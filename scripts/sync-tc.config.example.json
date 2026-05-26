@@ -1,0 +1,39 @@
+{
+  "_comment_1": "Copy this file to scripts/sync-tc.config.json (gitignored). Mỗi task tự cung cấp URL Sheet có ?gid=<tab_id> qua HTML comment trong 04-tc-list.md, hoặc CLI --spreadsheet.",
+  "_comment_2": "Strategy: APPEND xuống tab user pre-create. Script tìm row trống đầu tiên (cột A), ghi header + TCs từ đó. KHÔNG tạo tab mới.",
+  "_comment_3": "spreadsheet_id dưới = fallback khi cả CLI lẫn HTML comment đều thiếu. Để placeholder = bắt buộc khai báo per-task.",
+
+  "spreadsheet_id": "REPLACE_OR_LEAVE_PLACEHOLDER_TO_FORCE_PER_TASK_DECLARATION",
+
+  "columns": [
+    { "header": "TC ID",           "source": "tc_id" },
+    { "header": "Title",           "source": "title" },
+    { "header": "Type",            "source": "type" },
+    { "header": "Priority",        "source": "priority" },
+    { "header": "Precondition",    "source": "precondition" },
+    { "header": "Steps",           "source": "steps" },
+    { "header": "Expected result", "source": "expected" },
+    { "header": "Output note",     "empty": true },
+    { "header": "Assignee",        "empty": true },
+    {
+      "header": "Status",
+      "empty": true,
+      "dropdown": ["OK", "NG", "Not test", "NG -> Đã fix"]
+    }
+  ],
+
+  "_column_flags": {
+    "source": "Khi không set 'empty'/'static': lấy từ TC field theo source key.",
+    "static": "true → value giống nhau cho mọi row, lấy từ metadata folder/file header.",
+    "empty": "true → cell để trống cho QA fill thủ công sau (assignee, status,...).",
+    "dropdown": "Array string → tạo data validation dropdown trên cột này (chỉ cho cột empty)."
+  },
+
+  "_source_keys_dynamic": [
+    "tc_id", "title", "environment", "precondition", "steps",
+    "expected", "priority", "type", "map_to_impact"
+  ],
+  "_source_keys_static": [
+    "bug_id", "date", "slug", "tester", "submit_date", "version", "link_goc"
+  ]
+}

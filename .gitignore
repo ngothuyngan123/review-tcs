@@ -1,0 +1,16 @@
+# Service account credentials — NEVER commit
+credentials/*.json
+credentials/*.key
+
+# Sync config (chứa Sheet ID riêng của user/team)
+scripts/sync-tc.config.json
+
+# Env vars (Redmine API key, etc.) — NEVER commit
+.env
+
+# Claude Code local overrides
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db

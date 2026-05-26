@@ -1,0 +1,172 @@
+﻿{
+    "issue":  {
+                  "id":  36243,
+                  "project":  {
+                                  "id":  96,
+                                  "name":  "Lme"
+                              },
+                  "tracker":  {
+                                  "id":  1,
+                                  "name":  "Bug KH"
+                              },
+                  "status":  {
+                                 "id":  1,
+                                 "name":  "New"
+                             },
+                  "priority":  {
+                                   "id":  2,
+                                   "name":  "Normal"
+                               },
+                  "author":  {
+                                 "id":  160,
+                                 "name":  "AI CSS"
+                             },
+                  "assigned_to":  {
+                                      "id":  160,
+                                      "name":  "AI CSS"
+                                  },
+                  "category":  {
+                                   "id":  37,
+                                   "name":  "QR Landing"
+                               },
+                  "parent":  {
+                                 "id":  36192
+                             },
+                  "subject":  "[05-05-2026][10810][QR Landing] 2 case khách báo \u0027friend-add button không react\u0027 (1 case khi add qua QRCA) — confirm có phải bug LINE không?",
+                  "description":  "User: t.fukushima@hashtag.ne.jp\r\nBot Name: HASH HACK\r\n\r\nCó **2 case** khách báo: button `友だち追加` (add friend) không react khi tap.\r\n\r\n→ Khách hỏi: đây có phải vấn đề từ phía LINE không?\r\n\r\n**Chi tiết:**\r\n- Trong 2 case, **1 case** xảy ra khi user **add friend mới qua QR Code Action (QRCA)** — friend-add button không react.\r\n\r\nCần team check / điều tra giùm xem có phải bug LME / QRCA hay là vấn đề LINE-side.\r\n\r\nLink Slack: https://l-message.slack.com/lists/T01H7J4Q5M1/F08DACWUDMM?record_id=Rec0B16FTDV1V\r\n\r\n---\r\n\r\nh3. 原文 (JP)\r\n\u003cpre\u003e\r\n友だち追加ボタンが反応しないとのお問い合わせが2件届いていますが、こちらはLINE側の問題でしょうか？\r\n1件はQRコードアクション経由の新規友だち追加時に友だち追加ボタンが反応しないとのことです。\r\n\u003c/pre\u003e\r\n\r\n\u003c!-- TaskRef: user_report:Rec0B16FTDV1V --\u003e",
+                  "start_date":  "2026-05-05",
+                  "done_ratio":  0,
+                  "spent_hours":  0.0,
+                  "custom_fields":  [
+                                        {
+                                            "id":  7,
+                                            "name":  "Commit Date",
+                                            "value":  ""
+                                        }
+                                    ],
+                  "created_on":  "2026-05-05T02:55:06Z",
+                  "updated_on":  "2026-05-13T10:56:35Z",
+                  "attachments":  [
+                                      {
+                                          "id":  25623,
+                                          "filename":  "____________________________2026-05-06_140120__1_.png",
+                                          "filesize":  162392,
+                                          "content_type":  "image/png",
+                                          "description":  "",
+                                          "content_url":  "https://redmine.watermelon.vn/attachments/download/25623/____________________________2026-05-06_140120__1_.png",
+                                          "thumbnail_url":  "https://redmine.watermelon.vn/attachments/thumbnail/25623",
+                                          "author":  {
+                                                         "id":  155,
+                                                         "name":  "Ngọc Ánh"
+                                                     },
+                                          "created_on":  "2026-05-07T03:52:59Z"
+                                      },
+                                      {
+                                          "id":  25630,
+                                          "filename":  "image_1101517_612410512948330582_1777856416091.jpg",
+                                          "filesize":  73975,
+                                          "content_type":  "image/jpeg",
+                                          "description":  "",
+                                          "content_url":  "https://redmine.watermelon.vn/attachments/download/25630/image_1101517_612410512948330582_1777856416091.jpg",
+                                          "thumbnail_url":  "https://redmine.watermelon.vn/attachments/thumbnail/25630",
+                                          "author":  {
+                                                         "id":  58,
+                                                         "name":  "Ngô Thúy Ngần"
+                                                     },
+                                          "created_on":  "2026-05-07T07:30:49Z"
+                                      },
+                                      {
+                                          "id":  25631,
+                                          "filename":  "SnapCrab_NoName_2026-5-7_14-40-2_No-00.png",
+                                          "filesize":  94586,
+                                          "content_type":  "image/png",
+                                          "description":  "",
+                                          "content_url":  "https://redmine.watermelon.vn/attachments/download/25631/SnapCrab_NoName_2026-5-7_14-40-2_No-00.png",
+                                          "thumbnail_url":  "https://redmine.watermelon.vn/attachments/thumbnail/25631",
+                                          "author":  {
+                                                         "id":  58,
+                                                         "name":  "Ngô Thúy Ngần"
+                                                     },
+                                          "created_on":  "2026-05-07T07:30:49Z"
+                                      }
+                                  ],
+                  "journals":  [
+                                   {
+                                       "id":  117733,
+                                       "user":  {
+                                                    "id":  155,
+                                                    "name":  "Ngọc Ánh"
+                                                },
+                                       "notes":  "\r\nkamine@xross-skill.com\r\n（小川直美｜受講生専用LINE）\r\nĐối tượng: toàn bộ 3 QR Code Action\r\n\r\nUser 佐々木繭美 cho biết rằng họ không thể đăng ký thông qua QR Code Action từ tài khoản 「小川直美｜虹色つまみアーティスト」.",
+                                       "created_on":  "2026-05-07T03:53:00Z",
+                                       "details":  [
+                                                       {
+                                                           "property":  "attachment",
+                                                           "name":  "25623",
+                                                           "new_value":  "____________________________2026-05-06_140120__1_.png"
+                                                       }
+                                                   ]
+                                   },
+                                   {
+                                       "id":  117754,
+                                       "user":  {
+                                                    "id":  58,
+                                                    "name":  "Ngô Thúy Ngần"
+                                                },
+                                       "notes":  "Check tiếp friend 道下裕希 ở bot エルメサポート khi tap vào kết bạn của bot エルグラムサポート ko cũng ko thấy phản hồi gì (2 bot này check ở staging)\r\nhttps://go.lmes.jp/landing-qr/2002341759-JRn2awBD?uLand=7nUI4Q\r\n\r\n",
+                                       "created_on":  "2026-05-07T07:30:59Z",
+                                       "details":  [
+                                                       {
+                                                           "property":  "attachment",
+                                                           "name":  "25631",
+                                                           "new_value":  "SnapCrab_NoName_2026-5-7_14-40-2_No-00.png"
+                                                       },
+                                                       {
+                                                           "property":  "attachment",
+                                                           "name":  "25630",
+                                                           "new_value":  "image_1101517_612410512948330582_1777856416091.jpg"
+                                                       }
+                                                   ]
+                                   },
+                                   {
+                                       "id":  117779,
+                                       "user":  {
+                                                    "id":  155,
+                                                    "name":  "Ngọc Ánh"
+                                                },
+                                       "notes":  "8/5: khách hỏi đã có thông tin chính thức từ LINE chưa\r\n8/5: Người dùng đã chia sẻ nội dung sau.\r\nHiện tại, phía WSS có đang thực hiện biện pháp đối ứng nào cho vấn đề này không? Ngoài ra, phía người dùng có biện pháp xử lý tạm thời nào có thể thực hiện được không?\r\n\r\nTừ khoảng kỳ nghỉ Golden Week, số lượng báo cáo về việc không thể nhấn nút “Thêm bạn bè LINE” trên thiết bị Android đang tăng lên.\r\nPhía chúng tôi đã kiểm tra và xác nhận lỗi xảy ra trên LINE Android phiên bản 26.6.0 / 26.6.1, trong khi trên LINE 15.13.1 / 15.15.1 thì không tái hiện được.\r\n\r\nTrên LINE Developers cũng đã thông báo rằng kể từ LINE Android 26.3.0, đã có hỗ trợ edge-to-edge, và điều này có thể khiến các nút ở phía dưới màn hình của LIFF app / LINE Mini App bị chồng lên vùng navigation, gây ảnh hưởng đến thao tác.\r\n\r\nKhi chuyển từ URL nguồn vào của lmessage sang màn hình thêm bạn bè, xảy ra tình trạng:\r\n\r\nnút “Thêm bạn bè” cố định ở dưới cùng màn hình\r\nhoặc\r\nnút trên trang profile của LINE Official Account\r\n\r\nkhông phản hồi thao tác nhấn.",
+                                       "created_on":  "2026-05-08T02:17:09Z",
+                                       "details":  [
+
+                                                   ]
+                                   },
+                                   {
+                                       "id":  117858,
+                                       "user":  {
+                                                    "id":  155,
+                                                    "name":  "Ngọc Ánh"
+                                                },
+                                       "notes":  "11/5 Khách:\r\nL Step: Đã xử lý xong\r\n-\u003e UTAGE: Chưa xử lý (có lẽ vậy)\r\nBên tôi cũng đang tạm giữ inquiry No.10858, trong đó có báo cáo rằng trên iPhone thao tác được nhưng trên Android thì không thao tác được, nên mong nhận được chia sẻ về tiến độ xử lý.\r\n-\u003e Có thông tin rằng L Step đã hoàn tất đối ứng, vậy về vấn đề này phía Elme có biện pháp đối ứng nào có thể thực hiện được không?\r\n-\u003e Phía LINE đã đưa ra thông báo như dưới đây, vậy nội dung đối ứng từ phía LINE có phải là có thể giải quyết được vấn đề lần này hay không?\r\nhttps://developers.line.biz/ja/news/2026/05/11/liff-outage/",
+                                       "created_on":  "2026-05-11T08:15:22Z",
+                                       "details":  [
+
+                                                   ]
+                                   },
+                                   {
+                                       "id":  118286,
+                                       "user":  {
+                                                    "id":  58,
+                                                    "name":  "Ngô Thúy Ngần"
+                                                },
+                                       "notes":  "* Tái hiên bug:\r\nDùng device android quét qr landing để add friend\r\nHiện tượng: click vào btn kết bạn thì bị lỗi không phản hồi\r\n\r\n* Đánh giá ảnh hưởng phía dev:\r\n1. Nguyên nhân: liff và mini app đang lỗi\r\n2. Cách fix:\r\n- check liff login của liff app khi mở trên androind\r\n3. Đã check và sửa các function sử dụng đến function/data vừa sửa\r\n4. Đánh giá ảnh hưởng\r\n        4.1 List function\r\n            - resources/views/liff_callback.blade.php\r\n        4.2 List những data bị update khi fix bug \r\n            - không có\r\n        4.3 Dựa vào 2 mục trên list những tính năng sẽ ảnh hưởng\r\n      - Test các case kết bạn qua landing qrcode\r\n\r\n* Link TCs: https://docs.google.com/spreadsheets/d/15QEYkgp3OhzQyA5CLADvpQu_CAGovQIREuNjxPnBbOk/edit?gid=412698763#gid=412698763\r\nRow: 3494 ~ 3452",
+                                       "created_on":  "2026-05-13T10:56:35Z",
+                                       "details":  [
+
+                                                   ]
+                                   }
+                               ],
+                  "watchers":  [
+
+                               ]
+              }
+}

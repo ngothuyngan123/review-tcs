@@ -1,0 +1,7 @@
+*/*/_internal/*
+
+# Node modules
+node_modules/
+
+# macOS
+.DS_Store

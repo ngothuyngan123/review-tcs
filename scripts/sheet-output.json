@@ -1,0 +1,964 @@
+{
+  "Checklist web": [
+    [
+      "",
+      "ID",
+      "Ngày add checklist",
+      "Main checklist",
+      "Sub 1",
+      "Sub 2"
+    ],
+    [
+      "Function checklist",
+      "CL22",
+      "2026-04-16",
+      "Đối với tất cả các chức năng upload file:\n+ Check path url trước và sau khi save -> Đảm bảo path giống nhau\n+ Check preview sau upload mà chưa click save và sau khi save -> Đảm bảo preview bình thường",
+      "VD: Màn hình template, sau khi upload video (mà chưa click btn save) thì vẫn preview mở video bt, và sau khi click save vẫn preview và mở video bt"
+    ],
+    [
+      "",
+      "CL21",
+      "2026-03-03",
+      "Về các format dữ liệu hiển thị phía line user:\n- Chú ý các format datetime cần theo đúng design, nếu có dấu ngoặc thì phải là dấu ngoặc nhật\n- Để ý các dấu cách theo design là dấu cách Nhật hay dấu cách thường\n- Đảm bảo format khi web send/ send test và job send phải hoàn toàn giống nhau về mặt hiển thị"
+    ],
+    [
+      "",
+      "CL20",
+      "2026-02-24",
+      "Các tính năng khi version up đã test lại case hủy hợp đồng hay chưa?\n=> Khi hết hạn hợp đồng thì các tính năng không được chạy nữa",
+      "Khi hủy hợp đồng\n1. Clear toàn bộ richmenu của line user\n2. Hủy hết các schedule:\n- Schedule Broadcast\n- Step message \n- Remind: event, lesson, salon, form\n- Action schedule\n- Schedule send từ chat 1:1\n- Schedule send từ message error\n- Schedule hiển thị/stop richmenu\n3. QR code: không được chạy action nữa"
+    ],
+    [
+      "",
+      "CL19",
+      "2026-02-24",
+      "Tính năng cần hiển thị trigger trên chat 1:1 => Đã hiển thị đầy đủ trigger hay chưa?"
+    ],
+    [
+      "",
+      "CL18",
+      "2026-01-28",
+      "Khi test deploy luôn có case load UI trước và submit sau với những trường hợp release không lock maintain",
+      "VD: Tính năng trả lời form \nĐể sẵn màn hình form phía line user lúc chưa release\n=> Sau khi release tiến hành submit form. Expect: Vẫn submit bình thường: lưu result, ghi google spread, action form..."
+    ],
+    [
+      "",
+      "CL17",
+      "2026-01-27",
+      "Khi test 1 tính năng liên quan đến setting action cần kiểm tra:\n- DB: nếu xóa hết các action_detail thì phải xóa action_id trong phần setting action đó\n- GUI: Kiểm tra lại màn list, màn detail, các chỗ preview action không bị lỗi khi xóa hết action "
+    ],
+    [
+      "",
+      "CL16",
+      "2026-01-07",
+      "Add quan điểm test: các tính năng liên quan đến tạo file (ảnh, audio, video, pdf, csv...) thì cũng cần có quan điểm xóa file khi thực hiện việc xóa/ change file mới => MỤc đích: KHông để lại file rác trên server\n=> Xóa cả server local và server B2",
+      "VD: Khi change ảnh A sang ảnh B thì phải xóa ảnh A khỏi server\n=> Check access link ảnh trả về 404 là đúng",
+      "Riêng trên product thì cần check là ảnh đã xóa ở cả server local và server B2.\n=> Muốn check ảnh đã bị xóa chưa vào bằng link ảnh p.lmes.jp nhưng thêm ?v=x vào sau để không bị cache. Nếu trả về 404 là đã xóa\nVí dụ \nhttps://p.lmes.jp/ext-media-step/media/image-thumbnail/39928/83138/83138_1748868197165_120227_template_thumbnail_path_8657940.png\n \nThì check https://p.lmes.jp/ext-media-step/media/image-thumbnail/39928/83138/83138_1748868197165_120227_template_thumbnail_path_8657940.png?v=1"
+    ],
+    [
+      "",
+      "CL15",
+      "2025-11-24",
+      "Tính năng phân trang",
+      "Kiểm tra hành vi scroll khi chuyển page/rẽ nhánh\n-> Khi next sang page khác phải tự động scroll lên đầu page"
+    ],
+    [
+      "",
+      "CL14",
+      "2025-11-19",
+      "Rule đặt tên và validate dữ liệu",
+      "đưa ra rule đặt tên và validate dữ liệu:\n{tên tính năng}_{tên quản ly}_yyyymmdd_hhmmss\n\ntên tính năng lấy tên menu\ntên quản lý : cần validate ký tự đặc biệt ko cho nhập và không cho phép nhập trùng"
+    ],
+    [
+      "",
+      "CL13",
+      "2025-08-26",
+      "[Line Friend] \nCác tính năng access link của tool lme: Form, Item, Event, Salon, Lesson, Conversion, QR code\n",
+      "Cần check User line access đã là friend chưa? Nếu chưa là friend cần redirect sang màn hình kết bạn"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "Test case open in app line"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "Test case open trình duyệt ngoài (ngoài app line)"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "Testcase open từ button (nếu có)"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "Testcase open từ PC (nếu có)"
+    ],
+    [
+      "",
+      "CL12",
+      "2025-08-08",
+      "Đã check max cho toàn bộ các dữ liệu chưa? (Nếu spec ko nói thì cần nego với khách hàng để tránh gặp lỗi sau này)",
+      "- Max ký tự\n- Max số lượng item"
+    ],
+    [
+      "",
+      "CL11",
+      "NA",
+      "Create/review/update/delete (CRUD) đúng bản ghi tài khoản đang test hay chưa? Có bị hiển thị/update nhầm vào account khác hay không?",
+      "- Check khi update/delete đã WHERE đúng điều kiện hay chưa?\n-> Bằng cách tạo những bản ghi có cùng một dữ liệu nào đó (tên, ngày...) và xem đã WHERE đúng chưa? (bot_id, staff_id, course_id, date...)\n-> Khi kiểm tra sẽ  kiểm tra trên 2 tài khoản, 2 staff, ... và kiểm tra trong DB đảm bảo dữ liệu update/delete đúng"
+    ],
+    [
+      "",
+      "CL10",
+      "NA",
+      "Các case update data/delete data nào đó liên quan thì ảnh hưởng như nào tới dữ liệu hiện tại?",
+      "- Ví dụ khi xóa 1 item gốc thì các chỗ khác có chứa item đã xóa thì có còn hiển thị không? Hoặc có lỗi gì không?\n- Update 1 item gốc thì các màn hình/tính năng khác có hiển thị của item đó đã được update hay chưa?"
+    ],
+    [
+      "",
+      "CL9",
+      "NA",
+      "Tính năng search theo từ khóa",
+      "- Đã search text tiếng Nhật chưa?\n- Đã check kết quả search khi có phân trang/ loadmore chưa?"
+    ],
+    [
+      "",
+      "CL8",
+      "NA",
+      "Các function trong đó có tính năng copy/preview => Đã kiểm tra lại chưa?"
+    ],
+    [
+      "",
+      "CL7",
+      "NA",
+      "Các tính năng liên quan đến giới hạn của plan",
+      "Xem trong file: https://docs.google.com/spreadsheets/d/1_GdktZFY3QVP2Vg_z2pu_odIAYPWLRk15Yn9sho3Ksg/edit?gid=0#gid=0",
+      "Test giới hạn lúc tạo mới"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "",
+      "Test giới hạn lúc copy"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "",
+      "Test giới hạn lúc khôi phục data đã xóa (Đối với những tính năng xóa mềm)"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "",
+      "Test case mở 2 tab => Thao tác"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "",
+      "Test double click ở lần limit cuối"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "- Server dev: Test mọi tính năng bằng account staff + free (các tính năng cần check limit plan thì check lại của các plan khác)\n- Server staging: Test mọi tinh năng bằng account staff + free (các tính năng cần check limit plan thì check lại của các plan khác)\n- Server product: Test mọi tính năng bằng account staff + free (các tính năng cần check limit plan thì check lại của các plan khác)"
+    ],
+    [
+      "",
+      "CL6",
+      "NA",
+      "Check data input khác (Tham khảo sheet Data Input)",
+      "Data test đã check nhập text Nhật chưa?"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "Data test đã check nhập vào số 0 chưa?"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "Area text test data có enter hay chưa? Có tự động resize form nhập chưa?"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "Test các case validate input dữ liệu invalid"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "Các tính năng có upload ảnh",
+      "Khi upload ảnh thì phải tự động resize nếu ảnh có kích thước width hoặc height > 2048px  (Đảm bảo phải giữ nguyên tỉ lệ ảnh gốc). Ảnh > 10.000px thì không cho phép upload\n=> Lấy chiều lớn nhất/2048 để lấy tỉ lệ. Sau đó lấy tỉ lệ đó nhân với chiều còn lại để ra kích thước resize của chiều còn lại"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "",
+      "Toàn bộ các tính năng upload ảnh phải test aspect với rule fix chiều rộng, tự giãn chiều cao"
+    ],
+    [
+      "",
+      "",
+      "NA",
+      "",
+      "",
+      "Đối với các phần chú thích recommend kích thước ảnh:\nCần upload ảnh kích thước theo recommend và check hiển thị ở mọi chỗ liên quan xem ảnh có bị co hay bị giãn ra hay không?\nVD: Trên GUI recommend là 推奨 1,000 × 500（px） => Thì cần upload ảnh 1000 x 500 và kiểm tra việc hiển thị của ảnh"
+    ],
+    [
+      "",
+      "CL5",
+      "NA",
+      "Double click ở các button có bị duplicate bản ghi hay không"
+    ],
+    [
+      "",
+      "CL4",
+      "NA",
+      "Check các thao tác liên tục",
+      "+ Add mới => Add mới tiếp\n+ Xóa => Xóa tiếp\n+ Xóa => Add mới\n+ Sort xong edit 1 trạng thái\n+ Add mới => Sau đó sort\n+ Edit => Sau đó sort\n+ Xóa => Sau đó Sort\n+ Sort => Sort tiếp\n+ Edit => Edit tiếp\n..."
+    ],
+    [
+      "",
+      "CL3",
+      "NA",
+      "Check thao tác chuyển tab setting khác",
+      "Khi màn hình có nhiều tab => Check các thao tác chuyển tab qua lại giữa các tab xem dữ liệu có bị thay đổi gì sau khi save hay không"
+    ],
+    [
+      "",
+      "CL2",
+      "NA",
+      "Sau khi save/sửa/xóa/sort => Check reload màn hình xem sau khi reload có bị lỗi gì không?"
+    ],
+    [
+      "",
+      "CL1",
+      "NA",
+      "Test account staff chưa?\n- Acc staff không được phân quyền => Không được phép access\n- Account staff được phân quyền => Thao tác test giống account chính"
+    ],
+    [
+      "Non-function checklist",
+      "",
+      "",
+      "Check các url của tool mà khách đã add conversion để đo lường thì không được phép thay đổi khi có CR của những tính năng liên quan",
+      "đăng ký user thành công: https://step.lme.jp/register/success\ntop khi đăng ký user và login : https://step.lme.jp/admin/home\ntop sau khi login (đã có bot): https://step.lme.jp/basic/overview\nbill standard tháng thành công: https://step.lme.jp/monthly/standard_success\nbill standard năm thành công: https://step.lme.jp/yearly/standard_success\nbill pro theo tháng thành công: https://step.lme.jp/monthly/pro_success\nbill pro theo năm thanh công: https://step.lme.jp/yearly/pro_success\nkết nối bot thành công: https://step.lme.jp/admin/bot-add-v2?status=successful"
+    ],
+    [
+      "",
+      "",
+      "",
+      "Regression test (Test hồi quy)",
+      "Đã verify các chức năng đã được list ra trong effect range (nếu có)  do dev list hay chưa ?"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "Từ quan điểm Tester, bạn có thấy task này có khả năng ảnh hưởng chức năng khác không?\nNếu có thì list lại effect",
+      "Tính năng mới có update gì db không? Nếu có thì cần check lại tính năng backup + copy "
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Phía job có cần update gì không?"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Phía app mobile có cần update gì không?"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Có tính năng nào khác liên quan đến phần update lần này không?"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "Các data cũ chạy bình thường sau khi update code mới hay không"
+    ],
+    [
+      "",
+      "",
+      "",
+      "Security Testing",
+      "Khi có một màn hình mới (URL mới)",
+      "Gõ trực tiếp URL vào thanh địa chỉ của trình duyệt mà không qua đăng nhập => Redirect ra màn hình login"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Sau khi login => Đổi param ID của URL bằng một param của user khác/bot khác => Từ chối access"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Check access URL khi staff không được cấp quyền\n- staff không được cấp quyền của BOT\n- staff không được cấp quyền vào MH template"
+    ],
+    [
+      "",
+      "",
+      "",
+      "Compatibility testing (Test tính tương thích)",
+      "- Web: Check cả trên máy Win +  Mac chưa? (chrome + safari)\n- App: Đã test trên cả android và iOS chưa?"
+    ]
+  ],
+  "Checklist job": [
+    [
+      "Loại job",
+      "ID",
+      "Ngày add checklist",
+      "Main checklist",
+      "Sub checklist"
+    ],
+    [
+      "Job callback"
+    ],
+    [
+      "Job sync java",
+      "CLJ01",
+      "2026-04-16",
+      "Sync google: Kiểm tra rate limit từ docs api của google -> Tạo TCs với dữ liệu request lớn và liên tục để kiểm tra việc retry của job",
+      "- Đảm bảo job sync lỗi cần có retry\n- Hạn chế việc xảy ra rate limit với các api thứ 3"
+    ]
+  ],
+  "Các tính năng chung": [
+    [
+      "Màn hình",
+      "Type ",
+      "Main checklist",
+      "Sub checklist 1",
+      "Sub checklist 2"
+    ],
+    [
+      "Bill tiền",
+      "Admin web",
+      "Bill tiền có case delay của callback đã check chưa?"
+    ],
+    [
+      "",
+      "Admin web",
+      "Các tính năng sử dụng bill tiền trên tool",
+      "Bill tiền bot"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Bill tiền item: item 1 lần, item chu kỳ"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Bill tiền salon"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Bill tiền lesson"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Bill tiền event booking"
+    ],
+    [
+      "Send message",
+      "Cả admin và user",
+      "Các function liên quan đến send message:\n- Gửi đúng thứ tự chưa => Khi test tính năng nào thì cần confirm lại logic cũ trước đấy\n- Replace các content hay chưa? VD: name, friend info\n- Check trigger hiển thị trên chat 1:1 của web và app\n- Preview message ở các màn hình hiển thị đúng chưa?\n- Profile sender đã đúng chưa?\n- Có update last_message và last_time_message hay không? -> Tùy logic\n- Gửi đúng filter chưa\n- Gửi bị duplicate không?\n- Có bị lỗi:  Không gửi được msg hoặc Gửi sai của 1 account khác không?\n",
+      "Check các case Send từ job:\n",
+      "1. Broadcast\n2. Scenario\n3. Event remind: \n+ remind cũ\n+ remind mới của salon, lesson, form\n4. Action khi có callback:\n + add friend thường, landing\n + auto reply\n5. Delay message của template (random msg)\n6. Send schedule (dành cho message_error) (sending_schedule_setting) --> Resend msg error\n7. Send schedule chat (dành cho user đặt lịch) (schedule_send_chat) -> Đặt lịch send ở chat 1:1\n8. Action schedule\n9. Postback:\n+ button\n+ rich menu\n+ image map\n+ video\n10.  Toàn bộ action ở các tính năng khác: form, booking calendar, booking event, tag, friend infor, item bill tiền, url, conversion\n11. Send test ở scenario\n12. Send action ở friend list"
+    ],
+    [
+      "",
+      "Cả admin và user",
+      "",
+      "Check các case send từ web:",
+      "1. chat 1:1\n2. friend list => 03/2026 đã chuyển hết sang job send\n3. Add tag\n4. send test:\n+ Send test ở màn template\n+ Send test ở màn broadcast\n+ Send test ở màn scenario (Case send từng step msg)\n+ Send test ở màn remind\n5. send message reply ở màn talklist\n6. remind: case message kiểu gửi ngay\n7. Send action text (msg độc lập) của: salon, lesson, kết bạn, qr, form"
+    ],
+    [
+      "",
+      "Admin app",
+      "",
+      "",
+      "App: \n+ Send chat 1:1\n+ Add tag\n+ Approve/deny booking salon\n+ Approve/deny booking lesson\n"
+    ],
+    [
+      "",
+      "Admin web",
+      "Check các case send message error và resend error",
+      "- Lưu đúng error chưa?\n- Check case resend"
+    ],
+    [
+      "",
+      "Line user",
+      "Check case friend đã bị block/friend block bot thì không send message (Không action + Không send remind)"
+    ],
+    [
+      "Friend info",
+      "Admin web",
+      "Các tính năng liên quan đến hiển thị friend info phải check đủ 3 loại folder:\n- Folder chưa phân loại\n- 2 folder default\n- Các folder do admin tạo"
+    ],
+    [
+      "",
+      "Admin web",
+      "Các tính năng liên quan đến hiển thị friend info",
+      "Hiển thị trên màn hình quản lý ",
+      "Quản lý info friend\n/basic/friend-information"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "",
+      "Quản lý info friend => List friend có info friend\n/basic/friend-information/item/144054"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "",
+      "Chat 1:1 => Right bar"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "",
+      "My page => Tab 基本情報"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "",
+      "Quản lý CSV => Export CSV"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "",
+      "Màn phân tích cross: Phần setting trục tham chiếu case chọn 友だち情報\n/basic/cross-analysis/result-cross/9582"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Modal action"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Modal filter"
+    ],
+    [
+      "",
+      "Line user",
+      "",
+      "Hiển thị ở phía user line",
+      "Event booking => Khi booking"
+    ],
+    [
+      "",
+      "Line user",
+      "",
+      "",
+      "Lesson booking => Khi booking"
+    ],
+    [
+      "",
+      "Line user",
+      "",
+      "",
+      "Salon booking => Khi booking"
+    ],
+    [
+      "",
+      "Line user",
+      "",
+      "",
+      "Item => Khi mua item"
+    ],
+    [
+      "",
+      "Line user",
+      "",
+      "",
+      "Form => Khi trả lời form"
+    ],
+    [
+      "",
+      "Admin app",
+      "",
+      "App mobile => Màn my page"
+    ],
+    [
+      "",
+      "Admin web",
+      "Các tính năng có update friend info",
+      "Chat 1:1 => Update friend info ở right bar"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "My page =>  Update friend info "
+    ],
+    [
+      "",
+      "Job",
+      "",
+      "QR landing có set import param => Update friend info sau khi kết bạn"
+    ],
+    [
+      "",
+      "Job",
+      "",
+      "CSV => Import file CSV"
+    ],
+    [
+      "",
+      "Cả web và job",
+      "",
+      "Multi action"
+    ],
+    [
+      "",
+      "Line user",
+      "",
+      "Event booking => Admin tạo form nhập thông tin => User trả lời form nhập"
+    ],
+    [
+      "",
+      "Line user",
+      "",
+      "Lesson booking  => Admin tạo form nhập thông tin => User trả lời form nhập"
+    ],
+    [
+      "",
+      "Line user",
+      "",
+      "Salon booking  => Admin tạo form nhập thông tin => User trả lời form nhập"
+    ],
+    [
+      "",
+      "Line user",
+      "",
+      "Item  => Admin tạo form nhập thông tin => User trả lời form nhập"
+    ],
+    [
+      "",
+      "Line user",
+      "",
+      "Form  => Admin tạo form nhập thông tin => User trả lời form nhập"
+    ],
+    [
+      "",
+      "Admin app",
+      "",
+      "App mobile => Màn my page"
+    ],
+    [
+      "",
+      "Cả admin và user",
+      "Check các tính năng insert code friend info và replace dữ liệu động",
+      "Modal multi action => Action text có insert friend info",
+      "- Check hiển thị ở phía line user\n- Check hiển thị ở chat 1:1 trên web\n- Check hiển thị ở chat 1:1 trên app"
+    ],
+    [
+      "",
+      "Cả admin và user",
+      "",
+      "Template text insert friend info",
+      "- Check hiển thị ở phía line user\n- Check hiển thị ở chat 1:1 trên web\n- Check hiển thị ở chat 1:1 trên app"
+    ],
+    [
+      "",
+      "Cả admin và user",
+      "",
+      "Remind",
+      "- Check hiển thị ở phía line user\n- Check hiển thị ở chat 1:1 trên web\n- Check hiển thị ở chat 1:1 trên app"
+    ],
+    [
+      "Tag",
+      "Admin web",
+      "Các tính năng liên quan đến hiển thị Tag",
+      "Hiển thị trên các màn hình quản lý ",
+      "Quản lý tag => List tag"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "",
+      "Chat 1:1 => Right bar"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "",
+      "My page => Tab タグ"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "",
+      "Quản lý CSV => Export CSV"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "",
+      "Tính năng form: các item có gắn tag\n- Item trả lời 1 lần (radio, droplist)\n- Item checkbox"
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "Cross analysis"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Modal multi action"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Modal filter"
+    ],
+    [
+      "",
+      "Admin app",
+      "",
+      "App mobile:\n- Màn chat 1:1\n- Màn My page"
+    ],
+    [
+      "",
+      "Admin web",
+      "Các tính năng có update tag",
+      "Chat 1:1 => Right bar"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "My page => Tab タグ"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Quản lý CSV => Import CSV"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Trả lời form: các item có gắn tag\n- Item trả lời 1 lần (radio, droplist)\n- Item checkbox"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Modal multi action"
+    ],
+    [
+      "",
+      "Admin app",
+      "",
+      "App mobile:\n- Màn chat 1:1\n- Màn My page"
+    ],
+    [
+      "Google sheet",
+      "Admin web",
+      "Các tính năng có liên kết google spread",
+      "Form answer"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Salon"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Lesson"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "QR code"
+    ],
+    [
+      "",
+      "Admin web",
+      "Lúc liên kết google mà chưa cấp quyền => Phải hiển thị msg báo lỗi và không cho liên kết"
+    ],
+    [
+      "",
+      "Admin web",
+      "Sau khi liên kết google mà bị mất quyền/ mất liên kết => Phải hiển thị alert cảnh báo để user liên kết lại"
+    ],
+    [
+      "",
+      "Admin web",
+      "File name tạo ra lúc liên kết google có chứa ký tự đặc biệt thì có lỗi không?"
+    ],
+    [
+      "",
+      "Admin web",
+      "Check case tiêu đề cột ở spread có xuống dòng hay chưa?"
+    ],
+    [
+      "",
+      "Admin web",
+      "Khi có update của tính năng cần xem xét test lại job retry (Hiện tại Salon, lesson, Form có job retry nếu sync google bị lỗi)",
+      "Riêng tính năng form: Google spread có 2 loại header mới và header cũ nên cần test cả 2 loại này\n(Header cũ chỉ có 1 cột tên người trả lời,  header mới có 2 cột  Tên LINE và Tên hệ thống (システム表示名))"
+    ],
+    [
+      "Google calendar"
+    ],
+    [
+      "Các tính năng liên quan đến giới hạn của plan",
+      "Admin web",
+      "Xem trong file: https://docs.google.com/spreadsheets/d/1_GdktZFY3QVP2Vg_z2pu_odIAYPWLRk15Yn9sho3Ksg/edit?gid=0#gid=0",
+      "Test giới hạn lúc tạo mới"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Test giới hạn lúc copy"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Test giới hạn lúc khôi phục data đã xóa (Đối với những tính năng xóa mềm)"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Test case mở 2 tab => Thao tác"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Test double click ở lần limit cuối"
+    ],
+    [
+      "",
+      "Admin web",
+      "- Server dev: Test mọi tính năng bằng account free (các tính năng cần check limit plan thì check lại của các plan khác)\n- Server staging: Test mọi tinh năng bằng account pro (các tính năng cần check limit plan thì check lại của các plan khác)\n- Server product: Test mọi tính năng bằng account standard (các tính năng cần check limit plan thì check lại của các plan khác)"
+    ],
+    [
+      "Tính năng sort",
+      "Admin web",
+      "Sort folder ở các màn hình"
+    ],
+    [
+      "",
+      "Admin web",
+      "Sort bot ở over view"
+    ],
+    [
+      "",
+      "Admin web",
+      "Chat 1:1",
+      "Sort hiển thị info friend"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Sort status chat"
+    ],
+    [
+      "",
+      "Admin web",
+      "My page => Sort hiển thị info friend "
+    ],
+    [
+      "",
+      "Admin web",
+      "richmenu"
+    ],
+    [
+      "",
+      "Admin web",
+      "image richmenu"
+    ],
+    [
+      "",
+      "Admin web",
+      "scenario"
+    ],
+    [
+      "",
+      "Admin web",
+      "auto reply"
+    ],
+    [
+      "",
+      "Admin web",
+      "formanswer màn list"
+    ],
+    [
+      "",
+      "Admin web",
+      "template"
+    ],
+    [
+      "",
+      "Admin web",
+      "tag"
+    ],
+    [
+      "",
+      "Admin web",
+      "QR code"
+    ],
+    [
+      "",
+      "Admin web",
+      "friend info"
+    ],
+    [
+      "",
+      "Admin web",
+      "action schedule"
+    ],
+    [
+      "",
+      "Admin web",
+      "remind"
+    ],
+    [
+      "",
+      "Admin web",
+      "popup"
+    ],
+    [
+      "",
+      "Admin web",
+      "booking event"
+    ],
+    [
+      "",
+      "Admin web",
+      "Salon",
+      "Sort course/staff"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Sort item form"
+    ],
+    [
+      "",
+      "Admin web",
+      "Lesson",
+      "Sort course"
+    ],
+    [
+      "",
+      "Admin web",
+      "",
+      "Sort item form"
+    ],
+    [
+      "",
+      "Admin web",
+      "QL CSV"
+    ],
+    [
+      "",
+      "Admin web",
+      "QL item"
+    ],
+    [
+      "",
+      "Admin web",
+      "QL staff"
+    ],
+    [
+      "",
+      "Admin web",
+      "conversion"
+    ],
+    [
+      "",
+      "Admin web",
+      "url"
+    ]
+  ]
+}

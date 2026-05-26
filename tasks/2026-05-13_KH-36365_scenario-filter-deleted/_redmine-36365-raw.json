@@ -1,0 +1,132 @@
+﻿{
+    "issue":  {
+                  "id":  36365,
+                  "project":  {
+                                  "id":  96,
+                                  "name":  "Lme"
+                              },
+                  "tracker":  {
+                                  "id":  1,
+                                  "name":  "Bug KH"
+                              },
+                  "status":  {
+                                 "id":  1,
+                                 "name":  "New"
+                             },
+                  "priority":  {
+                                   "id":  2,
+                                   "name":  "Normal"
+                               },
+                  "author":  {
+                                 "id":  160,
+                                 "name":  "AI CSS"
+                             },
+                  "assigned_to":  {
+                                      "id":  80,
+                                      "name":  "Kieu Son Tung"
+                                  },
+                  "category":  {
+                                   "id":  26,
+                                   "name":  "Scenario"
+                               },
+                  "parent":  {
+                                 "id":  36192
+                             },
+                  "subject":  "[11-05-2026][10833][Scenario] Friend 「さや」: ステップ配信「問診票＋1H、1日、2日」 mốc 01時間00分後 gửi 2 lần (duplicate)",
+                  "description":  "User: sokuyaku0601@gmail.com\r\nBot Name: AURORA CLINIC\r\n\r\nĐối với friend 「さや」, trên ステップ配信「問診票＋1H、1日、2日」, message ở mốc 01時間00分後 (sau 1 giờ 0 phút) đã được gửi **2 lần** (2通送信されている) — bị duplicate send.\r\n\r\nLink Slack: https://l-message.slack.com/lists/T01H7J4Q5M1/F08DACWUDMM?record_id=Rec0B30GSMLRF\r\n\r\n---\r\n\r\nh3. 原文 (JP)\r\n\u003cpre\u003e\r\n友だち「さや」に対して、ステップ配信「問診票＋1H、1日、2日」の01時間00分後のメッセージが2通送信されている。\r\n\u003c/pre\u003e\r\n\r\n\u003c!-- TaskRef: user_report:Rec0B30GSMLRF --\u003e",
+                  "start_date":  "2026-05-11",
+                  "done_ratio":  0,
+                  "spent_hours":  0.0,
+                  "custom_fields":  [
+                                        {
+                                            "id":  7,
+                                            "name":  "Commit Date",
+                                            "value":  ""
+                                        }
+                                    ],
+                  "created_on":  "2026-05-11T08:46:08Z",
+                  "updated_on":  "2026-05-13T08:12:17Z",
+                  "attachments":  [
+                                      {
+                                          "id":  25682,
+                                          "filename":  "SnapCrab_NoName_2026-5-11_17-35-36_No-00.png",
+                                          "filesize":  115377,
+                                          "content_type":  "image/png",
+                                          "description":  "",
+                                          "content_url":  "https://redmine.watermelon.vn/attachments/download/25682/SnapCrab_NoName_2026-5-11_17-35-36_No-00.png",
+                                          "thumbnail_url":  "https://redmine.watermelon.vn/attachments/thumbnail/25682",
+                                          "author":  {
+                                                         "id":  160,
+                                                         "name":  "AI CSS"
+                                                     },
+                                          "created_on":  "2026-05-11T08:46:05Z"
+                                      },
+                                      {
+                                          "id":  25683,
+                                          "filename":  "SnapCrab_NoName_2026-5-11_17-36-45_No-00.png",
+                                          "filesize":  52080,
+                                          "content_type":  "image/png",
+                                          "description":  "",
+                                          "content_url":  "https://redmine.watermelon.vn/attachments/download/25683/SnapCrab_NoName_2026-5-11_17-36-45_No-00.png",
+                                          "thumbnail_url":  "https://redmine.watermelon.vn/attachments/thumbnail/25683",
+                                          "author":  {
+                                                         "id":  160,
+                                                         "name":  "AI CSS"
+                                                     },
+                                          "created_on":  "2026-05-11T08:46:08Z"
+                                      }
+                                  ],
+                  "journals":  [
+                                   {
+                                       "id":  117865,
+                                       "user":  {
+                                                    "id":  160,
+                                                    "name":  "AI CSS"
+                                                },
+                                       "notes":  "",
+                                       "created_on":  "2026-05-11T08:50:28Z",
+                                       "details":  [
+                                                       {
+                                                           "property":  "attr",
+                                                           "name":  "subject",
+                                                           "old_value":  "[11-05-2026][10833][Scenario] Friend さや — ステップ配信 \u0027questionnaire+1H/1日/2日\u0027 message mốc 1H gửi trùng 2 lần",
+                                                           "new_value":  "[11-05-2026][10833][Scenario] Friend 「さや」: ステップ配信「問診票＋1H、1日、2日」 mốc 01時間00分後 gửi 2 lần (duplicate)"
+                                                       },
+                                                       {
+                                                           "property":  "attr",
+                                                           "name":  "description",
+                                                           "old_value":  "User: sokuyaku0601@gmail.com\r\nBot Name: AURORA CLINIC\r\n\r\nĐối với friend 「さや」, trên ステップ配信 (step-distribution / scenario) 「問診票＋1H、1日、2日」, message ở mốc 「01時間00分後」 (sau 1 giờ 0 phút) đã được gửi **2 lần** (2通送信されている) — bị duplicate.\r\n\r\nLink Slack: https://l-message.slack.com/lists/T01H7J4Q5M1/F08DACWUDMM?record_id=Rec0B30GSMLRF\r\n\r\n---\r\n\r\nh3. 原文 (JP)\r\n\u003cpre\u003e\r\n友だち「さや」に対して、ステップ配信「問診票＋1H、1日、2日」の01時間00分後のメッセージが2通送信されている。\r\n\u003c/pre\u003e\r\n\r\n\u003c!-- TaskRef: user_report:Rec0B30GSMLRF --\u003e",
+                                                           "new_value":  "User: sokuyaku0601@gmail.com\r\nBot Name: AURORA CLINIC\r\n\r\nĐối với friend 「さや」, trên ステップ配信「問診票＋1H、1日、2日」, message ở mốc 01時間00分後 (sau 1 giờ 0 phút) đã được gửi **2 lần** (2通送信されている) — bị duplicate send.\r\n\r\nLink Slack: https://l-message.slack.com/lists/T01H7J4Q5M1/F08DACWUDMM?record_id=Rec0B30GSMLRF\r\n\r\n---\r\n\r\nh3. 原文 (JP)\r\n\u003cpre\u003e\r\n友だち「さや」に対して、ステップ配信「問診票＋1H、1日、2日」の01時間00分後のメッセージが2通送信されている。\r\n\u003c/pre\u003e\r\n\r\n\u003c!-- TaskRef: user_report:Rec0B30GSMLRF --\u003e"
+                                                       }
+                                                   ]
+                                   },
+                                   {
+                                       "id":  117866,
+                                       "user":  {
+                                                    "id":  58,
+                                                    "name":  "Ngô Thúy Ngần"
+                                                },
+                                       "notes":  "Check bot_id 68612\r\nscenario_id 256461\r\nline_id 43413410\r\nmessage_id: 1958315734,1958315735 (Tại sao có 1 msg text bị duplicate)?\r\n\r\nline_id tương tự: 44512507, 52493370",
+                                       "created_on":  "2026-05-11T08:56:15Z",
+                                       "details":  [
+
+                                                   ]
+                                   },
+                                   {
+                                       "id":  118250,
+                                       "user":  {
+                                                    "id":  58,
+                                                    "name":  "Ngô Thúy Ngần"
+                                                },
+                                       "notes":  "* Cách tái hiện bug:\r\n1. User mở 2 tab tạo scenario\r\n2. Tab 1 -\u003e Tạo 1 filter -\u003e Thực hiện xóa filter\r\n3. Tab 2 -\u003e thực hiện tạo 1 step trong màn filter đó( KH tạo step send sau XX giờ)\r\nBUG: Vẫn add step message vào scenario với filter_id đã bị xóa\r\n\r\n* Đánh giá ảnh hưởng từ phía dev:\r\n1. Nguyên nhân\r\n   - Do user tạo step có filter manager đã bị xóa, nhưng k hiển thị trên GUI\r\n2. Cách fix\r\n   - Khi tạo step, check filter manager có tồn tại k, nếu không thì báo lỗi フィルターが削除されたため、画面を再読み込みしてください\r\n   - Xóa try/catch để notify chatwork\r\n3. Đã check và sửa các function sử dụng đến function/data vừa sửa\r\n4. Đánh giá ảnh hưởng\r\n        4.1 List function\r\n            - createScenarioStep (app/Http/Controllers/Basic/ScenarioController.php)\r\n        4.2 List những data bị update khi fix bug \r\n            - k có\r\n        4.3 Dựa vào 2 mục trên list những tính năng sẽ ảnh hưởng\r\n            - tạo mới step message",
+                                       "created_on":  "2026-05-13T08:12:17Z",
+                                       "details":  [
+
+                                                   ]
+                                   }
+                               ],
+                  "watchers":  [
+
+                               ]
+              }
+}
