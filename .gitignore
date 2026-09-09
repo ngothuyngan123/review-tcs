@@ -14,3 +14,7 @@ scripts/sync-tc.config.json
 # OS
 .DS_Store
 Thumbs.db
+
+# ID Google Sheet kho TCs tổng hợp (riêng từng người)
+kho-tcs/.sheet-id
+kho-tcs/data/__pycache__/

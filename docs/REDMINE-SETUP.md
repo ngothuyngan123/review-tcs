@@ -1,6 +1,10 @@
-# Redmine MCP Setup
+# Redmine REST API Setup
 
-Hướng dẫn setup MCP Redmine cho project, cho phép Claude (qua `/write-tc`) tự đọc issue Redmine và auto-fill `01-bug-task.md`.
+Hướng dẫn setup kết nối Redmine cho project, cho phép Claude (qua `/new-task`) tự đọc issue Redmine và auto-fill `01-bug-task.md` + `03-dev-impact.md`.
+
+> ⚠️ **Đổi từ 2026-09-09**: project **KHÔNG dùng MCP redmine nữa**. Thay bằng gọi thẳng **Redmine REST API** qua script [scripts/redmine_fetch.py](../scripts/redmine_fetch.py) với API key trong `.env`.
+> Lợi ích: không cần `uvx` / MCP server chạy nền, không cần export env vào shell trước khi mở Claude Code, lỗi HTTP hiện rõ ràng (401/403/404) ngay trên terminal.
+> Nếu `.mcp.json` cũ của bạn còn block `redmine` → xóa đi, không còn tác dụng.
 
 ---
 
@@ -8,14 +12,15 @@ Hướng dẫn setup MCP Redmine cho project, cho phép Claude (qua `/write-tc`)
 
 ### Bước 1 — Lấy API access key trên Redmine
 
-1. Đăng nhập Redmine (vd `https://redmine.lme.jp`).
+1. Đăng nhập Redmine (vd `https://redmine.watermelon.vn`).
 2. Góc trên phải → **My account** (アカウント).
 3. Sidebar phải → **API access key** → click **Show** (hoặc **Reset** nếu chưa có).
 4. Copy chuỗi key (40 ký tự hex).
 
 > ⚠ Key này có quyền truy cập **mọi project user nhìn thấy được**. Đừng share, đừng commit.
+> Nếu Redmine trả `403` ở mọi request → nhờ admin bật **Administration → Settings → API → Enable REST web service**.
 
-### Bước 2 — Set env vars
+### Bước 2 — Điền `.env`
 
 1. Copy file mẫu:
    ```powershell
@@ -28,66 +33,77 @@ Hướng dẫn setup MCP Redmine cho project, cho phép Claude (qua `/write-tc`)
    ```
 2. Mở `.env` và điền:
    ```
-   REDMINE_URL=https://redmine.example.com
-   REDMINE_API_KEY=your-api-key-here
+   REDMINE_URL=https://redmine.watermelon.vn
+   REDMINE_API_KEY=<40 ký tự hex copy ở Bước 1>
    ```
-   - `REDMINE_URL` là **BASE URL** của Redmine (vd `https://redmine.example.com`), KHÔNG kèm `/projects/.../issues` path.
+   - `REDMINE_URL` là **BASE URL** của Redmine, KHÔNG kèm `/projects/.../issues` path.
    - Không thêm dấu nháy quanh giá trị. Không có space sau `=`.
+   - Redmine nội bộ dùng self-signed cert → thêm `REDMINE_VERIFY_SSL=0`.
 
 > `.env` đã được `.gitignore` block — sẽ không commit. Chỉ commit `.env.example`.
+> **Không cần load `.env` vào shell** — script đọc thẳng file. (Env var của shell nếu có thì được ưu tiên hơn `.env`.)
 
-### Bước 3 — Load env vars vào shell trước khi mở Claude Code
-
-Claude Code expand `${REDMINE_URL}` và `${REDMINE_API_KEY}` trong `.mcp.json` từ env của shell đang chạy nó. Phải load `.env` vào shell trước khi launch Claude Code.
-
-**PowerShell** — load `.env` mỗi lần mở terminal:
-
-```powershell
-# Load từng dòng KEY=VALUE
-Get-Content .env | ForEach-Object {
-  if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
-    [Environment]::SetEnvironmentVariable($matches[1].Trim(), $matches[2].Trim(), 'Process')
-  }
-}
-
-# Mở Claude Code SAU khi load env
-claude
-```
-
-(Có thể bỏ snippet này vào `$PROFILE` để auto-load khi vào folder project.)
-
-**Bash / WSL**:
+### Bước 3 — Verify kết nối
 
 ```bash
-set -a; source .env; set +a
-claude
+python scripts/redmine_fetch.py --check
 ```
 
-### Bước 4 — Verify MCP redmine kết nối
-
-1. Mở Claude Code trong root project: `claude` (sau khi đã load env ở Bước 3).
-2. Gõ `/mcp` → verify thấy `redmine` server status `connected`.
-3. Hỏi Claude (test connection): `Dùng MCP redmine, get_issue cho issue ID <số có thật> rồi cho tôi xem subject + author.`
-
-Claude sẽ gọi tool `redmine__get_issue` và trả về dữ liệu Redmine.
+In ra `OK - <base url> - dang nhap voi: <login> (<tên>)` là xong. Lỗi thì xem bảng [Troubleshooting](#troubleshooting).
 
 ---
 
-## Sử dụng với `/write-tc`
+## Script `scripts/redmine_fetch.py`
 
-Sau khi setup xong, truyền Redmine URL làm argument thứ 2:
+Chỉ dùng **stdlib Python** (`urllib`) — không cần cài thêm package.
+
+```bash
+# Fetch 1 issue → in digest markdown ra stdout
+python scripts/redmine_fetch.py https://redmine.watermelon.vn/issues/36437
+
+# Issue id thuần (lấy base URL từ REDMINE_URL trong .env)
+python scripts/redmine_fetch.py 36437
+
+# Kèm dump JSON gốc ra file (để parse lại, không phải đọc hết vào context)
+python scripts/redmine_fetch.py 36437 --json "$TMPDIR/rm36437.json"
+
+# Bỏ journals cho nhẹ
+python scripts/redmine_fetch.py 36437 --no-journals
+
+# Test kết nối + API key
+python scripts/redmine_fetch.py --check
+```
+
+**stdout** = digest markdown, đủ để auto-fill file 01 + 03:
+
+| Phần | Nội dung |
+|---|---|
+| Header | `# Redmine #<id> - <subject>` |
+| Metadata | URL · Project · Tracker · Status · Priority · Author · Assignee · Created · Updated · Custom fields (chỉ field có giá trị) |
+| Attachments | filename + filesize + `content_url` (link download trực tiếp) |
+| Relations | `relates #xxx` / `blocks #xxx` … (nếu có) |
+| `## Description (nguyen van)` | Description **giữ nguyên format gốc** (markdown hoặc textile) |
+| `## Journals co notes (n)` | Chỉ journal **có `notes`** — journal chỉ đổi status/assignee bị loại |
+
+**Exit code**: `0` OK · `2` thiếu config/tham số · `3` URL sai format · `4` lỗi HTTP (401/403/404/…) · `5` không kết nối được.
+
+Endpoint gọi: `GET <base>/issues/<id>.json?include=journals,attachments,relations`, header `X-Redmine-API-Key`. **Chỉ đọc** — script không có đường ghi/sửa issue.
+
+---
+
+## Sử dụng với `/new-task`
 
 ```
-/write-tc tasks/2026-05-12_KH-36317_form-page-mismatch/ https://redmine.lme.jp/issues/36317
+/new-task https://redmine.watermelon.vn/issues/36317
 ```
 
 Claude sẽ:
 1. Parse issue ID `36317` từ URL.
-2. Call `redmine__get_issue(issue_id=36317, include="journals,attachments")`.
-3. Auto-fill `01-bug-task.md` (template `templates/01-bug-task.template.md`).
-4. DỪNG, yêu cầu user verify field `Auto-filled` + tick checkbox "Tester verify auto-fill chính xác" trước khi sang bước tiếp.
+2. Chạy `python scripts/redmine_fetch.py <url> --json <scratchpad>/redmine-36317.json`.
+3. Tạo folder `tasks/<YYYY-MM-DD>_36317_<slug>/`, auto-fill `01-bug-task.md` + `03-dev-impact.md` (+ `04-tc-list.md` nếu Redmine có "Link TCs", hoặc fallback MCP LME TEST STUDIO).
+4. **DỪNG** — tester verify lại nội dung auto-fill: đọc lại `01-bug-task.md` đối chiếu Redmine, tick checkbox "Tester verify auto-fill chính xác" ở `03-dev-impact.md`.
 
-Sau khi tester verify xong → invoke lại `/write-tc <folder>` (không cần Redmine URL nữa) để chạy Bước 1-7 (sinh `04-tc-list.md`).
+Sau khi verify xong → gõ skill tiếp theo (`/write-tc <folder>` hoặc `/review-tc <folder>`). `/write-tc` và `/review-tc` **không đụng Redmine**.
 
 ---
 
@@ -95,21 +111,25 @@ Sau khi tester verify xong → invoke lại `/write-tc <folder>` (không cần R
 
 | Triệu chứng | Nguyên nhân | Fix |
 |---|---|---|
-| `/mcp` không thấy `redmine` server | `uvx mcp-redmine` không cài được | Verify `uvx --version`. Nếu chưa có → `pip install uv` hoặc xem [uv install](https://github.com/astral-sh/uv). |
-| Server `redmine` status `failed` | Env vars chưa expand | Verify `$env:REDMINE_URL` (PowerShell) hoặc `echo $REDMINE_URL` (Bash) có giá trị. Nếu trống → chưa load `.env`, xem Bước 3. |
-| Tool call trả `401 Unauthorized` | API key sai | Verify key trong `.env` đúng (40 ký tự hex). Reset key trong Redmine → cập nhật `.env`. |
-| Tool call trả `403 Forbidden` | User không có quyền xem issue (project private) | Hỏi PM cấp quyền vào project tương ứng. |
-| Tool call trả `404 Not Found` | Issue ID không tồn tại / URL sai | Verify URL Redmine có format `<base>/issues/<id>`. |
-| `.env` đã load nhưng `${REDMINE_URL}` vẫn không expand trong `.mcp.json` | Claude Code đã start trước khi load env | Thoát Claude Code → load env → khởi động lại. |
+| `ERROR: Thieu REDMINE_API_KEY` | `.env` chưa tạo, hoặc còn giá trị mẫu `your-api-key-here` | Làm Bước 1 + 2. |
+| `ERROR: Thieu REDMINE_URL` | `.env` thiếu base URL và arg truyền vào là số thuần | Điền `REDMINE_URL` vào `.env`, hoặc truyền URL issue đầy đủ. |
+| `HTTP 401` | API key sai / đã reset | Lấy lại key (Bước 1) → cập nhật `.env`. |
+| `HTTP 403` | Không có quyền vào project private, hoặc REST API bị tắt trên Redmine | Xin PM cấp quyền project; nhờ admin bật `Enable REST web service`. |
+| `HTTP 404` | Issue không tồn tại, hoặc `REDMINE_URL` kèm path thừa | Verify URL đúng format `<base>/issues/<id>`; `REDMINE_URL` phải là gốc site. |
+| `Response ... khong phai JSON` | URL redirect về trang login | Thường là key sai hoặc REST API tắt — như 401/403. |
+| `Khong ket noi duoc ...` | Sai host / chưa bật VPN / mạng nội bộ | Mở URL Redmine bằng browser để verify; bật VPN nếu Redmine nội bộ. |
+| Lỗi `CERTIFICATE_VERIFY_FAILED` | Redmine dùng self-signed cert | Thêm `REDMINE_VERIFY_SSL=0` vào `.env`. |
+| `/mcp` không còn thấy server `redmine` | **Đúng như thiết kế** từ 2026-09-09 | Không dùng MCP redmine nữa — dùng script REST API. |
 
 ---
 
 ## Bảo mật
 
 - ❌ KHÔNG commit `.env` (đã gitignore).
-- ❌ KHÔNG paste API key vào chat / log / file.
+- ❌ KHÔNG paste API key vào chat / log / file / JSON dump.
 - ❌ KHÔNG share `.env` qua Slack/Email — mỗi tester tự lấy key riêng từ Redmine UI.
 - ✅ Reset API key khi nghi key bị lộ (Redmine: My account → API access key → Reset).
+- ✅ Dump `--json` để ở **scratchpad**, không commit vào `tasks/`.
 
 ---
 
@@ -117,13 +137,14 @@ Sau khi tester verify xong → invoke lại `/write-tc <folder>` (không cần R
 
 | File | Mục đích |
 |---|---|
-| [.mcp.json](../.mcp.json) | Config MCP server `redmine` (đọc `${REDMINE_URL}` + `${REDMINE_API_KEY}` từ env) |
+| [scripts/redmine_fetch.py](../scripts/redmine_fetch.py) | Fetch issue qua REST API (stdlib, không cần package ngoài) |
 | [.env.example](../.env.example) | Mẫu env vars để copy thành `.env` |
 | [.gitignore](../.gitignore) | Block `.env` khỏi git |
+| [.mcp.json](../.mcp.json) | Chỉ còn MCP `google-sheets` — **không còn** server `redmine` |
 
 ---
 
 ## Tham khảo
 
-- MCP Redmine server: https://pypi.org/project/mcp-redmine/ (hoặc package tương đương — verify version trong `.mcp.json`).
-- Redmine REST API: https://www.redmine.org/projects/redmine/wiki/Rest_api
+- Redmine REST API — Issues: https://www.redmine.org/projects/redmine/wiki/Rest_Issues
+- Redmine REST API — Authentication: https://www.redmine.org/projects/redmine/wiki/Rest_api#Authentication

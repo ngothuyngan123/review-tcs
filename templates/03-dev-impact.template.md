@@ -1,7 +1,7 @@
 # 03 — Đánh giá ảnh hưởng từ Dev
 
 > 2 cách điền file này:
-> 1. **Auto-fill từ Redmine** — chạy `/new-task <redmine-url>` → Claude parse section "Đánh giá ảnh hưởng" trong Redmine, fill các mục bên dưới. Tester verify rồi tick checkbox "Tester verify auto-fill chính xác".
+> 1. **Auto-fill từ Redmine** — chạy `/new-task <redmine-url>` → Claude fetch issue qua Redmine REST API (`scripts/redmine_fetch.py`) rồi parse section "Đánh giá ảnh hưởng", fill các mục bên dưới. Tester verify rồi tick checkbox "Tester verify auto-fill chính xác".
 > 2. **Paste tay** — Dev paste nguyên văn đánh giá theo format 4 mục.
 >
 > **Đây là input QUAN TRỌNG NHẤT** để xác định coverage TCs.

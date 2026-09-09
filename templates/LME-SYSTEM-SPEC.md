@@ -1,7 +1,7 @@
 # LME System Spec — Tổng hợp tham chiếu cho review TCs
 
 > **Mục đích**: File này là **reference spec tổng thể** của hệ thống LME (L Message / エルメ).
-> Khi review TCs, thay vì paste lại toàn bộ spec vào `02-spec-reference.md`, member/Leader **trích phần liên quan** từ file này và chỉ cần ghi:
+> Khi review TCs, thay vì paste lại toàn bộ spec, member/Leader **trích phần liên quan** từ file này và chỉ cần ghi:
 >
 > ```
 > Xem section: [LME-SYSTEM-SPEC.md § 3.8 — FA-008 Gửi tin nhắn hàng loạt](../../templates/LME-SYSTEM-SPEC.md#38-fa-008--gửi-tin-nhắn-hàng-loạt-メッセージ配信)
@@ -76,6 +76,8 @@
 - Rich menu, popup, QR code action, form
 
 ### Manual chính thức
+
+> ⚠️ **Chỉ là thông tin tham khảo — KHÔNG còn là nguồn spec của `/review-tc` · `/write-tc`** (bỏ 2026-09-08). Không WebFetch các URL dưới đây khi review/viết TC.
 
 https://lme.jp/manual/ — chia 9 nhóm:
 
@@ -675,7 +677,7 @@ LINE webhook → INSERT `callback_event`
 ## 4. Các tính năng chưa có spec chi tiết
 
 Các FA dưới đây có trong index gốc nhưng chưa được scan/spec đầy đủ. Khi review TC cho các tính năng này, cần:
-1. Đọc trực tiếp manual: https://lme.jp/manual/
+1. Coi như **không có spec** — ghi `Spec không ghi` / flag `[MAJOR]`, **KHÔNG WebFetch `lme.jp/manual`** (bỏ 2026-09-08)
 2. Hỏi Dev trước khi viết TCs
 3. Cập nhật spec này khi có thông tin mới
 
@@ -858,7 +860,7 @@ Component UI/logic dùng chung xuyên nhiều tính năng. **Bug ở 1 component
 
 ## 9. Cách dùng file này khi review TCs
 
-### Trong file `02-spec-reference.md` của 1 review
+### Khi dẫn spec trong `05-review-report.md` (§0 `Nguồn spec đã dùng`, §6)
 
 Thay vì paste toàn bộ spec, member điền như sau:
 
@@ -898,8 +900,8 @@ Từ LME-SYSTEM-SPEC.md § 5 (SC-003):
 
 ### Khi tính năng chưa có spec chi tiết (§4)
 
-1. Đọc manual LME: https://lme.jp/manual/category/{nhóm}/
-2. Ghi link manual vào `02-spec-reference.md` làm "spec tạm"
+1. **KHÔNG** đi tìm spec trên web (`lme.jp/manual` đã bỏ khỏi quy trình 2026-09-08) — coi như không có spec
+2. Ghi `Input thiếu: spec cho <chức năng>` + `[MAJOR]` ở §4 report; TC liên quan ghi `Spec không ghi` + nêu cần hỏi ai
 3. Hỏi Dev để confirm business rules trước khi member viết TCs
 4. Sau khi review xong, **cập nhật mục §3 của file này** để lần sau không phải lặp lại
 

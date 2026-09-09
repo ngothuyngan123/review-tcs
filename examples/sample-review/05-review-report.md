@@ -1,121 +1,92 @@
 # 05 — Review Report
 
-## Thông tin
+> Ví dụ mẫu theo format **rút gọn** (2026-09-05). Report chỉ ghi **phần THIẾU + việc phải làm**.
+> Coverage matrix / bảng quan điểm / fix-shape vẫn chạy ở BƯỚC 2 · 3 · 3c nhưng là **nháp nội bộ**, không ghi vào file.
+
+## 0. Nguồn TC
 
 | Trường | Giá trị |
 |---|---|
-| Bug ID | LME-2054 |
-| Reviewer (Leader) | Lê Thị C (Test Leader) |
-| Tester được review | Trần Thị B |
-| Ngày review | 2026-04-23 |
-| Version TCs | v1 |
-| Vòng review | Round 1 |
+| Nguồn đã dùng | `04-tc-list.md` (Studio: 0 task cho ticket LME-2054) |
+| Tổng số TC review | `8` |
 
 ---
 
-## 1. Verdict
+## 1. Coverage — đánh giá ảnh hưởng Dev + diff code
 
-- [ ] APPROVED
-- [ ] APPROVED WITH CHANGES
-- [x] **REJECTED**
+**Kết luận**: `10/15 vùng ảnh hưởng đủ TC · 3 GAP · 2 RISK`
 
-**Lý do ngắn gọn**: Bộ TCs cover được phần lớn direct impact và bug fix (TC001, TC002 rất tốt) nhưng còn GAP đáng kể ở F4 (perf), T3, T4, T5, D3 và thiếu chiều negative/boundary. Cần bổ sung 5 TCs trước khi approve.
-
----
-
-## 2. Tóm tắt cho member
-
-B viết TCs khá chắc ở phần fix chính (TC001 capture rất đúng spirit của bug — test tag thay đổi sau lúc create). Điểm cần bổ sung: (1) thêm regression cho các tính năng phụ T3/T4/T5 mà Dev đã flag trong mục 4.3, (2) thêm negative & boundary cho edge case data (D3 — send log), và (3) self-check đã note thiếu 3 mục, lần tới hãy fix ngay trong vòng đầu để tăng chất lượng bản submit v1.
-
----
-
-## 3. Coverage Matrix
-
-| Impact | Loại | Priority | TCs map | # TC | Status |
+| # | Vùng thiếu | Chiều | TC hiện có | Thiếu gì | Severity |
 |---|---|---|---|---|---|
-| BUG (root cause) | Fix | — | TC001 | 1 | **OK** |
-| F1 — `BroadcastSender::send()` | Function | Direct | TC002 | 1 | **RISK** (chỉ positive, thiếu negative) |
-| F2 — `BroadcastScheduler::enqueueScheduledBroadcast()` | Function | Direct | TC001 (gián tiếp) | 1 | **RISK** (cần TC riêng verify không còn cache) |
-| F3 — `preview()` | Function | Indirect | TC003 | 1 | **OK** |
-| F4 — `FriendTagRepository::findFriendsByTag()` | Function | Indirect | — | **0** | **GAP** |
-| F5 — `BroadcastRepository::findById()` | Function | Indirect | TC005 | 1 | **OK** |
-| D1 — `broadcasts.cached_recipient_ids` | Data | — | TC007 | 1 | **OK** |
-| D2 — `broadcasts` read path | Data | — | TC002, TC006 | 2 | **OK** |
-| D3 — `broadcast_send_logs` | Data | — | — | **0** | **GAP** |
-| D4 — `friends_tags` read frequency | Data | — | — | — | Đã được Dev note là load test riêng — OK bỏ qua |
-| T1 — Scheduled broadcast send flow | Feature | High | TC001, TC002, TC008 | 3 | **OK** |
-| T2 — Immediate broadcast send flow | Feature | Medium | TC004 | 1 | **OK** |
-| T3 — Preview count screen | Feature | Low | TC003 | 1 | **OK** |
-| T4 — Broadcast detail screen | Feature | Medium | TC005 | 1 | **RISK** (chỉ check absence, thiếu positive flow đọc broadcast) |
-| T5 — Performance multi-broadcast | Feature | Medium | — | **0** | **GAP** (smoke test — theo note Dev ở mục 4, chỉ cần 1 TC) |
+| G1 | `F4 — FriendTagRepository::findFriendsByTag()` | `dev-impact` | `không có` | `GAP — 0 TC verify query path tại send time; mọi TC hiện có chỉ end-to-end` | `[BLOCKER]` |
+| G2 | `D3 — broadcast_send_logs` | `dev-impact` | `không có` | `GAP — 0 TC verify recipient_count ghi vào log` | `[BLOCKER]` |
+| G3 | `T5 — nhiều scheduled broadcast chạy đồng thời` | `dev-impact` | `không có` | `GAP — 0 TC smoke concurrency (Dev đã tách load test riêng nhưng vẫn cần 1 case chức năng)` | `[BLOCKER]` |
+| G4 | `BroadcastScheduler::enqueueScheduledBroadcast()` — nhánh bỏ ghi cache lúc create | `diff code` | `TC001` | `RISK — chỉ verify gián tiếp lúc send; không TC nào check cached_recipient_ids = null NGAY sau khi tạo` | `[MAJOR]` |
+| G5 | `F1 — BroadcastSender::send()` | `dev-impact` | `TC002` | `RISK — chỉ case remove tag; thiếu case mixed (vừa add vừa remove) → không chứng minh được resolve lại toàn bộ tại send time` | `[MAJOR]` |
 
-### ORPHAN TCs (nếu có)
-
-Không có TC orphan. Mọi TC đều map được.
+- Không có TC orphan — 8/8 TC đều map được về `BUG` / `F*` / `D*` / `T*`.
+- `D4 — friends_tags read frequency`: Dev đã note tách sang load test riêng → **không tính GAP**.
 
 ---
 
-## 4. Issues phát hiện
+## 2. Thiếu so với quan điểm test
 
-### 4.1 Blocker
+**Kết luận**: `6 quan điểm Trigger khớp task · 2 chưa cover đủ`
 
-- **[BLOCKER] GAP-1**: Không có TC nào verify F4 (`FriendTagRepository::findFriendsByTag()` được gọi tại send time). Đây là core của fix — cần thêm TC verify trực tiếp query path, không phải chỉ end-to-end. → Thêm `TC-NEW-01`.
-- **[BLOCKER] GAP-2**: Không có TC cho D3 (`broadcast_send_logs`). Log record là output quan trọng — nếu số recipients trong log sai, ops team không detect được regression. → Thêm `TC-NEW-02`.
-- **[BLOCKER] GAP-3**: Không có smoke test cho T5 (performance). Dev đã confirm load test riêng, nhưng TC chức năng vẫn cần 1 case verify 3+ scheduled broadcast chạy gần nhau không conflict/deadlock. → Thêm `TC-NEW-03`.
+| # | Mã quan điểm | Ưu tiên | Thiếu gì | Severity |
+|---|---|---|---|---|
+| Q1 | `MSG-004` | `Cao` | `RISK — có TC đếm số recipient trên màn admin, nhưng không TC nào nhận tin THẬT trên LINE app (RULE-06: dừng trước output cuối)` | `[MAJOR]` |
+| Q2 | `DATA-COUNT-001` | `Cao` | `RISK — chỉ đối chiếu 1 nguồn (màn preview); thiếu đối chiếu send log + phép tính tay 100+30-20` | `[MAJOR]` |
 
-### 4.2 Major
+---
 
-- **[MAJOR] TC002**: Chỉ có case remove tag (negative). Cần thêm case mixed: vừa thêm friend mới vào tag, vừa remove khỏi tag khác — verify resolve đúng tại send time. → Thêm `TC-NEW-04`.
-- **[MAJOR] GAP-4**: F2 (enqueueScheduledBroadcast) chỉ được verify gián tiếp qua TC001. Nên có TC riêng verify sau khi tạo scheduled, field `cached_recipient_ids` = null ngay tại thời điểm tạo (không đợi đến send mới check). → Thêm `TC-NEW-05`.
-- **[MAJOR] TC005**: Chỉ check absence của field trên UI. Cần verify API response cũng không expose field này (backend contract). → Update TC005 thêm bước API check.
+## 3. TC trùng lặp nội dung
 
-### 4.3 Minor
+Đã rà `8` TC, phát hiện 1 nhóm trùng.
 
-- **[MINOR] TC001 — Precondition**: "Bot có 150 friends tag VIP" — nên cụ thể timezone của bot (JST) vì bug gốc liên quan timezone. → Thêm vào precondition.
-- **[MINOR] TC006 — Expected**: "Broadcast complete với 0 recipients, không lỗi" — cần cụ thể "status = completed, sent_count = 0, error = null".
-- **[MINOR] TC007 — Type**: gán là `Positive` nhưng verify migration là closer tới `Regression` — đổi type cho đúng convention.
+| Nhóm trùng | TC giữ lại | TC đề nghị xóa / gộp | Loại trùng | 4 yếu tố trùng nhau | Severity |
+|---|---|---|---|---|---|
+| DUP-1 | `TC004` | `TC005` | `DUP-SUBSET` | Cùng `MSG-001` × `Normal` × màn chi tiết broadcast × cùng tiền đề bot 100 friend — steps của TC005 nằm trọn trong TC004 | `[MINOR]` |
 
-### 4.4 Nit
+- **Gate đã chạy**: giả định xóa `TC005` → `T4` vẫn còn `TC004` cover, coverage §1 + quan điểm §2 không đổi → `Có`, giữ đề xuất **xóa**.
+- `DUP-INFLATE`: không có. `DUP-CONFLICT`: không có.
 
-- **[NIT]** Priority phân bổ hơi lệch High: High=5, Medium=2, Low=1. Với bug `High priority`, tỷ lệ này OK — không cần đổi. Ghi nhận để tham khảo.
-- **[NIT]** Có thể gộp TC005 và TC004 thành 1 suite regression nhỏ. Giữ nguyên nếu muốn track riêng biệt cũng được.
+---
+
+## 4. Issues khác
+
+| # | Severity | TC / phạm vi | Vấn đề | Đề xuất fix |
+|---|---|---|---|---|
+| I1 | `[MAJOR]` | Toàn bộ 8 TC | Cột `Kết quả thực thi` rỗng — không xác định được TC đã chạy hay chưa; coverage ở §1 chỉ là trên giấy | Yêu cầu tester chạy + điền kết quả trước vòng 2; mọi kết luận "đủ TC" ở §1 hiện là `RISK` |
+| I2 | `[MAJOR]` | `TC005` | Chỉ check field không hiển thị trên UI, không verify API response còn expose `cached_recipient_ids` không (RULE-07) | Thêm bước gọi thẳng `GET /api/broadcasts/<id>` và assert field vắng mặt |
+| I3 | `[MINOR]` | `TC001` | `Điều kiện tiền đề` thiếu timezone của bot — bug gốc liên quan JST, người khác dựng lại env có thể lệch | Thêm `bot timezone = JST (Asia/Tokyo)` vào tiền đề |
+| I4 | `[MINOR]` | `TC006` | `Kết quả mong đợi` không đo lường được: "complete với 0 recipients, không lỗi" | Sửa thành `status = completed · sent_count = 0 · error = null` |
+| I5 | `[NIT]` | Bộ TC | File dùng format 10 cột cũ (có `Priority`, `Type = Regression`) | Task cũ → giữ nguyên, không convert; TC mới viết theo 16 cột canonical |
 
 ---
 
 ## 5. TCs đề xuất bổ sung
 
-| TC ID gợi ý | Title | Precondition | Steps | Expected | Priority | Type | Map to Impact |
-|---|---|---|---|---|---|---|---|
-| TC-NEW-01 | Verify send flow gọi FriendTagRepository tại send time, không dùng cache | Bot JST, 10 friends tag "A" | 1. Enable query log DB.<br>2. Tạo scheduled broadcast tag "A", send sau 5 phút.<br>3. Sau khi send xong, check query log. | Có query SELECT từ `friends_tags` trong khoảng ±2s quanh send time, không có đọc từ `cached_recipient_ids`. | High | Positive | F4 |
-| TC-NEW-02 | broadcast_send_logs ghi đúng số recipients thực tế tại send time | Bot có 100 friends tag "VIP" | 1. Tạo scheduled broadcast tag "VIP".<br>2. Add 20 friend vào tag VIP.<br>3. Chờ send.<br>4. Query `broadcast_send_logs` cho broadcast này. | Record có `recipient_count = 120`, khớp với số friend thực tế gửi. | High | Positive | D3 |
-| TC-NEW-03 | Smoke test — 3 scheduled broadcast trên cùng tag chạy đồng thời | Bot có 500 friends tag "VIP" | 1. Tạo 3 scheduled broadcast tag "VIP", cùng send time.<br>2. Chờ send. | Cả 3 broadcast gửi thành công, mỗi broadcast gửi 500 recipients, không deadlock/timeout. | Medium | Regression | T5 |
-| TC-NEW-04 | Mixed tag change — friend vừa thêm vào tag, vừa remove khỏi tag sau lúc create | Bot có 100 friends tag "VIP" | 1. Tạo scheduled broadcast tag "VIP", send sau 10 phút.<br>2. Add 30 friend mới vào VIP.<br>3. Remove tag VIP khỏi 20 friends cũ.<br>4. Chờ send. | Broadcast gửi đến 110 friends (100 + 30 - 20). | High | Positive | F1, D2 |
-| TC-NEW-05 | Sau khi tạo scheduled broadcast, field cached_recipient_ids = null ngay lập tức | — | 1. Tạo scheduled broadcast tag "VIP" (≥ 50 friend).<br>2. Query DB ngay sau khi submit. | `broadcasts.cached_recipient_ids IS NULL` cho record vừa tạo. | Medium | Positive | F2, D1 |
+**Đã đối chiếu trước khi viết**:
+
+| Mục | Kết quả |
+|---|---|
+| File kho TCs đã đọc | `kho-tcs chưa có FA-004 (Broadcast) — không đối chiếu được` |
+| Vùng regression phát hiện từ kho | `không có` |
+| Conflict expected vs kho | `Không` |
+| GAP dùng lại TC kho (không viết mới) | `Không` |
+| Xác nhận chống trùng | Đã đối chiếu `8` TC ở BƯỚC 0 — **không TC đề xuất nào trùng** |
+
+| ID | Nhóm | Mã quan điểm | Màn hình/chức năng | Loại case | Chạy | Phạm vi ENV | Tên case | Tiền điều kiện | Các bước thực hiện | Dữ liệu nhập | Kết quả mong đợi | Kết quả thực thi | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TC-MSG004-01 | UI | MSG-004 | Gửi broadcast theo tag | Normal | manual | product | Friend nhận được tin thật trên LINE app sau khi tag đổi trước giờ gửi | - Bot timezone JST<br>- 100 friend gắn tag `VIP`<br>- 2 máy thật: iOS + Android đã kết bạn | 1. Tạo scheduled broadcast tag `VIP`, hẹn gửi sau 10 phút.<br>2. Gắn tag `VIP` cho 30 friend mới (gồm 2 máy thật).<br>3. Bỏ tag `VIP` khỏi 20 friend cũ.<br>4. Chờ tới giờ gửi.<br>5. Mở LINE trên 2 máy thật kiểm tra tin. | tag `VIP`, +30 friend, −20 friend | Màn kết quả gửi hiện `110` người · 2 máy thật **đều nhận được** tin trong LINE · 20 friend đã bỏ tag không nhận | | Lấp `G5` · `Q1` · Đánh giá spec: Spec ghi rõ (BR-02) · Evidence: ảnh chụp màn LINE 2 máy + màn kết quả gửi · RULE-06 · RULE-08 |
+| TC-DATACOUNT001-01 | Data | DATA-COUNT-001 | Log gửi broadcast | Normal | manual | staging | Số người trong log gửi khớp số friend thực tế tại thời điểm gửi | - Bot có 100 friend tag `VIP`<br>- Quyền xem màn lịch sử gửi | 1. Tạo scheduled broadcast tag `VIP`.<br>2. Gắn thêm tag `VIP` cho 20 friend.<br>3. Chờ gửi xong.<br>4. Mở màn lịch sử gửi của broadcast đó.<br>5. Xuất CSV kết quả gửi, đếm số dòng. | 100 + 20 friend | Màn lịch sử hiện `120` người gửi · CSV có đúng `120` dòng · khớp phép tính tay `100 + 20` | | Lấp `G2` · `Q2` · Đánh giá spec: Spec ghi rõ · Evidence: ảnh màn lịch sử + file CSV · đối chiếu 3 nguồn |
+| TC-FUNC002-01 | UI | FUNC-002 | Tạo scheduled broadcast | Normal | manual | staging | Vừa tạo scheduled broadcast xong, danh sách người nhận CHƯA bị chốt | - Bot có ≥ 50 friend tag `VIP` | 1. Tạo scheduled broadcast tag `VIP`, hẹn gửi sau 1 giờ.<br>2. Bấm lưu.<br>3. Mở lại màn chi tiết broadcast vừa tạo.<br>4. Bỏ tag `VIP` khỏi 10 friend.<br>5. Mở lại màn chi tiết lần nữa. | tag `VIP` ≥ 50 friend | Màn chi tiết **không** hiện danh sách người nhận cố định · số dự kiến ở bước 5 giảm đúng 10 so với bước 3 | | Lấp `G4` · Đánh giá spec: Spec ghi rõ · Evidence: ảnh màn chi tiết 2 thời điểm · regression |
+| TC-FUNC002-02 | UI | FUNC-002 | Gửi broadcast theo tag | Abnormal | manual | staging | Bỏ tag toàn bộ friend trước giờ gửi → gửi 0 người, không lỗi | - Bot có 30 friend tag `TEST` | 1. Tạo scheduled broadcast tag `TEST`, hẹn gửi sau 5 phút.<br>2. Bỏ tag `TEST` khỏi cả 30 friend.<br>3. Chờ tới giờ gửi.<br>4. Mở màn lịch sử gửi. | 30 → 0 friend | Broadcast chuyển trạng thái `Đã gửi` · số người gửi = `0` · không hiện thông báo lỗi · log không có bản ghi lỗi | | Lấp `G1` · Đánh giá spec: Spec không ghi (đã hỏi Dev Nguyễn A) · Evidence: ảnh màn lịch sử |
+| TC-CONC001-01 | UI | CONC-001 | Gửi broadcast theo tag | Boundary | manual | product | 3 scheduled broadcast cùng tag, cùng giờ gửi — không chồng chéo | - Bot có 500 friend tag `VIP` | 1. Tạo 3 scheduled broadcast tag `VIP`, đặt **cùng một giờ gửi**.<br>2. Chờ tới giờ gửi.<br>3. Mở màn lịch sử gửi của cả 3. | 3 broadcast × 500 friend | Cả 3 đều `Đã gửi` · mỗi cái đúng `500` người · không cái nào timeout/lỗi · friend nhận đúng 3 tin, không trùng lặp | | Lấp `G3` · Đánh giá spec: Spec không ghi (đã hỏi Leader) · Evidence: ảnh 3 màn lịch sử + ảnh LINE 1 máy thật · RULE-08 |
 
 ---
 
 ## 6. Spec update needed
 
-- [x] Không cần update spec
-- [ ] Cần update spec
-
-**Ghi chú**: Spec v2.3 (BR-02) đã cover case này — bug là do code sai, không phải spec thiếu.
-
----
-
-## 7. Checklist đã chạy
-
-- [x] A. Coverage (phát hiện 3 GAP, 3 RISK)
-- [x] B. Chất lượng từng TC (1 MINOR về precondition, 1 MINOR về expected, 1 MINOR về type classification)
-- [x] C. Chất lượng bộ TC tổng thể (priority distribution OK, type distribution thiếu negative/boundary)
-- [x] D. Spec alignment (OK — BR-01 đến BR-05 đều có TC map)
-- [x] E. Hành chính (OK)
-
----
-
-## 8. Ký duyệt
-
-| Người | Tên | Ngày |
-|---|---|---|
-| Reviewer (Leader) | Lê Thị C | 2026-04-23 |
-| Tester | (chờ B ký sau khi đọc feedback) | — |
+`Không cần update spec.` — Spec v2.3 (BR-02) đã mô tả đúng hành vi; bug là do code sai, không phải spec thiếu.

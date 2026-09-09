@@ -1,0 +1,59 @@
+TỔNG 632 TC · phủ 77/80 quan điểm checklist
+Mã ngoài checklist: KHÔNG CÓ ✅
+Quan điểm CHƯA phủ (3): INTG-CAL-001, PAY-CONFIRM-001, UI-004
+
+Loại case: Normal=415 · Abnormal=168 · Boundary=49
+Môi trường: STAGING=320 · PRODUCTION=312
+Đánh giá spec: Spec ghi rõ=550 · Spec không ghi=51 · Đã hỏi leader=31
+
+=== COVERAGE THEO NHÓM ===
+Màn list calendar                    |  17 | TC-LSN-01 → TC-LSN-17
+Wizard tạo calendar                  |  12 | TC-LSN-18 → TC-LSN-29
+Giới hạn theo plan                   |   9 | TC-LSN-30 → TC-LSN-38
+コース — list & hiển thị                |   9 | TC-LSN-39 → TC-LSN-47
+コース — tạo/sửa/xóa                    |  34 | TC-LSN-48 → TC-LSN-81
+コース — action & filter riêng          |  27 | TC-LSN-82 → TC-LSN-108
+Tab 本日/新着の予約                         |  13 | TC-LSN-109 → TC-LSN-121
+Calendar theo ngày                   |  12 | TC-LSN-122 → TC-LSN-133
+Calendar theo tuần                   |   9 | TC-LSN-134 → TC-LSN-142
+Calendar theo tháng                  |   4 | TC-LSN-143 → TC-LSN-146
+Calendar theo list                   |  14 | TC-LSN-147 → TC-LSN-160
+Modal danh sách booking              |  15 | TC-LSN-161 → TC-LSN-175
+Modal filter booking                 |   9 | TC-LSN-176 → TC-LSN-184
+Modal filter 受付枠                     |   3 | TC-LSN-185 → TC-LSN-187
+リクエスト一括操作                            |  13 | TC-LSN-188 → TC-LSN-200
+Admin thêm booking thủ công          |  18 | TC-LSN-201 → TC-LSN-218
+Detail booking & lịch sử             |  17 | TC-LSN-219 → TC-LSN-235
+Booking đã xóa                       |   4 | TC-LSN-236 → TC-LSN-239
+Hoàn tiền 返金                         |   9 | TC-LSN-240 → TC-LSN-248
+受付枠 — thêm khung giờ                 |  28 | TC-LSN-249 → TC-LSN-276
+受付枠 — sửa 定員 & xóa                   |  11 | TC-LSN-277 → TC-LSN-287
+受付枠 — xóa nhiều                      |   8 | TC-LSN-288 → TC-LSN-295
+受付枠 — CSV export/import              |  22 | TC-LSN-296 → TC-LSN-317
+予約・キャンセル メッセージ                       |   9 | TC-LSN-318 → TC-LSN-326
+予約・キャンセル アクション                       |   8 | TC-LSN-327 → TC-LSN-334
+予約の開始・締切                             |  10 | TC-LSN-335 → TC-LSN-344
+1人あたりの予約上限                           |   5 | TC-LSN-345 → TC-LSN-349
+予約時のお客様への質問項目                        |  31 | TC-LSN-350 → TC-LSN-380
+リマインド — cài đặt                      |  16 | TC-LSN-381 → TC-LSN-396
+リマインド — job gửi & recover            |  19 | TC-LSN-397 → TC-LSN-415
+空き枠通知受け取り設定                          |  21 | TC-LSN-416 → TC-LSN-436
+予約ページの表示設定                           |   5 | TC-LSN-437 → TC-LSN-441
+予約ページの非表示 (filter)                   |   6 | TC-LSN-442 → TC-LSN-447
+トップ・店舗情報・利用規約                        |   6 | TC-LSN-448 → TC-LSN-453
+予約システムの削除                            |   5 | TC-LSN-454 → TC-LSN-458
+Googleスプレッドシート連携                     |  25 | TC-LSN-459 → TC-LSN-483
+決済連携 — cài đặt                       |  11 | TC-LSN-484 → TC-LSN-494
+決済 — Stripe                          |  18 | TC-LSN-495 → TC-LSN-512
+決済 — UnivaPay & webhook              |  23 | TC-LSN-513 → TC-LSN-535
+LINE user — mở link & entry          |  12 | TC-LSN-536 → TC-LSN-547
+LINE user — chọn コース                 |   1 | TC-LSN-548 → TC-LSN-548
+LINE user — chọn 受付枠                 |  13 | TC-LSN-549 → TC-LSN-561
+LINE user — nhập form & xác nhận     |  10 | TC-LSN-562 → TC-LSN-571
+LINE user — lịch sử & copy           |   9 | TC-LSN-572 → TC-LSN-580
+LINE user — hủy booking              |   5 | TC-LSN-581 → TC-LSN-585
+LINE user — キャンセル待ち                  |   9 | TC-LSN-586 → TC-LSN-594
+Đồng thời & verify API               |  20 | TC-LSN-595 → TC-LSN-614
+App mobile                           |   3 | TC-LSN-615 → TC-LSN-617
+Add link booking vào tin nhắn        |   4 | TC-LSN-618 → TC-LSN-621
+Phân quyền & môi trường              |  11 | TC-LSN-622 → TC-LSN-632

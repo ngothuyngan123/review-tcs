@@ -82,4 +82,4 @@
 
 ## Cách dùng khi review
 
-Trong `/review-tc` BƯỚC 3c, sau khi identify fix-shape → rà nhanh AP-1 → AP-6. Mỗi AP dính → ghi vào §4 report với prefix `[AP-N]`.
+Trong `/review-tc` **BƯỚC 2 chiều (b)** (`diff code`), sau khi đọc `dev_impact` + `spec_delta` từ Studio → rà nhanh AP-1 → AP-6. Mỗi AP dính → ghi vào §4 report với prefix `[AP-N]`.

@@ -35,7 +35,7 @@
 ## Member tự check trước khi submit
 
 - [x] Đã đọc kỹ `01-bug-task.md`
-- [x] Đã đọc kỹ `02-spec-reference.md`
+- [x] Đã đọc kỹ spec của tính năng
 - [x] Đã đọc kỹ `03-dev-impact.md`
 - [x] Mỗi impact trong 4.1 / 4.2 / 4.3 đều có ít nhất 1 TC verify (Title chứa keyword)
 - [x] Có TC verify trực tiếp bug fix (TC001)

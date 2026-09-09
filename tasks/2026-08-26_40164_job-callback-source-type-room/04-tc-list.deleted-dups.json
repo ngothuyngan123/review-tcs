@@ -1,0 +1,1150 @@
+[
+ {
+  "id": 14254,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-38",
+  "client_ref": null,
+  "name": "Bot verified/premium: tên room ghép từ tên 5 member đầu qua /room/{roomId}/members/ids",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-BUSINESS-005",
+   "commit 2cd86fc6"
+  ],
+  "requirement_keys": [
+   "REQ-005"
+  ],
+  "tc_group": "job",
+  "viewpoint": "FUNC-001",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Job callback - Tổng hợp tên room",
+  "precondition": "Bot loại verified/premium (được phép gọi API danh sách member room). Mock LINE API: danh sách member id của room trả 3 member; API profile từng member trả tên 「田中」「佐藤」「鈴木」. Branch fix đã checkout.",
+  "steps": [
+   "Cấu hình mock LINE API trả 3 member id và tên tương ứng cho room Rvip01",
+   "Nạp callback_event event join source.type=room roomId=Rvip01",
+   "Chạy job xử lý callback",
+   "Truy vấn DB kiểm tra tên của line_user và conversation của room Rvip01"
+  ],
+  "data_input": "Room có 3 member với tên 「田中」「佐藤」「鈴木」, bot verified",
+  "expected": "Tên room = 「田中, 佐藤, 鈴木」 — các tên nối bằng dấu phẩy + khoảng trắng (', '). Tên được lưu vào line_user.name và dùng làm conversation_name. Hệ thống KHÔNG gọi API tóm tắt nhóm (Group Summary) cho room. callback_event.status=2 (DONE).",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 743,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "[extra-info-bổ-sung] Dấu phân tách xác nhận từ code: DELIMITER_MEMBER_NAME_ROOM = ', '. Dùng 3 member để oracle rõ ràng; ràng buộc tối đa 5 kiểm ở TC boundary riêng. RULE-08: cần bot verified hoặc mock API.",
+  "status": "draft",
+  "sort_order": 230,
+  "created_at": "2026-08-26 09:19:43",
+  "updated_at": "2026-08-26 09:19:43",
+  "last_exec": null,
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 743
+  }
+ },
+ {
+  "id": 13545,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-3",
+  "client_ref": null,
+  "name": "Postback trong room được xử lý, callback_event chuyển DONE",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-018"
+  ],
+  "requirement_keys": [
+   "REQ-002",
+   "REQ-001"
+  ],
+  "tc_group": "job",
+  "viewpoint": "STATE-MATRIX-001",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Job callback - Xử lý tin nhắn room",
+  "precondition": "Bot tồn tại; conversation room đã có. callback_event chứa webhook type=postback, source.type=room. Branch fix đã checkout.",
+  "steps": [
+   "Nạp callback_event payload: {\"type\":\"postback\",\"postback\":{\"data\":\"action=abc\"},\"source\":{\"type\":\"room\",\"roomId\":\"Rxxxxxxxx\",\"userId\":\"Uxxxxxxxx\"}}",
+   "Chạy job xử lý callback",
+   "Truy vấn DB kiểm tra status callback_event"
+  ],
+  "data_input": "Webhook postback, source.type=room",
+  "expected": "Postback room đi vào nhánh room của doHandlePostbackEvent (không bị bỏ qua vì không phải source user); callback_event=DONE.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Phủ event postback trong room. Nếu code fix chỉ xử lý message/join/leave mà chưa xử lý postback room ⇒ ghi lại, cần human xác nhận scope.",
+  "status": "draft",
+  "sort_order": 60,
+  "created_at": "2026-08-26 04:23:38",
+  "updated_at": "2026-08-26 04:23:38",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13543,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-1",
+  "client_ref": null,
+  "name": "Tái hiện & xác nhận fix: tin nhắn text trong room được xử lý (không còn unhandled)",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-009",
+   "SRC-REGRESSION-019"
+  ],
+  "requirement_keys": [
+   "REQ-002",
+   "REQ-001"
+  ],
+  "tc_group": "job",
+  "viewpoint": "TOOL-KNOW-002",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Job callback - Xử lý tin nhắn room",
+  "precondition": "Bot tồn tại trong DB (có channel access token). Có bản ghi callback_event chứa payload webhook LINE với type=message, message.type=text, source.type=「room」, source.roomId=「R...」, source.userId hợp lệ. Checkout branch fix m_202608_callback_room_40164.",
+  "steps": [
+   "Nạp vào bảng callback_event một payload webhook room: {\"type\":\"message\",\"message\":{\"type\":\"text\",\"text\":\"xin chào room\"},\"source\":{\"type\":\"room\",\"roomId\":\"Rxxxxxxxx\",\"userId\":\"Uxxxxxxxx\"}}",
+   "Chạy job HandlePostbackTask xử lý callback (dispatch job callback)",
+   "Truy vấn DB: kiểm tra status của callback_event vừa xử lý",
+   "Kiểm tra conversation của room (line_id prefix R...) và message đã lưu"
+  ],
+  "data_input": "Webhook message text, source.type=room, roomId=Rxxxxxxxx",
+  "expected": "callback_event chuyển sang DONE (không còn status 10 unhandled). Message được route vào handleMessageGroup và lưu dưới conversation của room (conversation_kind=1). Đối chứng: trước fix cùng payload sẽ rơi vào log 「ignore handle not source user」 và không thành DONE.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "TC bắt buộc của fix-bug (tái hiện + verify fixed). Trigger thật là job xử lý callback từ DB, không gọi endpoint web. Expected lấy từ dev journal + SRC-REGRESSION-009/019.",
+  "status": "draft",
+  "sort_order": 50,
+  "created_at": "2026-08-26 04:23:38",
+  "updated_at": "2026-08-26 04:23:38",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13544,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-2",
+  "client_ref": null,
+  "name": "Tin nhắn media (ảnh) trong room được xử lý qua nhánh job media",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-019"
+  ],
+  "requirement_keys": [
+   "REQ-002"
+  ],
+  "tc_group": "job",
+  "viewpoint": "JOB-002",
+  "catalog": null,
+  "case_type": "Boundary",
+  "screen": "Job callback - Xử lý tin nhắn room",
+  "precondition": "Bot tồn tại. callback_event chứa webhook room với message.type=image (cần download file). Branch fix đã checkout.",
+  "steps": [
+   "Nạp callback_event payload: message.type=image, source.type=room, roomId=Rxxxxxxxx",
+   "Chạy job xử lý callback (lượt đầu xử lý non-media + đánh dấu media)",
+   "Chạy job media xử lý message ảnh",
+   "Truy vấn DB kiểm tra status callback_event và bản ghi message media của room"
+  ],
+  "data_input": "Webhook message image, source.type=room",
+  "expected": "Message media room được nhận diện (hasMediaMessage) và xử lý qua job media, cuối cùng callback_event=DONE. Message ảnh lưu đúng dưới conversation room, không rơi vào trạng thái unhandled.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Biến thể message-shape (media) của REQ-002 để phủ nhánh job media, không chỉ text. LINE content API có thể mock trả file.",
+  "status": "draft",
+  "sort_order": 100,
+  "created_at": "2026-08-26 04:23:38",
+  "updated_at": "2026-08-26 04:23:38",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13546,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-4",
+  "client_ref": null,
+  "name": "Join room tạo line_user (line_id R...) và conversation kind=1, is_blocked=0",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-010"
+  ],
+  "requirement_keys": [
+   "REQ-003"
+  ],
+  "tc_group": "job",
+  "viewpoint": "FUNC-001",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Job callback - Join/Leave room",
+  "precondition": "Bot tồn tại. Chưa có line_user/conversation cho roomId này. callback_event chứa webhook event join với source.type=room. Branch fix đã checkout.",
+  "steps": [
+   "Nạp callback_event payload: {\"type\":\"join\",\"source\":{\"type\":\"room\",\"roomId\":\"Rnewroom01\"}}",
+   "Chạy job xử lý callback",
+   "Truy vấn DB bảng line_user theo line_id=Rnewroom01",
+   "Truy vấn DB bảng conversation theo tb_line_user_id vừa tạo"
+  ],
+  "data_input": "Webhook join, source.type=room, roomId=Rnewroom01",
+  "expected": "Tạo mới 1 line_user với line_id=Rnewroom01 (prefix R...), type=1. Tạo mới 1 conversation với conversation_kind=1, is_blocked=0. callback_event=DONE.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Kiểm DB trực tiếp. type=1 theo dev journal — xem thêm TC xác minh conflict type.",
+  "status": "draft",
+  "sort_order": 120,
+  "created_at": "2026-08-26 04:24:03",
+  "updated_at": "2026-08-26 04:24:03",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13547,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-5",
+  "client_ref": null,
+  "name": "Join lại room đã tồn tại (từng leave): reset is_blocked=0, không tạo bản ghi trùng",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-010"
+  ],
+  "requirement_keys": [
+   "REQ-003"
+  ],
+  "tc_group": "job",
+  "viewpoint": "CONC-001",
+  "catalog": null,
+  "case_type": "Boundary",
+  "screen": "Job callback - Join/Leave room",
+  "precondition": "Bot tồn tại. Đã có line_user (line_id=Rexist01) + conversation (kind=1, is_blocked=1 do đã leave trước đó), chưa bị bot chủ động block. callback_event chứa event join source.type=room roomId=Rexist01.",
+  "steps": [
+   "Xác nhận trước: conversation của Rexist01 đang is_blocked=1",
+   "Nạp callback_event event join source.type=room roomId=Rexist01",
+   "Chạy job xử lý callback",
+   "Truy vấn DB đếm số line_user/conversation theo line_id=Rexist01 và giá trị is_blocked"
+  ],
+  "data_input": "Webhook join lại room Rexist01 (đã tồn tại)",
+  "expected": "Không tạo thêm line_user/conversation trùng (mỗi bảng vẫn đúng 1 bản ghi cho Rexist01). conversation.is_blocked về 0 (trừ khi bị bot chủ động block thì giữ nguyên và log skip). callback_event=DONE.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Idempotency + legacy record. Nhánh isBlockedByBot giữ nguyên block theo checkAddGroup hiện tại.",
+  "status": "draft",
+  "sort_order": 180,
+  "created_at": "2026-08-26 04:24:03",
+  "updated_at": "2026-08-26 04:24:03",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13548,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-6",
+  "client_ref": null,
+  "name": "Leave room set conversation.is_blocked=1 và KHÔNG xóa record",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-011"
+  ],
+  "requirement_keys": [
+   "REQ-004"
+  ],
+  "tc_group": "job",
+  "viewpoint": "FUNC-001",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Job callback - Join/Leave room",
+  "precondition": "Bot tồn tại. Đã có line_user (Rleave01) + conversation (kind=1, is_blocked=0). callback_event chứa event leave source.type=room roomId=Rleave01.",
+  "steps": [
+   "Nạp callback_event event leave source.type=room roomId=Rleave01",
+   "Chạy job xử lý callback",
+   "Truy vấn DB kiểm tra conversation của Rleave01 (is_blocked) và sự tồn tại của line_user"
+  ],
+  "data_input": "Webhook leave, source.type=room, roomId=Rleave01",
+  "expected": "conversation.is_blocked=1. line_user và conversation của Rleave01 VẪN tồn tại (không bị xóa). callback_event=DONE.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Đối chứng: giống hành vi leave group — không xóa record. doHandleLeaveGroup dùng getSource().getGroupId(); fix cần dùng getGroupOrRoomId để tìm đúng line_user room.",
+  "status": "draft",
+  "sort_order": 130,
+  "created_at": "2026-08-26 04:24:03",
+  "updated_at": "2026-08-26 04:24:03",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13550,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-8",
+  "client_ref": null,
+  "name": "Bot verified/premium: tên room ghép từ tên 5 member đầu qua /room/{roomId}/members/ids",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-BUSINESS-005",
+   "SRC-REGRESSION-012"
+  ],
+  "requirement_keys": [
+   "REQ-005"
+  ],
+  "tc_group": "job",
+  "viewpoint": "FUNC-001",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Job callback - Tổng hợp tên room",
+  "precondition": "Bot loại verified/premium (được phép gọi room API). LINE API room member IDs trả danh sách ≥5 member; member profile trả tên từng người. callback_event event join source.type=room. Branch fix đã checkout.",
+  "steps": [
+   "Cấu hình/mock LINE API: /v2/bot/room/{roomId}/members/ids trả ≥5 userId; /v2/bot/room/{roomId}/member/{userId} trả tên từng member",
+   "Nạp callback_event event join source.type=room roomId=Rvip01",
+   "Chạy job xử lý callback",
+   "Truy vấn DB kiểm tra name của line_user/conversation room Rvip01"
+  ],
+  "data_input": "Room có ≥5 member, bot verified",
+  "expected": "Tên room = tên 5 member đầu nối lại (theo dev journal). line_user/conversation của Rvip01 lưu đúng tên tổng hợp. Endpoint gọi là /v2/bot/room/... (không phải Group Summary). callback_event=DONE.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "RULE-05: endpoint /room/ lấy từ dev journal, chưa đối chiếu LINE docs chính thức. Ký tự nối tên (',' hay ', ') còn mơ hồ ⇒ kiểm tên chứa đủ member, không assert cứng dấu phân tách.",
+  "status": "draft",
+  "sort_order": 200,
+  "created_at": "2026-08-26 04:24:30",
+  "updated_at": "2026-08-26 04:24:30",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13551,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-9",
+  "client_ref": null,
+  "name": "Bot thường bị 403 khi lấy member room: tên rỗng, log warn, không throw, callback vẫn DONE",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-012"
+  ],
+  "requirement_keys": [
+   "REQ-005"
+  ],
+  "tc_group": "job",
+  "viewpoint": "INTG-LINE-001",
+  "catalog": null,
+  "case_type": "Abnormal",
+  "screen": "Job callback - Tổng hợp tên room",
+  "precondition": "Bot loại thường (không verified/premium). LINE API /v2/bot/room/{roomId}/members/ids trả 403. callback_event event join source.type=room. Branch fix đã checkout.",
+  "steps": [
+   "Cấu hình/mock LINE API room members/ids trả HTTP 403",
+   "Nạp callback_event event join source.type=room roomId=Rplain01",
+   "Chạy job xử lý callback",
+   "Truy vấn DB kiểm tra name room và status callback_event; kiểm log"
+  ],
+  "data_input": "Bot thường, room API trả 403",
+  "expected": "Tên room để RỖNG (không throw exception). Có log warn về việc lấy member thất bại. line_user/conversation vẫn được tạo. callback_event=DONE (không rơi vào STATUS_ERROR). Room chat vẫn hoạt động dù không có tên.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Graceful degrade là hành vi cốt lõi. Đây là nhánh phổ biến nhất vì đa số bot không verified.",
+  "status": "draft",
+  "sort_order": 250,
+  "created_at": "2026-08-26 04:24:30",
+  "updated_at": "2026-08-26 04:24:30",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13552,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-10",
+  "client_ref": null,
+  "name": "Lỗi mạng/429/timeout khi lấy member room: xử lý sạch, không crash job",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-012"
+  ],
+  "requirement_keys": [
+   "REQ-005"
+  ],
+  "tc_group": "job",
+  "viewpoint": "JOB-001",
+  "catalog": null,
+  "case_type": "Abnormal",
+  "screen": "Job callback - Tổng hợp tên room",
+  "precondition": "Bot verified. LINE API room members/ids trả lỗi tạm thời (429 rate limit hoặc timeout/network error). callback_event event join source.type=room. Branch fix đã checkout.",
+  "steps": [
+   "Cấu hình/mock LINE API room members/ids trả 429 (và biến thể timeout)",
+   "Nạp callback_event event join source.type=room roomId=Rerr01",
+   "Chạy job xử lý callback",
+   "Truy vấn DB kiểm tra record room + status callback_event; kiểm log"
+  ],
+  "data_input": "room API trả 429 / timeout",
+  "expected": "Job không crash/không throw ra ngoài làm hỏng cả batch; room record vẫn được tạo (tên có thể rỗng). Không có exception 500 nuốt im lặng — có log rõ ràng. callback_event không bị kẹt vô hạn.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Error-code hygiene + INTG-LINE-001. Dev journal chỉ nêu graceful 403; hành vi với 429/timeout là suy luận theo pattern — nếu code không phân biệt, ghi lại cho human. Không assert cứng retry/backoff.",
+  "status": "draft",
+  "sort_order": 260,
+  "created_at": "2026-08-26 04:24:30",
+  "updated_at": "2026-08-26 04:24:30",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13553,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-11",
+  "client_ref": null,
+  "name": "Member profile trong room gọi đúng endpoint /v2/bot/room/{roomId}/member/{userId}",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-BUSINESS-004",
+   "SRC-REGRESSION-017"
+  ],
+  "requirement_keys": [
+   "REQ-007"
+  ],
+  "tc_group": "job",
+  "viewpoint": "API-001",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Job callback - Tổng hợp tên room",
+  "precondition": "Bot verified. Có spy/mock LINE API client ghi lại URL được gọi. callback_event xử lý room cần cập nhật profile member. Branch fix đã checkout.",
+  "steps": [
+   "Bật ghi lại các request out-going tới LINE API",
+   "Nạp callback_event room (join hoặc message) roomId=Rapi01, member userId=Umember01",
+   "Chạy job xử lý callback",
+   "Đối chiếu URL đã gọi để lấy profile member"
+  ],
+  "data_input": "roomId=Rapi01, userId=Umember01",
+  "expected": "Khi cập nhật profile member của room, hệ thống gọi /v2/bot/room/Rapi01/member/Umember01 (nhánh room), KHÔNG gọi endpoint /group/. Với member IDs gọi /v2/bot/room/Rapi01/members/ids.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Contract API mới (updateRoomLineProfile/getRoomMemberProfile). Tách riêng khỏi TC hành vi để kiểm URL. RULE-05: cần đối chiếu LINE docs chính thức.",
+  "status": "draft",
+  "sort_order": 210,
+  "created_at": "2026-08-26 04:24:30",
+  "updated_at": "2026-08-26 04:24:30",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13554,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-12",
+  "client_ref": null,
+  "name": "Deserialize callback source.type=room giữ được roomId (Jackson không drop)",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-015"
+  ],
+  "requirement_keys": [
+   "REQ-001"
+  ],
+  "tc_group": "data",
+  "viewpoint": "TOOL-KNOW-002",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Model LineCallbackSource/LineCallback",
+  "precondition": "Branch fix đã checkout. Có unit test/harness parse JSON bằng Jackson vào LineCallbackSource/LineCallback.",
+  "steps": [
+   "Parse JSON source: {\"type\":\"room\",\"roomId\":\"Rjson01\",\"userId\":\"Ujson01\"} vào LineCallbackSource",
+   "Kiểm tra field roomId sau khi deserialize",
+   "Kiểm tra isRoom() và getGroupOrRoomId()"
+  ],
+  "data_input": "JSON source.type=room, roomId=Rjson01",
+  "expected": "roomId được giữ (=Rjson01), không bị Jackson drop. TYPE_ROOM='room' tồn tại; isRoom()=true; getGroupOrRoomId()=Rjson01 (vì không có groupId). Đối chứng: trước fix LineCallbackSource không có roomId nên id bị mất.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "read-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Kiểm tra ở tầng model/unit hoặc tĩnh trên source (root cause bug = Jackson drop id). Không cần dựng app/DB.",
+  "status": "draft",
+  "sort_order": 420,
+  "created_at": "2026-08-26 04:24:44",
+  "updated_at": "2026-08-26 04:24:44",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13555,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-13",
+  "client_ref": null,
+  "name": "getGroupOrRoomId ưu tiên groupId rồi roomId; getGroupId null-safe không NPE",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-BUSINESS-003",
+   "SRC-REGRESSION-016"
+  ],
+  "requirement_keys": [
+   "REQ-006"
+  ],
+  "tc_group": "data",
+  "viewpoint": "FUNC-004",
+  "catalog": null,
+  "case_type": "Boundary",
+  "screen": "Model LineCallbackSource/LineCallback",
+  "precondition": "Branch fix đã checkout. Harness gọi trực tiếp getGroupOrRoomId()/getGroupId() với các source khác nhau.",
+  "steps": [
+   "Source có groupId=Cgrp01, roomId=null ⇒ gọi getGroupOrRoomId()",
+   "Source có groupId=null, roomId=Rroom01 ⇒ gọi getGroupOrRoomId()",
+   "Source room (groupId=null) ⇒ gọi getGroupId()"
+  ],
+  "data_input": "3 tổ hợp: chỉ group / chỉ room / room không có groupId",
+  "expected": "getGroupOrRoomId(): trả Cgrp01 khi có groupId; trả Rroom01 khi chỉ có roomId (ưu tiên groupId rồi roomId). getGroupId() null-safe: với source room không có groupId trả null/rỗng, KHÔNG ném NullPointerException. Caller group cũ (có groupId) không đổi kết quả.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "read-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Bảo vệ shared logic: getGroupId() dòng 97 hiện tại (pre-fix) gọi source.getGroupId() không null-safe ⇒ room từng gây NPE. Kiểm ở tầng model/unit.",
+  "status": "draft",
+  "sort_order": 440,
+  "created_at": "2026-08-26 04:24:44",
+  "updated_at": "2026-08-26 04:24:44",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13560,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-14",
+  "client_ref": null,
+  "name": "Regression: tin nhắn trong group (line_id C...) vẫn dùng Group Summary + /group/, DONE",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-013"
+  ],
+  "requirement_keys": [
+   "REQ-008"
+  ],
+  "tc_group": "job",
+  "viewpoint": "REG-SHARED-001",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Job callback - Regression group/1-1",
+  "precondition": "Bot tồn tại. callback_event chứa webhook message text với source.type=group, groupId=Cgrp01. Spy LINE API bật. Branch fix đã checkout.",
+  "steps": [
+   "Nạp callback_event message text source.type=group groupId=Cgrp01",
+   "Chạy job xử lý callback",
+   "Đối chiếu URL LINE API đã gọi (Group Summary / member profile)",
+   "Truy vấn DB kiểm tra conversation group + status callback_event"
+  ],
+  "data_input": "Webhook message, source.type=group, groupId=Cgrp01",
+  "expected": "Group vẫn route vào handleMessageGroup; gọi getGroupSummary và member profile /v2/bot/group/... (không đổi sang /room/). line_user group type=1, conversation kind=1. callback_event=DONE. Behavior group KHÔNG đổi sau khi thêm nhánh room và null-safe getGroupId.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Regression bắt buộc do signature checkAddGroup/updateGroupMember thêm isRoom (3 callsite) và getGroupId null-safe.",
+  "status": "draft",
+  "sort_order": 340,
+  "created_at": "2026-08-26 04:25:03",
+  "updated_at": "2026-08-26 04:25:03",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13561,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-15",
+  "client_ref": null,
+  "name": "Regression: join/leave group vẫn hoạt động đúng sau khi getGroupId null-safe",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-BUSINESS-007",
+   "SRC-REGRESSION-013"
+  ],
+  "requirement_keys": [
+   "REQ-008"
+  ],
+  "tc_group": "job",
+  "viewpoint": "REG-SHARED-001",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Job callback - Regression group/1-1",
+  "precondition": "Bot tồn tại. callback_event chứa event join rồi leave với source.type=group, groupId=Cgrp02. Branch fix đã checkout.",
+  "steps": [
+   "Nạp & xử lý callback_event event join source.type=group groupId=Cgrp02",
+   "Truy vấn DB: line_user (C...) + conversation (kind=1, is_blocked=0) được tạo",
+   "Nạp & xử lý callback_event event leave source.type=group groupId=Cgrp02",
+   "Truy vấn DB: conversation.is_blocked=1, record không bị xóa"
+  ],
+  "data_input": "Webhook join/leave group Cgrp02",
+  "expected": "Join group tạo line_user line_id=Cgrp02 (prefix C..., type=1) + conversation kind=1 is_blocked=0. Leave group set is_blocked=1, không xóa. Caller group cũ không đổi behavior (getGroupId có groupId nên null-safe không ảnh hưởng).",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Đối chứng âm: thay đổi cho room không được làm hỏng luồng group.",
+  "status": "draft",
+  "sort_order": 350,
+  "created_at": "2026-08-26 04:25:03",
+  "updated_at": "2026-08-26 04:25:03",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13562,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-16",
+  "client_ref": null,
+  "name": "Regression: tin nhắn 1-1 (source.type=user) push/reply đúng line_id user, không route group",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-014"
+  ],
+  "requirement_keys": [
+   "REQ-009"
+  ],
+  "tc_group": "job",
+  "viewpoint": "REG-SHARED-001",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Job callback - Regression group/1-1",
+  "precondition": "Bot tồn tại. callback_event chứa webhook message text source.type=user, userId=Uuser01. Branch fix đã checkout.",
+  "steps": [
+   "Nạp callback_event message text source.type=user userId=Uuser01",
+   "Chạy job xử lý callback",
+   "Truy vấn DB kiểm tra message lưu dưới conversation 1-1 của user; đối chiếu đối tượng push/reply"
+  ],
+  "data_input": "Webhook message, source.type=user, userId=Uuser01",
+  "expected": "Message 1-1 xử lý như cũ (isSourceUser=true), lưu dưới conversation của user Uuser01; push/reply to=line_id user. KHÔNG bị route vào handleMessageGroup (isSourceGroupOrRoom=false với user). callback_event=DONE.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Đảm bảo đổi isSourceGroup()→isSourceGroupOrRoom() không kéo nhầm user vào nhánh group.",
+  "status": "draft",
+  "sort_order": 360,
+  "created_at": "2026-08-26 04:25:03",
+  "updated_at": "2026-08-26 04:25:03",
+  "last_exec": {
+   "status": "pass",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13566,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-17",
+  "client_ref": null,
+  "name": "Chat admin: room conversation hiển thị trong filter 「グループ」 với tên đúng",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "spec: chat/feature-spec.md:72"
+  ],
+  "requirement_keys": [
+   "REQ-010"
+  ],
+  "tc_group": "ui",
+  "viewpoint": "FUNC-001",
+  "catalog": null,
+  "case_type": "Normal",
+  "screen": "Chat admin - danh sách hội thoại",
+  "precondition": "Đã có room conversation (conversation_kind=1, có tên tổng hợp) do job tạo từ callback room. Đăng nhập admin, chọn đúng bot sở hữu room. Màn chat.",
+  "steps": [
+   "Đăng nhập admin qua /login-v2, chọn bot có room",
+   "Mở màn Chat, chọn filter 「グループ」 (groupChat)",
+   "Tìm hội thoại room trong danh sách",
+   "Mở hội thoại room và xem tên hiển thị"
+  ],
+  "data_input": "Room conversation đã tạo (kind=1)",
+  "expected": "Room conversation xuất hiện trong filter 「グループ」 (vì conversation_kind=1). Tên hiển thị đúng tên tổng hợp từ 5 member. Mở được hội thoại, xem được lịch sử tin nhắn room, không lỗi.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Web không đổi code — chỉ verify UI hiển thị hệ quả của job. Hành động chính từ browser thật; DB/job chỉ dựng tiền điều kiện. exec_mode auto qua browser tự động (Playwright --no-sandbox).",
+  "status": "draft",
+  "sort_order": 10,
+  "created_at": "2026-08-26 04:25:18",
+  "updated_at": "2026-08-26 04:25:18",
+  "last_exec": {
+   "status": "skip",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ },
+ {
+  "id": 13567,
+  "task_id": 220,
+  "kho_id": null,
+  "temp_id": "NEW-18",
+  "client_ref": null,
+  "name": "Chat admin: room có tên rỗng (bot 403) vẫn render danh sách, không trắng màn/không crash",
+  "priority": null,
+  "tech_note": null,
+  "spec_status": null,
+  "version": 1,
+  "feature": "chat",
+  "spec_ids": [
+   "TICKET-40164",
+   "SRC-REGRESSION-012"
+  ],
+  "requirement_keys": [
+   "REQ-010"
+  ],
+  "tc_group": "ui",
+  "viewpoint": "UI-003",
+  "catalog": null,
+  "case_type": "Abnormal",
+  "screen": "Chat admin - danh sách hội thoại",
+  "precondition": "Đã có room conversation với tên RỖNG (bot thường 403 khi lấy member). Đăng nhập admin, chọn bot đó, màn Chat.",
+  "steps": [
+   "Đăng nhập admin, chọn bot có room tên rỗng",
+   "Mở màn Chat, chọn filter 「グループ」",
+   "Quan sát hàng room tên rỗng trong danh sách",
+   "Mở hội thoại room đó"
+  ],
+  "data_input": "Room conversation tên rỗng",
+  "expected": "Danh sách chat vẫn render bình thường, hàng room tên rỗng hiển thị an toàn (tên trống hoặc placeholder), KHÔNG trắng màn/không crash JS. Mở hội thoại vẫn xem được tin nhắn.",
+  "env_hint": null,
+  "env_scope": [
+   "all"
+  ],
+  "exec_mode": "auto",
+  "env_tag": "local-only",
+  "author": "AI",
+  "origin": null,
+  "created_job_id": 682,
+  "kho_origin": null,
+  "spec_change": 1,
+  "note": "Biến thể trạng thái rỗng (UI-003) — hệ quả của graceful 403 ở job. Web dùng conversation_name/line_user.name có thể null ⇒ FE phải chịu được.",
+  "status": "draft",
+  "sort_order": 30,
+  "created_at": "2026-08-26 04:25:18",
+  "updated_at": "2026-08-26 04:25:18",
+  "last_exec": {
+   "status": "skip",
+   "source": "ai",
+   "by": "pipeline-resume",
+   "at": "2026-08-26 08:14:28",
+   "env": "local",
+   "runId": 562
+  },
+  "bug_tickets": [],
+  "provenance": {
+   "source": "ai",
+   "actor": "AI",
+   "createdJobId": 682
+  }
+ }
+]
