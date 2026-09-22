@@ -1,30 +1,40 @@
 ---
 description: Fetch Redmine issue → tạo folder task mới, auto-fill 01-bug-task.md + 03-dev-impact.md + 04-tc-list.md (từ Link TCs Sheet, hoặc fallback MCP LME TEST STUDIO). Bước CHUẨN BỊ INPUT, KHÔNG phải skill review/write.
-argument-hint: <redmine-url>
+argument-hint: <redmine-id | redmine-url>
 ---
 
 Bạn là trợ lý cho QA chuẩn bị input task review từ Redmine. Sau khi chạy xong, **DỪNG** — KHÔNG tự gọi `/write-tc` hoặc `/review-tc`. Human sẽ tự gõ skill tiếp theo.
 
 **Arguments:** `$ARGUMENTS`
-- **arg1** = Redmine issue URL (BẮT BUỘC, vd `https://redmine.watermelon.vn/issues/36437`)
+- **arg1** = **ID issue Redmine** (khuyên dùng, vd `40539`) **hoặc** URL đầy đủ (vd `https://redmine.watermelon.vn/issues/40539`).
 
-Nếu **arg1 trống** → DỪNG, in: "Cần Redmine URL. Cú pháp: `/new-task <redmine-url>`." KHÔNG được tự đoán URL.
+**Chuẩn hoá arg1 TRƯỚC khi làm bất cứ việc gì** — user hay gõ ID ở **dòng dưới** hoặc paste kèm ký tự bao:
+1. Ghép toàn bộ `$ARGUMENTS` (**kể cả phần xuống dòng**) → strip whitespace/newline → lấy **token đầu tiên không rỗng**. Nhờ vậy `/new-task` rồi enter gõ `40539` vẫn chạy đúng.
+2. Bỏ ký tự bao ở đầu/cuối: `"` `'` `<` `>` `#` `,` `.` — vd `#40539` → `40539`, `<https://.../issues/40539>` → URL thuần.
+3. Phân loại token:
+   - Khớp `^\d+$` → **issue id thuần**. Base URL do script tự lấy từ `REDMINE_URL` trong `.env` — **KHÔNG hỏi user, KHÔNG tự ghép URL**.
+   - Khớp `^https?://.+/issues/(\d+)` → **URL đầy đủ**, `<id>` = group 1 (query string `?...` / anchor `#...` ở sau bỏ qua).
+   - Không khớp cả 2 → DỪNG, in: "Arg không hợp lệ: `<arg>`. Cú pháp: `/new-task 40539` hoặc `/new-task https://<redmine>/issues/40539`."
+
+Nếu **arg1 trống** → DỪNG, in: "Cần ID task Redmine. Cú pháp: `/new-task 40539` (hoặc paste URL đầy đủ)." KHÔNG tự đoán ID, KHÔNG lấy ID từ hội thoại trước đó.
 
 ---
 
-### BƯỚC 1 — Parse URL + fetch Redmine
+### BƯỚC 1 — Chuẩn hoá arg + fetch Redmine
 
-1. **Parse issue ID** từ URL — extract số sau `/issues/`. Vd `https://redmine.watermelon.vn/issues/36437` → `36437`. Nếu không match pattern `.+/issues/\d+` → DỪNG, in: "Redmine URL không hợp lệ, expect `<base>/issues/<số>`."
+1. **Lấy `<id>`** theo mục "Chuẩn hoá arg1" ở trên. `<id>` luôn là **số thuần** — dùng cho cả tên folder (BƯỚC 2) và `task_list(ticket_id=<id>)` (BƯỚC 6b).
 
-2. **Fetch issue qua REST API** — chạy script (KHÔNG dùng MCP redmine, đã gỡ khỏi project từ 2026-09-09):
+2. **Fetch issue qua REST API** — chạy script (KHÔNG dùng MCP redmine, đã gỡ khỏi project từ 2026-09-09). Truyền **token đã chuẩn hoá** — script nhận cả id thuần lẫn URL đầy đủ:
    ```bash
-   python scripts/redmine_fetch.py "<redmine-url>" --json "<scratchpad>/redmine-<id>.json"
+   python scripts/redmine_fetch.py 40539 --json "<scratchpad>/redmine-40539.json"
+   # hoặc: python scripts/redmine_fetch.py "https://<redmine>/issues/40539" --json ...
    ```
    - Script đọc `REDMINE_URL` + `REDMINE_API_KEY` thẳng từ `.env` ở root project — không cần export env, không cần MCP server.
+   - **Arg là id thuần** → script tự ghép `REDMINE_URL` + `/issues/<id>.json`. `.env` thiếu `REDMINE_URL` → script exit `2` (`Thieu REDMINE_URL ... va arg khong phai URL day du`) → DỪNG, báo user điền `REDMINE_URL` vào `.env` hoặc paste URL đầy đủ thay vì ID.
    - **stdout** = digest markdown: metadata (project/tracker/status/priority/author/assignee/created/updated/custom fields) · attachments (filename + `content_url`) · relations · `## Description (nguyen van)` · `## Journals co notes (n)`. Đây là input chính cho BƯỚC 3 → 6.
    - `--json` dump payload gốc ra **scratchpad** (không ghi vào `tasks/`) để tra lại field lẻ khi cần — chỉ đọc file này khi digest thiếu thông tin.
    - Exit code ≠ 0 → **DỪNG**, in nguyên văn dòng `ERROR:` của script + trỏ user đến [docs/REDMINE-SETUP.md](../../docs/REDMINE-SETUP.md). KHÔNG retry vô hạn, KHÔNG fallback sang WebFetch trang Redmine, KHÔNG bịa nội dung issue.
-     - `2` = thiếu `REDMINE_URL` / `REDMINE_API_KEY` trong `.env` · `3` = URL sai format · `4` = lỗi HTTP (401 key sai · 403 không có quyền/REST API tắt · 404 issue không tồn tại) · `5` = không kết nối được (VPN/mạng).
+     - `2` = thiếu `REDMINE_URL` / `REDMINE_API_KEY` trong `.env` · `3` = arg không phải id thuần cũng không phải `<base>/issues/<số>` · `4` = lỗi HTTP (401 key sai · 403 không có quyền/REST API tắt · 404 issue không tồn tại) · `5` = không kết nối được (VPN/mạng).
 
 ---
 
@@ -256,6 +266,7 @@ Warnings (nếu có):
 
 ### QUY TẮC
 
+- **ID thuần là cú pháp mặc định** (`/new-task 40539`) — base URL lấy từ `REDMINE_URL` trong `.env`. Chỉ cần URL đầy đủ khi issue nằm trên Redmine **khác** base đó.
 - KHÔNG bịa nội dung Redmine — chỉ dùng output của `scripts/redmine_fetch.py` (REST API). KHÔNG WebFetch trang Redmine để thay thế.
 - KHÔNG diễn giải lại description khi map vào 01/03 — paste nguyên văn.
 - KHÔNG sửa TCs cũ fetch từ Sheet **hoặc từ Studio** — TCs là **read-only**, kể cả khi nghi không còn đúng sau fix. Sửa TC Studio thì sửa trên Studio (`testcase_update`) rồi fetch lại.
@@ -266,4 +277,4 @@ Warnings (nếu có):
 - KHÔNG chain skill sau khi xong — DỪNG tại Bước 7.
 - Redmine API key + Sheet credentials đọc từ `.env` / `credentials/` (đã setup). Nếu fail → trỏ docs setup, KHÔNG paste API key/secret vào output.
 
-Bắt đầu bằng việc parse URL, chạy `scripts/redmine_fetch.py`, rồi thực hiện tuần tự các bước 1 → 7 (kèm 6b nếu Redmine không có Link TCs).
+Bắt đầu bằng việc chuẩn hoá arg1 → `<id>`, chạy `scripts/redmine_fetch.py <id>`, rồi thực hiện tuần tự các bước 1 → 7 (kèm 6b nếu Redmine không có Link TCs).

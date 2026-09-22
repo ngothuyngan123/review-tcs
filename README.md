@@ -84,8 +84,8 @@ Workflow chia làm **2 phase tách biệt**: chuẩn bị input → chọn skill
 
 ### Phase 1 — Chuẩn bị input
 
-**Cách A (có Redmine URL — khuyên dùng):** chạy `/new-task <redmine-url>`.
-- AI chạy `python scripts/redmine_fetch.py <url>` (Redmine REST API, API key trong `.env`) + (option) MCP google-sheets, tạo folder `tasks/YYYY-MM-DD_<id>_<slug>/`, auto-fill:
+**Cách A (có ticket Redmine — khuyên dùng):** chạy `/new-task <redmine-id>` — chỉ cần **ID** (vd `/new-task 40539`), URL đầy đủ vẫn nhận.
+- AI chạy `python scripts/redmine_fetch.py <id|url>` (Redmine REST API, API key trong `.env`) + (option) MCP google-sheets, tạo folder `tasks/YYYY-MM-DD_<id>_<slug>/`, auto-fill:
   - `01-bug-task.md` ← Section "Tái hiện bug" (nếu Redmine có) + mô tả bug **dịch sang tiếng Việt** + Dữ liệu định danh ca lỗi + Journal Redmine.
   - `03-dev-impact.md` ← Section "Đánh giá ảnh hưởng phía dev" (BẮT BUỘC trong Redmine).
   - `04-tc-list.md` ← Section "Link TCs" + `Row: <start>-<end>` (OPTIONAL — fetch từ Google Sheet nếu Redmine có ghi).
@@ -103,7 +103,7 @@ Tùy theo task hiện tại có sẵn TCs hay chưa, chọn 1 trong 3:
 
 - **`/write-tc <folder>`** — chưa có TCs hoặc cần bổ sung → AI đọc 01 + 03 + (option) 02 + (option) Old TCs Sheet → sinh draft `04-tc-list.md`. Member verify + chỉnh rồi submit cho Leader. Xem [prompts/write-tc-prompt.md](prompts/write-tc-prompt.md).
 - **`/sync-tc <folder>`** — sau khi có 04 (do `/write-tc` sinh ra hoặc paste tay) → push lên Google Sheet master (mỗi task = 1 tab pre-created). Xem [docs/SYNC-TC-SETUP.md](docs/SYNC-TC-SETUP.md).
-- **`/review-tc <folder> [ticket_id|task:<n>|<link Sheet>]`** — AI tự lấy bộ TC theo **3 nguồn ưu tiên, dừng ở nguồn đầu tiên có TC**: **MCP LME TEST STUDIO** → **link Google Sheet human cung cấp** → file `04-tc-list.md`; cả 3 không có → DỪNG hỏi human. Rồi đọc 01 + 03 + spec và sinh draft `05-review-report.md` **rút gọn — chỉ ghi phần thiếu**: §1 coverage GAP theo 2 chiều (đánh giá ảnh hưởng Dev + diff code) · §2 quan điểm test còn thiếu · §3 TC trùng lặp · §4 issues · §5 TC bổ sung. Chiều `diff code` lấy thẳng từ tab Thông tin của Studio (`dev_impact` + `spec_delta`). Bảng coverage / bảng quan điểm vẫn chạy nhưng là nháp nội bộ, không ghi vào file. Leader verify + chỉnh. Xem [prompts/review-tc-prompt.md](prompts/review-tc-prompt.md).
+- **`/review-tc <folder> [ticket_id|task:<n>|<link Sheet>]`** — AI tự lấy bộ TC theo **3 nguồn ưu tiên, dừng ở nguồn đầu tiên có TC**: **MCP LME TEST STUDIO** → **link Google Sheet human cung cấp** → file `04-tc-list.md`; cả 3 không có → DỪNG hỏi human. Rồi đọc 01 + 03 + spec và sinh draft `05-review-report.md` **rút gọn — chỉ ghi phần thiếu**, **9 section**: §1 coverage **2 chiều kèm 2 dòng trả lời ĐỦ / CHƯA ĐỦ** (đánh giá ảnh hưởng Dev + diff code) · §2 quan điểm test còn thiếu · §3 TC trùng lặp · §4 **mâu thuẫn** (TC vs TC / vs `spec-features/` / vs `kho-tcs/`) · §5 issues khác · §6 **TC thừa / ngoài phạm vi task** · §7 TC bổ sung (GAP + quan điểm + regression AI đánh giá) · §8 spec update needed. Chiều `diff code` lấy thẳng từ tab Thông tin của Studio (`dev_impact` + `spec_delta`). Bảng coverage / bảng quan điểm vẫn chạy nhưng là nháp nội bộ, không ghi vào file. Leader verify + chỉnh. Xem [prompts/review-tc-prompt.md](prompts/review-tc-prompt.md).
 
 ### Phase 3 — Gửi feedback (chỉ khi `/review-tc`)
 Chia sẻ `05-review-report.md` cho member. Member fix TCs → review vòng 2 nếu cần.
@@ -131,8 +131,10 @@ Chia sẻ `05-review-report.md` cho member. Member fix TCs → review vòng 2 n�
 Trong Claude Code (mở ở thư mục project root), gõ:
 
 ```
-/new-task https://redmine.lme.jp/issues/12345
+/new-task 40539
 ```
+
+(ID thuần — base URL lấy từ `REDMINE_URL` trong `.env`. Gõ `/new-task` rồi enter, dán ID ở dòng dưới cũng được. Cần ticket ở Redmine khác → paste URL đầy đủ `https://<redmine>/issues/40539`.)
 
 → Claude fetch issue qua Redmine REST API (`scripts/redmine_fetch.py`), tạo folder `tasks/<YYYY-MM-DD>_<id>_<slug>/`, auto-fill `01-bug-task.md` + `03-dev-impact.md` + (option) `04-tc-list.md` từ Section "Link TCs" trong Redmine. Sau đó **DỪNG** — tester verify lại nội dung (tick checkbox ở file 03) trước khi sang skill tiếp theo.
 
@@ -154,6 +156,6 @@ Trong Claude Code (mở ở thư mục project root), gõ:
 
 → Claude tự lấy bộ TC (Studio → link Sheet bạn đưa → file 04), đọc `01` + `03` + spec, rồi sinh draft `05-review-report.md` (rút gọn: nguồn + số TC · GAP coverage 2 chiều dev-impact/diff code · quan điểm thiếu · TC trùng · issues · TC bổ sung). **Không tự fetch Redmine** (việc của `/new-task`), **không tự viết TC** (việc của `/write-tc`).
 
-Gõ slash command **không kèm folder** → Claude sẽ liệt kê các folder con trong `tasks/` để bạn chọn (trừ `/new-task` — cần URL Redmine bắt buộc).
+Gõ slash command **không kèm folder** → Claude sẽ liệt kê các folder con trong `tasks/` để bạn chọn (trừ `/new-task` — cần ID ticket Redmine bắt buộc).
 
 Định nghĩa command nằm ở [.claude/commands/](.claude/commands/), tài liệu hướng dẫn ở [prompts/](prompts/).

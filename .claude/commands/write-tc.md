@@ -10,7 +10,7 @@ Bạn là trợ lý cho QA member viết Test Cases. Hãy sinh draft TCs cho bug
 
 Nếu **arg1 trống** → liệt kê các folder con trong `tasks/` (sắp xếp theo ngày mới nhất), hỏi user chọn 1 trong đó rồi tiếp tục. KHÔNG được tự đoán.
 
-> **Prereq**: `/write-tc` không fetch Redmine. Nếu folder thiếu `01-bug-task.md` hoặc `03-dev-impact.md` → chạy `/new-task <redmine-url>` trước để auto-fill, HOẶC paste tay từ Dev. `/write-tc` chỉ tập trung sinh TCs từ input đã chuẩn bị sẵn.
+> **Prereq**: `/write-tc` không fetch Redmine. Nếu folder thiếu `01-bug-task.md` hoặc `03-dev-impact.md` → chạy `/new-task <redmine-id>` trước để auto-fill, HOẶC paste tay từ Dev. `/write-tc` chỉ tập trung sinh TCs từ input đã chuẩn bị sẵn.
 
 ### BƯỚC 1 — ĐỌC INPUT
 Đọc và tóm tắt ngắn gọn:
@@ -18,7 +18,7 @@ Nếu **arg1 trống** → liệt kê các folder con trong `tasks/` (sắp xế
    - File 01 là bản **rút gọn** (2026-09-05): chỉ có `Bug ID / Ticket` · `Module / Màn hình` · Mô tả bug (**bản dịch tiếng Việt**, không còn khối 原文 JP) · Steps · Expected · Actual · Attachment · Ghi chú Leader · Dữ liệu định danh ca lỗi · Journal Redmine. **KHÔNG còn** field `Auto-filled` / `Môi trường phát hiện` / `Priority` và **KHÔNG còn** checkbox "Tester verify" → không check verify gate ở file 01.
    - **Môi trường lỗi** (nếu cần): đọc ở `Ghi chú thêm của Leader`; không ghi ở đó → coi như chưa rõ, ghi `Môi trường test` của TC theo RULE-08 + note cần confirm.
    - **`Dữ liệu định danh ca lỗi`** (nếu có) là nguồn dựng `Điều kiện tiền đề` + `Dữ liệu test/input` của TC — ưu tiên dùng ID thật ở đây thay vì bịa dữ liệu mới.
-   - **Nếu file CHƯA tồn tại** → DỪNG, in: "Cần `01-bug-task.md`. Có 2 cách: (1) chạy `/new-task <redmine-url>` để auto-fill từ Redmine; (2) paste tay theo `templates/01-bug-task.template.md`."
+   - **Nếu file CHƯA tồn tại** → DỪNG, in: "Cần `01-bug-task.md`. Có 2 cách: (1) chạy `/new-task <redmine-id>` để auto-fill từ Redmine; (2) paste tay theo `templates/01-bug-task.template.md`."
 2. **Spec** — đọc thẳng từ nguồn, **KHÔNG tạo `02-spec-reference.md`** (đã bỏ khỏi bộ file chuẩn; folder cũ còn file này thì vẫn dùng được). **Thứ tự ưu tiên** (dừng ở nguồn đầu tiên trả lời được "hành vi ĐÚNG của chức năng này là gì"):
 
    | # | Nguồn | Cách dùng |
@@ -41,7 +41,7 @@ Nếu **arg1 trống** → liệt kê các folder con trong `tasks/` (sắp xế
      - **CHƯA tick** → KHÔNG dừng. Vẫn tiếp tục viết TCs bình thường, nhưng GHI NHẬN để in cảnh báo ở Bước 7: "⚠️ File 03 auto-fill chưa được tester verify (checkbox 'Tester verify auto-fill chính xác' chưa tick) — impact F/D/T chưa được người xác nhận, member nên verify lại đánh giá ảnh hưởng + TCs trước khi submit."
      - **Đã tick** → tiếp tục (không cảnh báo).
 
-Nếu thiếu `01-bug-task.md` hoặc `03-dev-impact.md` → DỪNG, ghi rõ "Input thiếu: ... — chạy `/new-task <redmine-url>` để auto-fill hoặc paste tay từ Dev." trước khi viết TC.
+Nếu thiếu `01-bug-task.md` hoặc `03-dev-impact.md` → DỪNG, ghi rõ "Input thiếu: ... — chạy `/new-task <redmine-id>` để auto-fill hoặc paste tay từ Dev." trước khi viết TC.
 
 #### 1.4a — Sync target URL (BẮT BUỘC hỏi URL)
 
@@ -200,6 +200,7 @@ Mục tiêu: bộ TC mới ở file 04 chỉ chứa **delta** (bug + impact mớ
 **Đọc kho TCs của tính năng** trong [kho-tcs/](../../kho-tcs/) trước khi viết:
 
 1. **Tìm file kho**: `ls kho-tcs/*.md` → khớp mã màn hình `FA-xxx` của task (tra mã ở bảng feature [templates/LME-SYSTEM-SPEC.md](../../templates/LME-SYSTEM-SPEC.md)). Tên file dạng `<mã>-<tên VN bỏ dấu>-<tên JP>.md`, VD `kho-tcs/fa012-quanlythe-タグ管理.md`.
+   - ⚠️ **Tra theo FA của TỪNG TC định viết, không chỉ FA của task.** TC kéo sang tính năng khác (copy bot FA-033, backup, CSV, filter, popup...) → mở kho + `spec-features/` của **chính FA đó** để xác minh tính năng của task có nằm trong phạm vi nó không. **Trigger quan điểm ≠ bằng chứng có ảnh hưởng** — không tìm được câu khẳng định trong spec/kho thì **không viết TC**, ghi 1 dòng "đã loại khỏi phạm vi + nguồn kiểm chứng" ở Bước 7. VD: QR/landing **không** nằm trong 13 loại dữ liệu của copy bot (FA-033 BR-05/BR-06, kho `TC-BK-329`/`TC-BK-333`).
    Kho **chưa có** tính năng này → ghi note ở Bước 7 ("kho-tcs chưa có `FA-xxx` — không đối chiếu được"), vẫn tiếp tục viết TC.
 2. **Đọc có chọn lọc, KHÔNG nạp cả file vào context** (mỗi file 350–810 dòng):
    `grep -n "^## \|^### " <file>` lấy danh sách nhóm chức năng → `grep -n "<từ khoá chức năng bị ảnh hưởng>" <file>` → `sed -n` đọc đúng vùng đó.

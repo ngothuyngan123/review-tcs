@@ -144,7 +144,7 @@ def main():
         vp = str(g(tc, "viewpoint", "viewpoint_code", "vp", default="") or "")
         (vp_known if vp in known else vp_unknown)[vp or "(trống)"] += 1
         per_vp[vp] += 1
-        tcno = "TC-%s-%02d" % (vp.replace("-", "") if vp else "NOVP", per_vp[vp])
+        tcno_gen = "TC-%s-%02d" % (vp.replace("-", "") if vp else "NOVP", per_vp[vp])
 
         le = g(tc, "last_exec", "lastExec", default={}) or {}
         raw = str(g(le, "status", default="") or "").lower()
@@ -166,6 +166,9 @@ def main():
 
         tickets = g(tc, "bug_tickets", "bugTickets", default=[]) or []
         sid, tid = g(tc, "id", default=""), g(tc, "temp_id", "tempId", default="")
+        # TC No. = ID HIEN THI TREN STUDIO (temp_id dang NEW-xx) de Leader tra nguoc duoc tren tool.
+        # Khong co temp_id -> dung #<studio id>; ca 2 deu khong co -> ma tu sinh theo quan diem.
+        tcno = str(tid) if tid else ("#%s" % sid if sid else tcno_gen)
         title = cell(g(tc, "name", "title", default=""))
         if raw in ("fail", "failed", "error", "ng") or tickets:
             flagged.append((tid or sid, raw or "(chưa chạy)", cell(tickets), title))
@@ -174,6 +177,7 @@ def main():
 
         note_bits = [
             "Studio #%s%s" % (sid, " (%s)" % tid if tid else ""),
+            "mã theo quan điểm: %s" % tcno_gen,
             cell(g(tc, "tc_group", "tcGroup", default="")),
             cell(g(tc, "exec_mode", "execMode", default="")),
             cell(g(tc, "env_tag", "envTag", default="")),

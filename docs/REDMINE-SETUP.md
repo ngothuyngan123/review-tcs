@@ -94,12 +94,14 @@ Endpoint gọi: `GET <base>/issues/<id>.json?include=journals,attachments,relati
 ## Sử dụng với `/new-task`
 
 ```
-/new-task https://redmine.watermelon.vn/issues/36317
+/new-task 36317
 ```
 
+Chỉ cần **ID ticket** — base URL lấy từ `REDMINE_URL` trong `.env`. Gõ `/new-task` rồi enter, dán ID ở dòng dưới cũng được. Ticket ở Redmine khác base → paste URL đầy đủ (`https://redmine.watermelon.vn/issues/36317`).
+
 Claude sẽ:
-1. Parse issue ID `36317` từ URL.
-2. Chạy `python scripts/redmine_fetch.py <url> --json <scratchpad>/redmine-36317.json`.
+1. Chuẩn hoá arg → issue ID `36317` (bỏ `#`, dấu nháy, xuống dòng; hoặc parse từ URL nếu user paste URL).
+2. Chạy `python scripts/redmine_fetch.py 36317 --json <scratchpad>/redmine-36317.json`.
 3. Tạo folder `tasks/<YYYY-MM-DD>_36317_<slug>/`, auto-fill `01-bug-task.md` + `03-dev-impact.md` (+ `04-tc-list.md` nếu Redmine có "Link TCs", hoặc fallback MCP LME TEST STUDIO).
 4. **DỪNG** — tester verify lại nội dung auto-fill: đọc lại `01-bug-task.md` đối chiếu Redmine, tick checkbox "Tester verify auto-fill chính xác" ở `03-dev-impact.md`.
 

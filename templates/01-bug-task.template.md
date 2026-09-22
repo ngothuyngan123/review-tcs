@@ -1,7 +1,7 @@
 # 01 — Bug Task từ khách hàng
 
 > 2 cách điền file này:
-> 1. **Auto-fill từ Redmine** — chạy `/new-task <redmine-url>` → Claude fetch issue qua Redmine REST API (`scripts/redmine_fetch.py`), tạo folder mới + fill các section bên dưới (cùng với `03-dev-impact.md`).
+> 1. **Auto-fill từ Redmine** — chạy `/new-task <redmine-id>` → Claude fetch issue qua Redmine REST API (`scripts/redmine_fetch.py`), tạo folder mới + fill các section bên dưới (cùng với `03-dev-impact.md`).
 > 2. **Paste tay** — nếu không có Redmine link, member paste nội dung task bug.
 >
 > File này **chỉ giữ thông tin cần để viết/review TC**. Metadata Redmine (ngày báo cáo, người báo, priority, URL, môi trường phát hiện) tra thẳng trên Redmine khi cần, KHÔNG chép lại vào đây.

@@ -1,9 +1,9 @@
 ---
-description: Push TCs bổ sung của reviewer (05-review-report.md §5) về ĐÚNG nơi bộ TC gốc được lấy về — nguồn Studio thì call MCP testcase_create, nguồn Google Sheet thì push lên chính Sheet đó, nguồn file 04 thì hỏi human vị trí push.
+description: Push TCs bổ sung của reviewer (05-review-report.md §7) về ĐÚNG nơi bộ TC gốc được lấy về — nguồn Studio thì call MCP testcase_create, nguồn Google Sheet thì push lên chính Sheet đó, nguồn file 04 thì hỏi human vị trí push.
 argument-hint: <folder review> [studio | sheet | ask]
 ---
 
-User muốn sync **toàn bộ TCs bổ sung của reviewer** — bảng tại section **`## 5. TCs đề xuất bổ sung (<n>)`** (tiêu đề có kèm số TC trong ngoặc; parser khớp theo tiền tố `## 5` nên hậu tố `(<n>)` không ảnh hưởng) trong `05-review-report.md` — về **đúng nơi bộ TC gốc được lấy về ở `/review-tc` BƯỚC 0**.
+User muốn sync **toàn bộ TCs bổ sung của reviewer** — bảng tại section **`## 7. TCs đề xuất bổ sung (<n>)`** (tiêu đề có kèm số TC trong ngoặc; parser khớp theo **cụm “đề xuất bổ sung”**, không theo số section — nên hậu tố `(<n>)` không ảnh hưởng, và report cũ đánh số `## 5.` vẫn push được) trong `05-review-report.md` — về **đúng nơi bộ TC gốc được lấy về ở `/review-tc` BƯỚC 0**.
 
 **Arguments:** `$ARGUMENTS`
 - **arg1** = folder review, vd `tasks/2026-08-26_40128_salon-dat-lich-ngoai-khung-gio-ca/`. Trống → liệt kê folder con trong `tasks/` (mới nhất trước), hỏi human chọn. KHÔNG tự đoán.
@@ -37,8 +37,8 @@ In ra trước khi làm gì tiếp: `Nguồn TC gốc: <...>` → `Đích push: 
 
 Verify TRƯỚC khi vào nhánh. Fail → DỪNG và hướng dẫn fix:
 
-- `<arg1>/05-review-report.md` tồn tại **và §5 có TC thật** — không phải chỉ row template rỗng (`TC-XXX000-01` không nội dung). Trống → báo "Reviewer chưa điền TC bổ sung ở §5", DỪNG.
-- Parse bảng §5 theo **14 cột** = 12 cột kho + 2 cột test tool (`ID · Nhóm · Mã quan điểm · Màn hình/chức năng · Loại case · **Chạy** · **Phạm vi ENV** · Tên case · Tiền điều kiện · Các bước thực hiện · Dữ liệu nhập · Kết quả mong đợi · Kết quả thực thi · Ghi chú`), bỏ row placeholder. Đếm được `<n>` TC → in ra `§5 có <n> TC bổ sung`.
+- `<arg1>/05-review-report.md` tồn tại **và §7 có TC thật** — không phải chỉ row template rỗng (`TC-XXX000-01` không nội dung). Trống → báo "Reviewer chưa điền TC bổ sung ở §7", DỪNG.
+- Parse bảng §7 theo **14 cột** = 12 cột kho + 2 cột test tool (`ID · Nhóm · Mã quan điểm · Màn hình/chức năng · Loại case · **Chạy** · **Phạm vi ENV** · Tên case · Tiền điều kiện · Các bước thực hiện · Dữ liệu nhập · Kết quả mong đợi · Kết quả thực thi · Ghi chú`), bỏ row placeholder. Đếm được `<n>` TC → in ra `§7 có <n> TC bổ sung`.
   - Report cũ (trước khi đổi format) dùng 16 cột canonical → vẫn parse được, map theo tên cột tương ứng.
 - `<n> = 0` → DỪNG, không gọi MCP, không chạy script.
 
@@ -54,9 +54,9 @@ Verify TRƯỚC khi vào nhánh. Fail → DỪNG và hướng dẫn fix:
 2. **Load schema**: `ToolSearch` → `select:mcp__claude_ai_MCP_LME_TEST_STUDIO__testcase_create`
    (thêm `,...task_list` nếu cần dò task).
 
-3. **Map 14 cột §5 → `fields` của Studio**:
+3. **Map 14 cột §7 → `fields` của Studio**:
 
-   | Cột §5 (12 cột kho + 2 cột test tool) | Field Studio | Ghi chú |
+   | Cột §7 (12 cột kho + 2 cột test tool) | Field Studio | Ghi chú |
    |---|---|---|
    | `ID` | `client_ref` | **Khoá idempotent** theo task. Ký tự ngoài `[A-Za-z0-9._:-]` → thay bằng `-`; giữ nguyên giá trị để chạy lại KHÔNG tạo TC trùng |
    | `Tên case` | `name` | |
@@ -64,7 +64,7 @@ Verify TRƯỚC khi vào nhánh. Fail → DỪNG và hướng dẫn fix:
    | `Nhóm` | `tc_group` | **lowercase** theo enum Studio: `UI`→`ui` · `API`→`api` · `Data`→`data` |
    | `Màn hình/chức năng` | `screen` | |
    | `Loại case` | `case_type` | enum `Normal` / `Abnormal` / `Boundary` |
-   | `Chạy` | `exec_mode` | enum Studio `auto` / `manual` — giá trị §5 đã đúng enum, ghi thẳng |
+   | `Chạy` | `exec_mode` | enum Studio `auto` / `manual` — giá trị §7 đã đúng enum, ghi thẳng |
    | `Phạm vi ENV` | `env_scope` | **array tên env của Studio** (`env_list`: `dev` · `local` · `prd` · `staging`). Quy đổi: `staging` → `["staging"]` · `product` → **`["prd"]`** (⚠️ Studio dùng code `prd`, KHÔNG phải `product`/`production`) · `Tất cả` → `["dev","local","prd","staging"]` |
    | `Tiền điều kiện` | `precondition` | |
    | `Các bước thực hiện` | `steps` | **array** — tách theo `<br>` hoặc số thứ tự `1./2./3.` |
@@ -76,7 +76,7 @@ Verify TRƯỚC khi vào nhánh. Fail → DỪNG và hướng dẫn fix:
    - **`Ghi chú`** → **KHÔNG sync**. Cột này chỉ tồn tại ở file `05-review-report.md` local (lấp GAP nào · evidence bắt buộc · `regression` · `dẫn từ <ID kho>` — thông tin phục vụ Leader/member đọc report, không phải nội dung TC). **KHÔNG** ghi vào `note`, **KHÔNG** đào ra `spec_status`/`env_hint` từ nó.
    - `Kết quả thực thi` (luôn để trống) — Studio quản lý kết quả qua `result_submit`; TC tạo mới luôn là **draft chưa chạy**.
 
-   > Report **cũ 12 cột** (chưa có `Chạy` / `Phạm vi ENV`) → `exec_mode = manual`, `env_scope` **bỏ trống**. KHÔNG đọc `Ghi chú` để đoán env.
+   > Report **cũ 12 cột** (chưa có `Chạy` / `Phạm vi ENV`) → `exec_mode` suy theo quy tắc cột `Chạy` ở [templates/05-review-report.template.md](../../templates/05-review-report.template.md) §7 (mặc định `auto`; `manual` chỉ khi steps bắt buộc production / thiết bị thật / mail thật / mắt người phán đoán) và **in ra bảng xác nhận** để human sửa trước khi ghi; `env_scope` **bỏ trống**. KHÔNG đọc `Ghi chú` để đoán env.
    > Report **cũ 16 cột canonical** → `TC No.`→`client_ref` · `Tiêu đề test case`→`name` · `Mã quan điểm liên kết`→`viewpoint` · `Điều kiện tiền đề`→`precondition` · `Dữ liệu test/input`→`data_input` · `Môi trường test`→`env_scope` (quy đổi như trên) · `Trạng thái đánh giá spec`→`spec_status` — đây là **cột riêng**, không phải `Ghi chú`, nên vẫn map.
 
 4. **XÁC NHẬN TRƯỚC KHI GHI** (bắt buộc — đây là mutation lên hệ thống ngoài, Studio audit dưới actor `username@mcp`). In bảng:
@@ -88,7 +88,7 @@ Verify TRƯỚC khi vào nhánh. Fail → DỪNG và hướng dẫn fix:
    ```
    Hỏi human confirm. **Chưa confirm → KHÔNG gọi `testcase_create`.**
 
-5. **Gọi** `testcase_create(task_id=<id>, rows=[...])` — **tối đa 100 row/lần**, nhiều hơn thì chia batch theo thứ tự §5.
+5. **Gọi** `testcase_create(task_id=<id>, rows=[...])` — **tối đa 100 row/lần**, nhiều hơn thì chia batch theo thứ tự §7.
 
 6. Lỗi → in **nguyên lý do** (MCP chưa authorize / task không tồn tại / field sai enum), KHÔNG retry vô hạn, **KHÔNG tự chuyển sang nhánh khác**.
 
@@ -107,7 +107,7 @@ Cả 3 đều không có → hỏi human URL + tên tab (không tự đoán), r�
 
 **Pre-flight riêng nhánh này**:
 - `credentials/google-service-account.json` tồn tại + service account quyền **Editor** → không thì trỏ [docs/MCP-SETUP.md](../../docs/MCP-SETUP.md).
-- **Chống push trùng** (append lên Sheet **KHÔNG** idempotent như Studio): đọc ~30 row cuối của cột anchor bằng `mcp__google-sheets__get_sheet_data`; nếu `TC No.` đầu tiên của §5 **đã tồn tại** → cảnh báo "có vẻ đã sync rồi ở row `<x>`" và hỏi confirm trước khi chạy.
+- **Chống push trùng** (append lên Sheet **KHÔNG** idempotent như Studio): đọc ~30 row cuối của cột anchor bằng `mcp__google-sheets__get_sheet_data`; nếu `TC No.` đầu tiên của §7 **đã tồn tại** → cảnh báo "có vẻ đã sync rồi ở row `<x>`" và hỏi confirm trước khi chạy.
 
 **Chạy**:
 ```
@@ -119,7 +119,7 @@ uv run scripts/push_tc_anchored.py <arg1> --source 05 --url "<URL>" --sheet "<t�
 ```
 > `--row` dùng khi cột anchor "Main Function" chỉ có data ở dòng đầu mỗi block (merged-style) khiến auto-detect đếm sai và có nguy cơ đè data cũ.
 
-Trước khi confirm: đọc stderr `Source: 05-review-report.md §5 ... → N TC` · `Resolved tab: ...` · `Row trống kế tiếp: ...` — verify đúng tab + đúng số TC. Sai → cancel.
+Trước khi confirm: đọc stderr `Source: 05-review-report.md §7 ... → N TC` · `Resolved tab: ...` · `Row trống kế tiếp: ...` — verify đúng tab + đúng số TC. Sai → cancel.
 
 Script ghi **đúng 5 cột** `TC ID, Title, Precondition, Steps, Expected` vào 5 cột **LIÊN TIẾP** bắt đầu tại cột anchor, APPEND xuống dưới row cuối có data. **KHÔNG ghi header, KHÔNG tạo tab mới, KHÔNG đè data cũ.**
 
@@ -135,7 +135,7 @@ Nguồn TC gốc là file trong repo → **không suy ra được đích**. Dùn
 |---|---|---|
 | **Google Sheet TC human** (đề xuất nếu file 04 đã có config `sync-tcs`) | URL Sheet + tên tab (+ anchor nếu khác `Main Function`) — bỏ qua nếu config đã đủ | → chạy **2B** với target vừa nhận |
 | **MCP LME TEST STUDIO** | `task_id` của task đích — **bắt buộc**, `testcase_create` cần task có sẵn. Chưa có task → yêu cầu human tạo task trên Studio trước rồi chạy lại | → chạy **2A** với `task_id` vừa nhận |
-| **Không push** | — | DỪNG, TC giữ nguyên trong §5 của file 05 |
+| **Không push** | — | DỪNG, TC giữ nguyên trong §7 của file 05 |
 
 **KHÔNG tự chọn đích**, KHÔNG mặc định về config `sync-tcs` mà không hỏi — human có thể muốn đẩy lên Studio.
 
@@ -160,9 +160,9 @@ OK: ghi <n> TC vào tab '<tab>' cột <start>:<end>, row <start_row>-<end_row>
 |---|---|---|
 | MCP báo chưa authorize | Connector claude.ai chưa bật | Authorize MCP LME TEST STUDIO trong connector settings; phiên non-interactive thì không tự làm được |
 | `task_id` không tồn tại / archived | Task sai hoặc đã đóng | Kiểm lại `task_list(ticket_id=...)`, chọn task chưa archived |
-| MCP báo sai enum `case_type` / `priority` | §5 ghi giá trị ngoài enum | Sửa §5 về `Normal`/`Abnormal`/`Boundary` rồi chạy lại |
-| `Không tìm thấy section '## 5...'` | File 05 thiếu §5 | Verify file 05 bám [templates/05-review-report.template.md](../../templates/05-review-report.template.md) |
-| `Không có TC nào parse được` | §5 chỉ có row template trống, hoặc header bảng không đúng 12 cột kho | Reviewer điền TC bổ sung vào §5; verify header khớp [kho-tcs/README.md](../../kho-tcs/README.md) §Format 12 cột |
+| MCP báo sai enum `case_type` / `priority` | §7 ghi giá trị ngoài enum | Sửa §7 về `Normal`/`Abnormal`/`Boundary` rồi chạy lại |
+| `Không tìm thấy section 'TCs đề xuất bổ sung'` | File 05 thiếu §7 | Verify file 05 bám [templates/05-review-report.template.md](../../templates/05-review-report.template.md) |
+| `Không có TC nào parse được` | §7 chỉ có row template trống, hoặc header bảng không đúng 12 cột kho | Reviewer điền TC bổ sung vào §7; verify header khớp [kho-tcs/README.md](../../kho-tcs/README.md) §Format 12 cột |
 | `Thiếu target URL Sheet TC human` | Không có config `sync-tcs` + không truyền CLI | Add `<!-- sync-tcs: url=... \| sheet=... -->` vào file 04, hoặc truyền `--url --sheet` |
 | `Không tìm thấy cột header 'Main Function'` | Sheet không có cột đó | Truyền `--anchor "<tên cột đúng>"` |
 | `403 Permission denied` | Sheet chưa share Editor | Share Sheet với `client_email` của service account, quyền **Editor** |
@@ -172,7 +172,7 @@ OK: ghi <n> TC vào tab '<tab>' cột <start>:<end>, row <start_row>-<end_row>
 ## QUY TẮC
 
 - **Đích push bám theo nguồn TC gốc** (§0 report): Studio → MCP · Sheet → chính Sheet đó · file 04 → hỏi human. **Không đổi đích, không push vào 2 nơi cùng lúc.**
-- Nguồn TC = bảng **§5 của file 05**, format **14 cột** (12 cột kho + `Chạy` + `Phạm vi ENV`). Report cũ (12 cột chưa có 2 cột này, hoặc 16 cột canonical) vẫn parse được. Bỏ qua row template trống.
+- Nguồn TC = bảng **§7 của file 05**, format **14 cột** (12 cột kho + `Chạy` + `Phạm vi ENV`). Report cũ (12 cột chưa có 2 cột này, hoặc 16 cột canonical) vẫn parse được. Bỏ qua row template trống.
 - **Cột `Ghi chú` là dữ liệu LOCAL — KHÔNG sync lên bất kỳ đích nào.** Studio: không ghi `note`, không đào `spec_status`/`env_hint` từ nó. Sheet: vốn chỉ ghi 5 cột nên đã không đụng tới. Nội dung `Ghi chú` (lấp GAP nào, evidence, `regression`, `dẫn từ <ID kho>`) chỉ phục vụ Leader/member đọc report.
 - `Phạm vi ENV = product` phải quy đổi thành env code **`prd`** của Studio — sai code là TC rơi sai phạm vi chạy.
 - **Xác nhận với human trước mọi lần ghi ra ngoài** (Studio `testcase_create` và Sheet append) — in đích + số TC + danh sách `TC No.` trước khi chạy.
@@ -182,4 +182,4 @@ OK: ghi <n> TC vào tab '<tab>' cột <start>:<end>, row <start_row>-<end_row>
 - Không xác định được nguồn hoặc đích → **hỏi human**, KHÔNG đoán.
 - **Xong → DỪNG.** Không tự chain skill khác.
 
-Bắt đầu: xác định folder (arg1) → đọc §0 xác định nguồn TC gốc → in `Nguồn → Đích → Nhánh` → pre-flight §5 → chạy đúng nhánh 2A / 2B / 2C.
+Bắt đầu: xác định folder (arg1) → đọc §0 xác định nguồn TC gốc → in `Nguồn → Đích → Nhánh` → pre-flight §7 → chạy đúng nhánh 2A / 2B / 2C.

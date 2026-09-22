@@ -1,0 +1,4 @@
+taskId 15 count 1
+   2026-08-28 11:03:21 haodtb Release done — đóng 12 bug
+taskId 44 count 1
+   2026-08-26 03:52:20 ngannt Release done — đóng 0 bug

@@ -174,14 +174,16 @@ Cách 2 — Chọn từ thư viện template:
 
 #### Loại nội dung tin nhắn
 
+> ⚠️ **`bot_type` đã hết vòng đời** (Test Leader xác nhận 2026-09-16): giá trị `1` (OLIOA) là **kiểu cũ, không còn dùng**; trên DB production **toàn bộ bot đều `bot_type = 0`**. Mọi điều kiện `bot_type == 0` trong tài liệu này vì thế **luôn đúng** — coi như không còn nhánh rẽ, không viết TC cho nhánh `bot_type = 1`.
+
 | Tab | Loại | Điều kiện hiển thị |
 |-----|------|--------------------|
 | テキスト | text | Luôn hiển thị |
-| 質問・ボタン | form | Chỉ khi bot_type == 0 |
+| 質問・ボタン | form | Luôn hiển thị |
 | メディア | image/voice/video | Luôn hiển thị |
-| スタンプ | stamp | Chỉ khi bot_type == 0 |
-| 位置情報 | location | Chỉ khi bot_type == 0 |
-| 紹介 | introduction | Chỉ khi bot_type == 0 |
+| スタンプ | stamp | Luôn hiển thị |
+| 位置情報 | location | Luôn hiển thị |
+| 紹介 | introduction | Luôn hiển thị |
 
 #### Gửi thử (Tester mode)
 

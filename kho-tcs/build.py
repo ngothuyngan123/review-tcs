@@ -1069,6 +1069,212 @@ FEATURES = [
             "02. TCsLine_Template → tab「Preview URL」— thuộc FA-010 Mẫu tin nhắn, đã gom ở tab FA-010",
         ],
     },
+    {
+        "code": "FA-039", "vi": "change bot", "jp": "LINE公式アカウント入れ替え機能",
+        "prefix": "CB",
+        "sections": "SECTIONS_CB",
+        "parts": ["cb_s1_access.S1", "cb_s1_access.S2",
+                  "cb_s2_select_input.S3", "cb_s2_select_input.S4",
+                  "cb_s3_webhook_confirm.S5", "cb_s3_webhook_confirm.S6",
+                  "cb_s4_qr_progress.S7", "cb_s4_qr_progress.S8",
+                  "cb_s5_reservation.S9",
+                  "cb_s6_cleanup.S10", "cb_s6_cleanup.S11",
+                  "cb_s7_keep_perm_env.S12", "cb_s7_keep_perm_env.S13",
+                  "cb_s7_keep_perm_env.S14"],
+        "conflicts": "cb_conflicts",
+        "spec": "spec-features/admin/bot-edit/ (SCR-BE-03 + EP-08, quét 2026-03-24) — ⚠️ LẠC HẬU NẶNG: "
+                "spec tả màn đổi LOA là LANDING PAGE MARKETING 1 màn + 1 nút「無料で利用開始」và ghi quy trình "
+                "kết nối LOA mới là『ngoài scope』, trong khi corpus 04/2026→08/2026 tả WIZARD 10 màn + "
+                "campaign + đặt lịch + tiến trình + 11 endpoint + 46 business rule. "
+                "FA-039 CHƯA CÓ spec-features riêng — xem MT-12. "
+                "Spec phụ có ích: lesson-booking/job/job-spec.md §2.6 + §3.5 (ChangeBotTask / ChangeBotJob — "
+                "hàng đợi schedule_change_bot + bước 6 dọn dữ liệu lesson) · qr-landing/db/db-mapping.md:1730 "
+                "(ChangeBotJob dọn 4 bảng landing) · bot-edit/db/db-mapping.md:51 (cột id_bot_change)",
+        "sources": [
+            "15.3 TCsLine_ChangeBot → tab「Change bot」(gid=1737994193, 317 dòng — TAB MASTER, chồng 3 đợt: "
+            "Feature #34632『5. Change BOT』(04/2026, r1-r247: job dọn dữ liệu 25 tính năng web + app mobile, "
+            "campaign bot free, wizard 5 step, đặt lịch, phân quyền staff) · Feature #36420『Tự động get old "
+            "friend khi bot chuyển verify』(r230-r247) · Feature #37744『Update lại giao diện màn change bot』"
+            "(07/2026, r249-r317, Figma「入れ替え機能 1ヶ月無料開放」). Cột kết quả: Test Result + staging + step)",
+            "15.3 TCsLine_ChangeBot → tab「[AI] TCs_change_bot_v2」(gid=469044478, 116 TC TC-CBF-001…116, "
+            "07-08/2026 — ĐÃ Ở FORMAT 12 CỘT của kho + cột SPEC ID (SCR-01…SCR-10, EP-01…EP-11, BR-01…BR-46) "
+            "và 2 cột kết quả chạy RIÊNG cho dev và staging kèm ghi chú tester. Bộ chi tiết nhất, dùng làm "
+            "bản chuẩn khi viết TC. ⚠️ Loại case dùng enum riêng F-Normal/F-Abnormal/F-Boundary/UI-UX/"
+            "Permission/Regression/State display — kho đã quy về 3 giá trị Normal/Abnormal/Boundary)",
+            "15.3 TCsLine_ChangeBot → tab「Improve xxx」(gid=412698763, 11 dòng — Feature #37229『Feedback "
+            "task tháng 5』(06/2026), 8 dòng comment sửa/xóa text + bỏ banner campaign, tất cả OK staging. "
+            "Lưu ý: gid này trùng gid tab template rỗng「Improve xxx」của file 00. TCsLine_Mẫu, nhưng ở file "
+            "này ĐÃ CÓ nội dung thật)",
+            "15.3 TCsLine_ChangeBot → tab「Info」(dùng để xác định niên đại 4 đợt: 04/2026 improve màn change "
+            "bot · 06/2026 feedback task tháng 5 · 7/2026 Feature #38155 get old friend · 7/2026 Feature "
+            "#37744 update giao diện)",
+            "TCsLine_Bill tiền → tab「change_bot」(gid=927328639, 50 dòng, 11/2023 — BỘ TC GỐC của tính năng, "
+            "~2,8 NĂM TUỔI → mọi TC lấy từ đây đều ghi『CẦN VERIFY LẠI』. Nguồn DUY NHẤT cho cơ chế "
+            "『update thông tin bot mới vào id bot cũ』+ cột id_bot_change (MT-01), cho bộ text lỗi cũ (MT-06) "
+            "và cho dòng『event_step_time bảng này k xóa』(MT-07). Niên đại xác định qua tab Info r10: "
+            "'11/2023 | Change bot')",
+            "TCsLine_AddBot → tab「Testcase」(476 dòng, khối change bot: r135-r136 điều kiện gói · r227 "
+            "SpecImprove #33154 (21/01/2026 — fix changeNewBotStep1 clear thêm data friend cũ, liệt kê 8 nhóm "
+            "dữ liệu) · r228-r252 setting giữ nguyên sau khi đổi · r276-r344 job dọn dữ liệu + quyền staff · "
+            "r473 button change bot. ⚠️ r253-r262 tác giả TỰ ĐÁNH DẤU "
+            "'<PHẦN TESTCASE CŨ CỦA HÀ → ĐÃ UPDATE TCS MỚI NÊN KHÔNG DÙNG TCS NÀY NỮA>' nên đã loại)",
+            "TCsLine_AddBot → tab「Bug Logic」(r27-r28 — 2 rule rút từ bug: 'change bot fail sau đấy change "
+            "lại thì từ màn 2 nhảy đến màn QR luôn' (đã Fixed → expected phải đi từng bước, thông tin đã "
+            "nhập vẫn giữ) và 'bot free chưa có button change bot' (Not fix). Dùng cho RULE-12 mục (3): "
+            "mọi case đã từng Không đạt và được fix phải nằm trong bộ regression)",
+        ],
+        "excluded": [
+            "15.3 TCsLine_ChangeBot → tab「Get old friend」(36 dòng, Feature #38155 07/2026 — 34 TC "
+            "TC-GOF-001…034 + 5 TC bổ sung về modal「既存友だちをエルメ上に反映しますか？」và job daily detect "
+            "bot verify) VÀ tab「Change bot」r230-r247 (Feature #36420『Tự động get old friend khi bot chuyển "
+            "verify』, enum is_get_old_friend 0-4). LÝ DO LOẠI: entry point chính là nút「既存友だち情報取得」trên "
+            "/admin/bot-edit = FA-038 EP-04 (spec bot-edit/feature-spec.md flow diagram nhánh D), không phải "
+            "màn đổi LOA. USER ĐÃ XÁC NHẬN 2026-09-12: để lại gom khi chạy /collect-tcs cho FA-038",
+            "15.3 TCsLine_ChangeBot → tab「Q&A」(115 dòng nhưng CHỈ có cột số thứ tự 1-114, toàn bộ ô nội dung "
+            "TRỐNG — không có câu hỏi/câu trả lời nào) ·「Copy of ListBug」(1 dòng) ·「Copy of Improve xxx」"
+            "(2 dòng, bản sao template rỗng) ·「[AI] Bugs」(3 dòng) — rỗng hoặc là nhật ký bug, không phải "
+            "test case",
+            "15.3 TCsLine_ChangeBot → tab「Change bot」r242-r244 (khối 'Check add bot' cho 3 gói free/standard/"
+            "pro) — thuộc FA-032『新規アカウント追加』(/admin/bot-add). Kho FA-039 chỉ giữ r245-r247 (check CHANGE "
+            "bot cho 3 gói). ĐỀ XUẤT: gom r242-r244 khi chạy /collect-tcs cho FA-032 — HỎI USER XÁC NHẬN",
+            "15.3 TCsLine_ChangeBot → tab「Change bot」r106-r121 (khối『Check hướng dẫn màn 1 / màn 2』và "
+            "『step 1 kiểm tra thông tin kết nối màn 3』của bản #34632, gồm checkbox「チャネルIDが同一である"
+            "ことを確認した」) — bản #37744 (07/2026) đã THAY giao diện này bằng màn「nhập Messaging APIチャネル」, "
+            "và [AI] v2 không có 2 màn hướng dẫn. Kho giữ phần validate + link phụ (vẫn còn ở bản mới), LOẠI "
+            "phần UI 2 màn hướng dẫn đã bị thay. Nếu Leader chốt MT-13 là bản #34632 đang chạy production thì "
+            "phải lấy lại khối này",
+            "TCsLine_Setting Liên kết BOT (4 tab: UI Tests · Test logic · Improve 01/07/2026 · [AI] API Tests) "
+            "— đây là FA-038『LOA接続設定』(/admin/bot-edit): kiểm tra kết nối 3 lớp, đổi ảnh/tên bot, "
+            "kết nối lại LIFF, job HandleCheckStatusConnectBotAndTool. Tab「Test logic」r9-r23 có chữ 'change "
+            "bot' nhưng tiêu đề khối là 'Check Data các màn hình sau khi change PROFILE' — là khối copy-paste "
+            "dùng cho thao tác đổi profile bot, KHÔNG phải đổi LOA. ĐỀ XUẤT: chạy /collect-tcs riêng cho "
+            "FA-038 (gom luôn khối Get old friend ở trên) — HỎI USER XÁC NHẬN",
+            "TCsLine_AddBot → 7 tab còn lại (「[AI] flow_add_bot_v2」·「[AI] TCs_flow」+ bản staging 07-14 · "
+            "「[AI] Onboarding trải nghiệm_v2」+ 2 bản cũ ·「Template_Onboarding trải nghiệm」·「Test design」·"
+            "「Video hiển thị」) — thuộc FA-032 thêm LOA mới + onboarding. Kho FA-039 chỉ giữ 1 TC hồi quy "
+            "『add bot KHÔNG bị ảnh hưởng bởi thay đổi ở change bot』(TC-CBF-114). "
+            "ĐỀ XUẤT: chạy /collect-tcs riêng cho FA-032 — HỎI USER XÁC NHẬN",
+            "TCsLine_Improve chung → tab「check tình trạng kết nối của bot với tool」(1000 dòng) — job daily "
+            "HandleCheckStatusConnectBotAndTool kiểm trạng thái kết nối + refresh token, thuộc FA-038. "
+            "ĐỀ XUẤT: gom khi chạy /collect-tcs cho FA-038 — HỎI USER XÁC NHẬN",
+            "TCsLine_Mypage → tab「Xóa bot」(988 dòng) — thao tác XÓA bot khác hẳn ĐỔI LOA (xóa là bỏ hẳn bot "
+            "khỏi tool, đổi LOA là giữ bot và thay LINE OA bên dưới). ĐỀ XUẤT: chạy /collect-tcs riêng cho "
+            "FA-036『マイページ』— HỎI USER XÁC NHẬN",
+            "15.3 TCsLine_ChangeBot → tab「Change bot」r216 (gửi template qua job) — kết quả mong đợi ghi "
+            "nguyên văn 'a Tư báo k cần check' ⇒ DEV ĐÃ LOẠI khỏi phạm vi test. Đây là dòng DUY NHẤT trong "
+            "287 dòng có Expect Result của tab master không được chuyển vào kho. "
+            "r180 ('nếu xác thực auth => qua màn 12 => e đã check bên trong friendlist/chat 11 có hiển thị "
+            "dc list friend cũ thật ko?') là CÂU HỎI của tester chưa ai trả lời, không phải TC — "
+            "nội dung câu hỏi đã được cover bởi nhóm 10 (xóa data friend bot cũ)",
+            "00. TCsLine_Mẫu (file TEMPLATE của dự án, 6 tab rỗng: Info · Improve xxx · Q&A · ListBug · "
+            "Copy of ListBug · Copy of Improve xxx) — file mẫu, không có TC. Đã đọc để xác nhận tab "
+            "「Improve xxx」gid=412698763 và「Copy of Improve xxx」gid=223705530 của file 15.3 là copy từ "
+            "template này (nên「Copy of Improve xxx」rỗng là đúng, không phải mất dữ liệu)",
+        ],
+    },
+    {
+        "code": "FA-041", "vi": "Cài đặt chat", "jp": "チャット設定",
+        "prefix": "CST",
+        "applied": "2026-09-21",   # đã áp quyết định MT-01 (8 tab) + MT-02 (CRUD inline)
+        "sections": "SECTIONS_CST",
+        "parts": ["cst_s1_nav_list.S1", "cst_s1_nav_list.S2",
+                  "cst_s2_status_crud.S3", "cst_s2_status_crud.S4", "cst_s2_status_crud.S5",
+                  "cst_s3_status_sync.S6",
+                  "cst_s4_csv_create_history.S7", "cst_s4_csv_create_history.S8",
+                  "cst_s5_csv_filedata.S9", "cst_s9_csv_year_tables.S19",
+                  "cst_s6_tabs_settings.S10", "cst_s6_tabs_settings.S11",
+                  "cst_s6_tabs_settings.S12", "cst_s6_tabs_settings.S13",
+                  "cst_s6_tabs_settings.S14",
+                  "cst_s7_dup_send.S15", "cst_s7_dup_send.S16",
+                  "cst_s8_perm_env.S17", "cst_s8_perm_env.S18"],
+        "conflicts": "cst_conflicts",
+        "spec": "spec-features/admin/chat-setting/ (feature-spec 506 dòng · ui-spec 351 · api-spec 418 · "
+                "logic-spec 344 · job-spec 578 · db-mapping 536) — ⚠️ LẠC HẬU VỀ GIAO DIỆN: spec quét "
+                "theo bản 2025 (6 tab, CRUD trạng thái qua MODAL, EP-06 gửi cả list), corpus 06-07/2026 "
+                "tả 8 tab (thêm チャットのCSVエクスポート và 重複送信防止機能) + CRUD INLINE ＋新規追加/Enter. "
+                "Xem MT-01 và MT-02. ⚠️ Spec TỰ NÊU 3 lỗ hổng mà KHÔNG TC nào kiểm: BR-03 mass "
+                "assignment (🔴 Nghiêm trọng), BR-04 IDOR trên EP-09 (🟠 Cao), BR-06 backend không "
+                "kiểm quyền Staff (🟡 Trung bình) — xem MT-14, MT-15. ⚠️ Spec §4.1/§4.2 CHỈ khai bảng "
+                "`messages_v2s`, KHÔNG biết lịch sử chat nằm ở DB riêng với 6 bảng theo năm "
+                "(`messages_2020`…`messages_2025`) — Leader cung cấp 2026-09-22, xem MT-26",
+        "sources": [
+            "01. TCsLine_Chat1:1 (Improve 10/2024) → tab「[AI] Flow_setting_chat_v2」(gid=1359954897, "
+            "192 TC TC-SC-001…204 — BẢN CHUẨN để viết TC. Đã ở format gần giống 12 cột của kho, có cột "
+            "SPEC ID (SCR-01…SCR-08B / EP / BR / BR-CSV / BR-08B) và 2 cột kết quả chạy RIÊNG cho "
+            "staging và production (round1 2026-08-05, round2 2026-08-06) kèm ghi chú tester rất chi "
+            "tiết. Niên đại: tab Info r26『06/2026 Improve màn hình setting chat』, nhiều ghi chú sửa "
+            "expected ghi ngày 2026-07-23/24/29. ⚠️ Loại case dùng enum riêng F-Normal/F-Abnormal/"
+            "F-Boundary/State display/Side-effect/Permission/UI-UX/Regression — kho đã quy về 3 giá trị "
+            "Normal/Abnormal/Boundary)",
+            "01. TCsLine_Chat1:1 (Improve 10/2024) → tab「AI_TCs_Setting_chat_v1」(gid=609478050, 220 "
+            "dòng, 06/2026 — 93 TC TC-SC-xxx ĐÃ ĐƯỢC v2 tiếp thu hết, phần RIÊNG là 113 dòng BS_001…122. "
+            "Trong đó BS_059-BS_122 chỉ là bản chép lại tab「Setting Chat」. Phần thực sự bổ sung cho v2: "
+            "BS_001-007 (validate + bảng màu + nút 新規追加 khi đủ 10 bản ghi), BS_029-BS_037 (hành vi "
+            "từng checkbox/toggle Tab 3 + cột `auto_confirm_message_media`), BS_039-041, BS_046-050 "
+            "(ô tích『không hiển thị preview nữa』), BS_051-058 (đổi số phút giữa cửa sổ chặn, phạm vi "
+            "chặn theo từng hội thoại, người gửi trước gửi tiếp))",
+            "01. TCsLine_Chat1:1 (Improve 10/2024) → tab「Setting Chat」(gid=1728927088, 220 dòng, r4-r220 "
+            "— 2 đợt: 10/2024 (r4-r91: 5 tab cấu hình, theo tab Info r7) và 07/2025『Improve Trạng thái "
+            "đối ứng』(r92-r220, theo tab Info r15). Là nguồn DUY NHẤT cho: modal CRUD trạng thái bản "
+            "2025 (MT-02), nội dung modal xóa (MT-09), bảng 7 màu + màu mặc định #F44336 (MT-10), modal "
+            "並べ替え (MT-11), toàn bộ mảng đồng bộ sang chat 1:1 / modal lọc / app mobile (r195-r219), "
+            "và 9 dòng『bot khác ko bị update』. Cột kết quả: Test result + Staging + Step)",
+            "01. TCsLine_Chat1:1 (Improve 10/2024) → tab「[AI] Flow_validate_3333」(gid=492891839, 264 "
+            "dòng, 19/08/2026) — CHỈ lấy 3 dòng r223/r224/r225 (NEW-66 · NEW-145 · NEW-232, cùng 1 nội "
+            "dung) về rule CẤM TRÙNG TÊN trạng thái đối ứng theo『QA-01 mục 1』do BA chốt. Xem MT-05",
+            "TCsLine_Improve chung → tab「Improve shorten」(gid=1761365617, 30 dòng, 2024-01-17 theo tab "
+            "Info r23) — CHỈ lấy 3 hành vi liên quan Tab 5: link LME không bị rút gọn (r17-r18), tắt "
+            "cấu hình thì giữ link gốc và không ghi bảng rút gọn (r19-r20), link cũ vẫn mở được (r21-r30), "
+            "mỗi lần gửi sinh 1 mã rút gọn riêng (r4). Phần còn lại thuộc FA-023/FA-024",
+            "01. TCsLine_Chat1:1 (Improve 10/2024) → tab「Info」(28 dòng — dùng để xác định niên đại: "
+            "r7『Setting Chat』10/2024 · r15『Improve Trạng thái đối ứng』07/2025 · r26『Improve màn hình "
+            "setting chat』06/2026)",
+        ],
+        "excluded": [
+            "01. TCsLine_Chat1:1 (Improve 10/2024) → tab「[AI] Flow_validate_3333」(261/264 dòng còn lại) "
+            "— là SWEEP VALIDATE TOÀN TOOL của ticket #3333 (template 61 dòng, QR landing 24, tag 16, "
+            "popup 13, scenario 12, friend info 10, richmenu 10, image richmenu 10, conversion 9, cross "
+            "analysis 9, action schedule 9, event booking 9, salon 9, lesson 7, remind 6…). "
+            "ĐỀ XUẤT: gom vào đúng feature của từng màn khi chạy /collect-tcs cho các màn đó — "
+            "HỎI USER XÁC NHẬN",
+            "01. TCsLine_Chat1:1 (Improve 10/2024) → tab「[AI] Bugs」(26 dòng, cột Bug ID / Severity / "
+            "Steps to Reproduce / Redmine ID) — NHẬT KÝ BUG, không phải test case. Nội dung đã được v2 "
+            "tham chiếu lại đầy đủ ở cột Ghi chú (BUG-006 · 007 · 008 · 011 · 017 · 018 · 021 · 022 · "
+            "023 · 024), kho giữ dưới dạng 2 TC hồi quy ở nhóm『Hồi quy & môi trường』",
+            "TCsLine_Improve chung → tab「improve count comfirm_message」(gid=1269219140, 127 dòng, "
+            "10/2023 theo tab Info r31『improve comfirm_count message』) — vòng đời bộ đếm "
+            "`conversation.confirm_count` ở MÀN CHAT 1:1 (friend nhắn tin, bấm nút xác nhận, xóa friend, "
+            "block/unblock, bot ẩn friend, gửi tin từ các màn khác). ĐÃ ĐƯỢC GOM VÀO KHO FA-041 KHÁC: "
+            "tab FA-001 Chat 1:1 (120 TC lá). Kho FA-041 chỉ trích 1 điểm mâu thuẫn (MT-19: r20/r58/r96 "
+            "『user block bot → confirm_count vẫn giữ nguyên』) để đối chiếu với BR-13",
+            "01. TCsLine_Chat1:1 (Improve 10/2024) → 5 tab thuộc FA-001 đã gom ở tab FA-001: "
+            "「Leftbar+Header」·「Content: Send message」·「Content: Hiển thị msg」·「Rightbar」·"
+            "「Maincase」·「Test fix bug Kh」·「Feature #28859」. Riêng khối CRUD 対応ステータス trong "
+            "「Leftbar+Header」là lối vào phụ từ màn chat 1:1 — kho FA-041 chỉ giữ 1 TC điều hướng "
+            "(icon bút cạnh dropdown), phần CRUD giữ nguyên ở FA-041 theo màn cài đặt",
+            "01. TCsLine_Chat1:1 (Improve 10/2024) → tab「Chat GPT」(1376 dòng) và「Bug chatGPT」(1162 "
+            "dòng) — tính năng ChatGPT連携 (học liệu folder/WEB/PDF, 基本設定, API key). Truy cập từ icon "
+            "trong chat 1:1 nhưng là TÍNH NĂNG RIÊNG, CHƯA CÓ spec-features. Đã được FA-001 đề xuất tách "
+            "feature riêng『ChatGPT連携』— HỎI USER XÁC NHẬN (giữ nguyên đề xuất)",
+            "01. TCsLine_Chat1:1 (Improve 10/2024) → tab「Data base message」(2 dòng) ·「Bug staging」"
+            "(1002r nhưng là nhật ký bug) — không phải test case có kết quả mong đợi",
+            "01. TCsLine_Chat1:1 (file CŨ, mod 2026-05-04, id=1l6qBNd…) → 6 tab (「Send media」· "
+            "「Improve performance」·「Improve server image」·「Group chat」·「Improve move database」· "
+            "「Test fix bug KH」) — thuộc FA-001, đã gom ở tab FA-001; từ 10/2024 đã bị file master thay thế",
+            "TCsLine_MCP → tab「11. Chat」(1072 dòng, format phẳng TC ID | MCP Tool | Category | Scenario) "
+            "— test tầng MCP tool chứ không phải màn của LME. ĐỀ XUẤT: tách sheet riêng『MCP』(giữ nguyên "
+            "đề xuất như FA-001/FA-011/FA-012) — HỎI USER XÁC NHẬN",
+            "TCsLine_Notify setting (9 tab) — thuộc FA-006『通知設定』. Kho FA-041 chỉ giữ 4 TC hồi quy về "
+            "thông báo đẩy / web push / số chưa xác nhận trên app (nhóm『Hồi quy & môi trường』) vì chúng "
+            "là side-effect trực tiếp của bộ đếm ở Tab 3. ĐỀ XUẤT: chạy /collect-tcs riêng cho FA-006 — "
+            "HỎI USER XÁC NHẬN",
+            "TCsLine_Talklist → tab「Improve 2026」(941 dòng) — thuộc FA-002『チャット管理』(/basic/talk-list). "
+            "ĐỀ XUẤT: chạy /collect-tcs riêng cho FA-002 — HỎI USER XÁC NHẬN",
+            "08. TCsLine_AutoReply → tab「Ver1.0」·  TCsLine_Modal Filter → tab「Sửa filter autoreply」— "
+            "thuộc FA-003『自動応答』. Kho FA-041 chỉ giữ 4 TC về 2 checkbox 自動応答 ở Tab 3 (là cấu hình "
+            "của FA-041, chỉ dùng FA-003 để dựng dữ liệu)",
+        ],
+    },
 ]
 
 # Thứ tự tab trên Google Sheet + thứ tự dòng ở các tab dùng chung = MÃ MÀN HÌNH tăng dần.

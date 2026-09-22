@@ -6,7 +6,7 @@ Hướng dẫn `/sync-ai-tc <folder>` và `/sync-review-tc <folder>` — push TC
 
 | | `/sync-ai-tc` | `/sync-review-tc` |
 |---|---|---|
-| Nguồn TC | bảng TC trong `04-tc-list.md` (TC do AI viết) | bảng §5 "TCs đề xuất bổ sung" trong `05-review-report.md` (TC reviewer bổ sung) |
+| Nguồn TC | bảng TC trong `04-tc-list.md` (TC do AI viết) | bảng §7 "TCs đề xuất bổ sung" trong `05-review-report.md` (report cũ: §5) (TC reviewer bổ sung) |
 | `--source` | `04` | `05` |
 | Target Sheet | config `sync-tcs` trong `04-tc-list.md` | config `sync-tcs` trong `04-tc-list.md` (dùng chung) |
 
@@ -38,7 +38,7 @@ Template `templates/04-tc-list.template.md` đã có sẵn dòng này với plac
 # TC do AI viết (file 04)
 uv run scripts/push_tc_anchored.py tasks/<folder>/ --source 04
 
-# TC bổ sung của reviewer (file 05 §5)
+# TC bổ sung của reviewer (file 05 §7)
 uv run scripts/push_tc_anchored.py tasks/<folder>/ --source 05
 ```
 
@@ -66,6 +66,6 @@ OK: ghi 12 TC vào tab 'TC_KH-35968' cột C:G, row 48-59
 | `Thiếu target URL Sheet TC human` | Chưa có config sync-tcs + không truyền CLI | Add `<!-- sync-tcs: url=... \| sheet=... -->` vào file 04 |
 | `Không tìm thấy tab tên '<x>'` | Sai tên tab | Script in list tab hợp lệ — copy đúng tên |
 | `Không tìm thấy cột header 'Main Function'` | Sheet không có cột đó trong 15 dòng đầu | Verify header, hoặc `--anchor "<tên cột đúng>"` |
-| `Không tìm thấy section '## 5...'` (source 05) | File 05 thiếu §5 | Verify file 05 bám template |
+| `Không tìm thấy section 'TCs đề xuất bổ sung'` (source 05) | File 05 thiếu §7 | Verify file 05 bám template |
 | `Không có TC nào parse được` | Bảng TC rỗng / chỉ row template | Điền TC vào bảng nguồn |
 | `403 Permission denied` | Sheet chưa share Editor | Share sheet với `client_email` service account, quyền **Editor** |

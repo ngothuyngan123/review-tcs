@@ -408,13 +408,64 @@ SECTIONS_FRL = [
     "Xoá bạn bè & cascade", "Đồng bộ Elasticsearch", "Phân quyền & môi trường",
 ]
 
+SECTIONS_CB = [
+    # ── Vào màn & điều kiện gói ──
+    "Menu & điều kiện truy cập",
+    "Modal promo & trang campaign",
+    # ── Wizard đổi LOA ──
+    "Chọn phương thức đổi LOA",
+    "Nhập thông tin kết nối",
+    "Cài đặt webhook",
+    "Xác nhận thông tin kết nối",
+    "Quét QR & kiểm tra kết nối",
+    "Tiến trình đổi LOA & hoàn tất",
+    # ── Đặt lịch đổi LOA ──
+    "Đặt lịch đổi LOA",
+    # ── Hậu quả dữ liệu ──
+    "Xóa data bot cũ — web",
+    "Xóa data bot cũ — app mobile",
+    "Setting giữ nguyên sau khi đổi",
+    # ── Chung ──
+    "Phân quyền & bảo mật",
+    "Hồi quy & môi trường",
+]
+
+SECTIONS_CST = [
+    # ── Vào màn ──
+    "Vào màn & điều hướng tab",
+    # ── Tab 1 対応ステータス編集 ──
+    "Danh sách trạng thái đối ứng",
+    "Thêm & sửa trạng thái",
+    "Sắp xếp trạng thái",
+    "Xóa trạng thái",
+    "Đồng bộ trạng thái sang nơi dùng",
+    # ── Tab 2 チャットのCSVエクスポート ──
+    "CSV export — tạo dữ liệu",
+    "CSV export — lịch sử tạo",
+    "CSV export — nội dung file",
+    "CSV export — dữ liệu theo năm",
+    # ── Tab 3-7 ──
+    "Tự động xác nhận tin nhắn",
+    "Phím tắt gửi",
+    "URL rút gọn",
+    "Xem trước khi gửi",
+    "Hiển thị đã đọc (FAQ)",
+    # ── Tab 8 重複送信防止機能 ──
+    "Chống gửi trùng — cài đặt",
+    "Chống gửi trùng — chặn gửi thực tế",
+    # ── Chung ──
+    "Phân quyền & bảo mật",
+    "Hồi quy & môi trường",
+]
+
 SECTIONS = SECTIONS_TAG                       # giữ tương thích code cũ
 _ALL_SECTIONS = (SECTIONS_TAG + SECTIONS_FORM + SECTIONS_RICHMENU
                  + SECTIONS_FRI + SECTIONS_SCE + SECTIONS_BIL
                  + SECTIONS_EBK + SECTIONS_BLP + SECTIONS_TMT
                  + SECTIONS_RPL + SECTIONS_CHT + SECTIONS_BK
                  + SECTIONS_SLN + SECTIONS_LSN
-                 + SECTIONS_BC + SECTIONS_SAF + SECTIONS_FRL)
+                 + SECTIONS_BC + SECTIONS_SAF + SECTIONS_FRL
+                 + SECTIONS_CB + SECTIONS_CST)
 _ORDER = {s: i for i, s in enumerate(_ALL_SECTIONS)}
 
 

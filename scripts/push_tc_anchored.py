@@ -12,7 +12,7 @@ Khác với scripts/push_tc.py (ghi từ cột A vào tab AI pre-create), script
   - Ghi vào 5 cột LIÊN TIẾP bắt đầu ĐÚNG tại cột header "Main Function"
   - APPEND xuống dưới row cuối cùng có data (đo theo cột anchor)
   - KHÔNG ghi header (sheet human đã có header sẵn)
-  - Nguồn TC: 04-tc-list.md (--source 04) hoặc 05-review-report.md §5 (--source 05)
+  - Nguồn TC: 04-tc-list.md (--source 04) hoặc 05-review-report.md §7 (--source 05)
 
 Usage:
   uv run scripts/push_tc_anchored.py <review-folder> --source 04|05
@@ -191,18 +191,23 @@ def parse_source_04(path: Path) -> list:
 
 
 def parse_source_05(path: Path) -> list:
-    """Parse bảng §5 'TCs đề xuất bổ sung' trong 05-review-report.md."""
+    """Parse bảng 'TCs đề xuất bổ sung' trong 05-review-report.md.
+
+    Khớp theo TÊN section, KHÔNG theo số: report từ 2026-09-21 đánh số
+    '## 7. TCs đề xuất bổ sung' (report cũ: '## 5.'), và '## 5.' bây giờ là
+    'Issues khác' — match theo số sẽ bắt nhầm bảng.
+    """
     if not path.exists():
         die(f"Not found: {path}")
     lines = path.read_text(encoding="utf-8").split("\n")
     sec_idx = None
     for i, raw in enumerate(lines):
         s = raw.strip()
-        if s.startswith("## 5") or (s.startswith("##") and "đề xuất bổ sung" in s.lower()):
+        if s.startswith("##") and "đề xuất bổ sung" in s.lower():
             sec_idx = i + 1
             break
     if sec_idx is None:
-        die("Không tìm thấy section '## 5. TCs đề xuất bổ sung' trong 05-review-report.md")
+        die("Không tìm thấy section 'TCs đề xuất bổ sung' (## 7. — report cũ: ## 5.) trong 05-review-report.md")
     return parse_md_table(lines, start_idx=sec_idx, stop_heading_prefix="## ")
 
 
@@ -316,7 +321,7 @@ def main():
         src_label = "04-tc-list.md (TC do AI viết)"
     else:
         tcs = parse_source_05(folder / "05-review-report.md")
-        src_label = "05-review-report.md §5 (TC bổ sung reviewer)"
+        src_label = "05-review-report.md §7 (TC bổ sung reviewer)"
 
     if not tcs:
         die(f"Không có TC nào parse được từ {src_label}.")

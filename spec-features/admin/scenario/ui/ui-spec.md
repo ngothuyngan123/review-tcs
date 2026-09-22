@@ -301,13 +301,15 @@ Phần Action (`.step_add_action`):
 
 #### Tab chọn loại nội dung
 
-Khi tạo mới, hiển thị các tab (tùy bot_type):
+> ⚠️ **`bot_type` đã hết vòng đời** (Test Leader xác nhận 2026-09-16): giá trị `1` (OLIOA) là **kiểu cũ, không còn dùng**; trên DB production **toàn bộ bot đều `bot_type = 0`**. Mọi điều kiện `bot_type == 0` trong tài liệu này vì thế **luôn đúng** — coi như không còn nhánh rẽ, không viết TC cho nhánh `bot_type = 1`.
+
+Khi tạo mới, hiển thị **đủ 6 tab**:
 - 「テキスト」 (text)
-- 「質問・ボタン」 (form) — chỉ khi bot_type == 0
+- 「質問・ボタン」 (form)
 - 「メディア」 (image/voice/video)
-- 「スタンプ」 (stamp) — chỉ khi bot_type == 0
-- 「位置情報」 (location) — chỉ khi bot_type == 0
-- 「紹介」 (introduction) — chỉ khi bot_type == 0
+- 「スタンプ」 (stamp)
+- 「位置情報」 (location)
+- 「紹介」 (introduction)
 
 Khi chỉnh sửa, tab bị khóa (pointer-events: none) theo loại đang có.
 

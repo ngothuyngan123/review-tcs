@@ -93,7 +93,7 @@ Các bảng liên quan qua FK, config, hoặc side effects.
 | `flag_get_old_friend` | tinyint(4) | NULL | 0 | — | Flag khác (có thể legacy) — khác `is_get_old_friend` | — |
 | `flag_contract_new` | tinyint(4) | NOT NULL | 0 | — | 0=old (trước 1.5.2023), 1=new | — |
 | `chat_enable` | int(4) | NULL | 0 | — | Bật/tắt chat | — |
-| `bot_type` | int(4) | NULL | 0 | — | 0=LINE, 1=OLIOA | — |
+| `bot_type` | int(4) | NULL | 0 | — | **Hết vòng đời** — production toàn bộ = `0` (LINE). `1` (OLIOA) là kiểu cũ, không còn dùng (xác nhận 2026-09-16) | — |
 | `max_friend_plan` | tinyint(4) | NOT NULL | 0 | — | 0=chưa max, 1=max bạn bè theo plan | — |
 | `mobile_profile_selected_id` | int(10) UNSIGNED | NULL | NULL | — | Profile ID đang chọn trên mobile | — |
 | `key_chatgpt` | varchar(255) | NULL | NULL | — | API key ChatGPT (nếu có) | — |
@@ -496,7 +496,7 @@ Các cột về Stripe/billing (`strip_*`, `product_id`, `plan_id`, `subscriptio
 | `google_sheet_*` | mixed | Google Sheets integration | Module Google Sheets |
 | `key_chatgpt` | varchar(255) | API key ChatGPT | Module AI chat |
 | `server_id` | int(11) | Server ID | Internal config |
-| `bot_type` | int(4) | 0=LINE, 1=OLIOA | Phân loại hệ thống |
+| `bot_type` | int(4) | **Hết vòng đời** — production toàn bộ = `0` (LINE); `1` (OLIOA) là kiểu cũ, không còn dùng | Phân loại hệ thống (không còn nhánh rẽ) |
 | `chat_enable` | int(4) | Bật/tắt chat | Module chat |
 | `setting_info_my_page` | text | Cài đặt My Page | Module my page |
 | `type_job` | int(11) | Loại job | Internal |

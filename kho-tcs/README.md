@@ -131,7 +131,7 @@ vào `kho-tcs/.sheet-id` (đã gitignore).
 | 🔴 CHỜ QUYẾT ĐỊNH | Đã gom TCs, **chưa mâu thuẫn nào được chốt** |
 | ⬜ CHƯA COLLECT | Chưa chạy `/collect-tcs` cho màn hình này |
 
-**17 / 41 màn hình đã gom TCs** (danh mục 41 màn lấy từ `ALL_SCREENS` trong `build.py`,
+**19 / 41 màn hình đã gom TCs** (danh mục 41 màn lấy từ `ALL_SCREENS` trong `build.py`,
 trích từ [templates/LME-SYSTEM-SPEC.md](../templates/LME-SYSTEM-SPEC.md)).
 
 | Mã | Màn hình | Spec đối chiếu | Số TC | Mâu thuẫn (chốt/tổng) | Trạng thái |
@@ -153,10 +153,12 @@ trích từ [templates/LME-SYSTEM-SPEC.md](../templates/LME-SYSTEM-SPEC.md)).
 | FA-026 | Bill tiền item (商品販売) | `admin/bill-item/` | 381 | 0 / 40 | 🔴 CHỜ QUYẾT ĐỊNH |
 | FA-031 | Bill tiền tool (契約プラン・決済情報) | `admin/billing-plan/` | 398 | 0 / 46 | 🔴 CHỜ QUYẾT ĐỊNH |
 | FA-033 | Backup (データコピー) | `admin/backup/` | 359 | 0 / 31 | 🔴 CHỜ QUYẾT ĐỊNH |
+| FA-039 | change bot (LINE公式アカウント入れ替え機能) | `admin/bot-edit/` ⚠️ lạc hậu (xem MT-12) | 224 | 0 / 16 | 🔴 CHỜ QUYẾT ĐỊNH |
+| FA-041 | Cài đặt chat (チャット設定) | `admin/chat-setting/` ⚠️ lạc hậu giao diện + thiếu 6 bảng tin nhắn theo năm (MT-01 · MT-02 · MT-26) | 262 | 2 / 26 | 🔄 ĐÃ ÁP QUYẾT ĐỊNH (2026-09-21) |
 
-**24 màn hình ⬜ CHƯA COLLECT**: FA-002 · FA-005 · FA-006 · FA-014 ·
+**22 màn hình ⬜ CHƯA COLLECT**: FA-002 · FA-005 · FA-006 · FA-014 ·
 FA-016 · FA-017 · FA-018 · FA-022 · FA-023 · FA-024 · FA-025 · FA-027 · FA-028 · FA-029 · FA-030 ·
-FA-032 · FA-034 · FA-035 · FA-036 · FA-037 · FA-038 · FA-039 · FA-040 · FA-041.
+FA-032 · FA-034 · FA-035 · FA-036 · FA-037 · FA-038 · FA-040.
 
 **Thứ tự tab trên Sheet** = 3 tab meta rồi đến các tab tính năng **sắp theo mã màn hình tăng dần**
 (`FEATURES.sort(key=code)` trong `build.py`) — thứ tự khai báo trong `FEATURES` không còn ảnh hưởng.
@@ -172,6 +174,35 @@ FA-032 · FA-034 · FA-035 · FA-036 · FA-037 · FA-038 · FA-039 · FA-040 · 
 > - 42 mâu thuẫn, trong đó **12 mức CAO**. Nặng nhất: MT-22 (spec chỉ mô tả 2/4 tuỳ chọn 受付上限),
 >   MT-20 (tính năng スタッフ自動割り当て không có trong spec), MT-03 (xóa ca có xóa booking không),
 >   MT-29 (remind khi course/staff OFF), MT-35 (phân quyền staff CHƯA từng test được).
+
+> **FA-041 — trạng thái (cập nhật 2026-09-22):**
+> - **262 TC** (248 khi gom + 14 TC bổ sung theo năm, xem MT-26) gộp từ **5 tab** của `01. TCsLine_Chat1:1 (Improve 10/2024)` + 1 tab của
+>   `TCsLine_Improve chung`. Bản chuẩn là tab「[AI] Flow_setting_chat_v2」(192 TC, 06-07/2026,
+>   có kết quả chạy RIÊNG cho staging và production).
+> - **26 mâu thuẫn, 12 mức CAO. 2 mâu thuẫn NỀN đã được Leader chốt 2026-09-21:**
+>   `MT-01` ✅ — màn có **8 tab** (thêm「チャットのCSVエクスポート」và「重複送信防止機能」).
+>   `MT-02` ✅ — CRUD và sắp xếp trạng thái đối ứng là thao tác **INLINE** (＋新規追加 + Enter,
+>   đổi màu và kéo thả tự lưu, không modal, không nút 保存).
+>   TCs KHÔNG phải sửa (kho đã viết theo đúng 2 quyết định), nhưng **spec `admin/chat-setting/`
+>   nay xác định là LẠC HẬU** — danh sách việc sửa spec nằm ở cột "Việc phải làm tiếp" của
+>   MT-01 (quét bổ sung 2 màn CSV + chống gửi trùng, ~19 BR, ~9 endpoint, đánh số lại tab) và
+>   MT-02 (viết lại SCR-CST-01, gỡ modal SCR-CST-02, xác nhận lại endpoint).
+>   `MT-11` đã thu hẹp còn mỗi vấn đề `position` 0-based vs 1-based giữa các endpoint.
+> - **`MT-15` là GAP mức Nghiêm trọng**: spec tự nêu 3 lỗ hổng (BR-03 mass assignment trên bảng
+>   `bots` 🔴, BR-04 IDOR trên endpoint sắp xếp 🟠, BR-06 backend không kiểm quyền Staff 🟡) mà
+>   **KHÔNG TC nào trong toàn bộ corpus từng kiểm** → kho đã viết 3 TC bổ sung, đánh dấu DỰ KIẾN FAIL.
+> - **4 bug còn MỞ** đã đánh dấu DỰ KIẾN FAIL trong TC: `BUG-024` (High — bot gói TRẢ PHÍ bị chặn
+>   giới hạn 180 ngày như gói free), `BUG-021` (mất 2/3 trạng thái sau chuỗi kéo thả liên tiếp),
+>   `BUG-023` (chặn nhầm khoảng đúng 180 ngày), `TC-SC-070` (file CSV của tin đã thu hồi — rủi ro
+>   lộ nội dung đã thu hồi). Thêm `MT-23`: 「対象人数」ở màn tạo CSV đang **Fail trên production**.
+> - **`MT-26` mở 2026-09-22** sau khi Leader cung cấp kiến trúc lưu tin nhắn: lịch sử chat nằm ở
+>   **DB riêng, mỗi năm 1 bảng** (`messages_2020`…`messages_2025`), năm 2026 ở `messages_v2s`.
+>   Spec §4.1/§4.2 CHỈ khai `messages_v2s` ⇒ bỏ sót 6 bảng + 1 DB. Đã bổ sung nhóm chức năng mới
+>   **『CSV export — dữ liệu theo năm』(14 TC, TC-CST-139…152)** phủ từng bảng năm 2020→2026 +
+>   3 case vắt ranh giới bảng (nặng nhất là 2025→2026 vì vắt qua 2 DB) + năm nhuận 2024 +
+>   năm chưa có bảng (2019). ⚠️ Nhóm này bị **chặn bởi BUG-024 (MT-06)** — bot trả phí đang bị
+>   chặn khoảng > 180 ngày nên chưa chạy được.
+> - Phủ **41 quan điểm** của `checklist-lme.md`.
 
 > **FA-033 — trạng thái (2026-08-25):**
 > - 359 TC gộp từ 7 tab của `TCsLine_BackUp` + tab「Improve backup media」của `TCsLine_Improve chung`.
@@ -467,3 +498,43 @@ Các quyết định ngày 2026-08-19 kéo theo việc **sửa spec** — xem c�
 > - **Nguồn đã LOẠI, cần user xác nhận**: toàn bộ file `TCsLine_Booking Calendar` (hệ 予約管理 thế hệ
 >   cũ, đã gỡ khỏi tool 07/2025) và tab「18. Lesson」của `TCsLine_MCP` (test tầng MCP tool, đề xuất
 >   tách sheet riêng『MCP』).
+
+> **FA-039 — trạng thái (2026-09-12):**
+> - **224 TC / 14 nhóm chức năng**, gộp từ **3 tab** của `15.3 TCsLine_ChangeBot` + tab「change_bot」của
+>   `TCsLine_Bill tiền` (11/2023, bộ GỐC) + khối change bot trong tab「Testcase」·「Bug Logic」của
+>   `TCsLine_AddBot`. Corpus đã đọc: **287 TC lá** ở tab master「Change bot」+ **116 TC** ở tab
+>   「[AI] TCs_change_bot_v2」+ 50 dòng bộ gốc. Trích dẫn **286/287** dòng tab master và **116/116**
+>   TC-CBF (dòng duy nhất bỏ: r216 — dev ghi「a Tư báo k cần check」).
+> - 🔴 **Phải chốt TRƯỚC 4 mâu thuẫn nền tảng**, vì chúng quyết định hình dạng của phần lớn bộ TC:
+>   `MT-12` (spec tả màn đổi LOA là **landing page 1 màn**, corpus tả **wizard 10 màn** — ảnh hưởng
+>   toàn bộ 14 nhóm), `MT-01` (đổi LOA **update tại chỗ bot_id cũ** hay **tạo bản ghi bots mới** —
+>   ảnh hưởng quyền Staff, hợp đồng, khóa ngoại), `MT-02` (quyền Staff — 3 nguồn nói 3 kiểu, 1 nguồn
+>   **tự ghi nhận expected ≠ thực tế** và chưa ai trả lời), `MT-03`+`MT-04` (campaign「1ヶ月無料開放」
+>   còn dùng hay KH đã bỏ, và bot Free có được đổi LOA — ảnh hưởng ~30 TC của nhóm 1 + 2).
+> - 16 mâu thuẫn: **8 mức CAO** · 7 TRUNG BÌNH · 1 THẤP. **5 mâu thuẫn (MT-03/05/13/14/15) có niên đại
+>   các nguồn CÁCH NHAU CHỈ 1-2 THÁNG** ⇒ quy tắc「ưu tiên TC mới nhất」là **căn cứ YẾU**; lý do chọn
+>   bản `[AI] TCs_change_bot_v2` làm bản viết TC là vì nó có SPEC ID + BR + kết quả chạy trên **cả dev
+>   và staging**, KHÔNG phải vì nó mới hơn.
+> - **109/224 TC đặt `Môi trường test = PRODUCTION`** theo **RULE-08** (webhook · domain callback ·
+>   LIFF · job dọn dữ liệu · bill chu kỳ · media rich menu · output LINE app + app mobile).
+> - **43 TC gắn `Đã hỏi leader`** — không chạy được trước khi Leader chốt mâu thuẫn tương ứng.
+> - Phủ **55/80 quan điểm** của `checklist-lme.md`. ⚠️ **Chưa đạt RULE-01**: 17 quan điểm ưu tiên Cao
+>   chỉ có **1 TC** (FRIEND-001 · PAY-STATE/PLAN/BATCH-001 · JOB-001 · ENV-003 · INTG-CAL-001 ·
+>   SEC-ISO-001 · REG-RUN-001 · DATA-REF/MIG/BACKUP-001 · DEPLOY-ASSET/LIVE-001 · OUT-PREVIEW-001 ·
+>   MEDIA-IMG-001 · LIST-001) vì corpus chỉ chạm các tính năng này **ở mức hồi quy**, không có đủ
+>   case Abnormal/Boundary. **Không bịa thêm TC** — cần Leader quyết có mở rộng hay ghi lý do miễn.
+> - **6 TC cuối là TC BỔ SUNG do AI viết** (`TC-CB-219` → `TC-CB-224`), KHÔNG có trong corpus:
+>   dữ liệu đổi LOA trước release đọc đúng sau migration (DATA-MIG-001) · sao chép dữ liệu khi bot đã
+>   từng đổi LOA (DATA-BACKUP-001) · webhook URL + LIFF đúng domain từng môi trường (ENV-003) · job dọn
+>   dữ liệu với nhiều bản ghi xếp hàng (JOB-001) · release không bật bảo trì (DEPLOY-LIVE-001) · cache
+>   JS/CSS sau release (DEPLOY-ASSET-001). Tất cả đánh `Đã hỏi leader`. Ngoài ra **5 TC có nguồn nhưng
+>   phần expected do AI bổ sung** (`TC-CB-101` · `121` · `164` · `192` · `202`) — đã ghi rõ ở cột `Ghi chú`.
+> - **Vùng RISK — case CHƯA ĐƯỢC CHẠY ở bất kỳ nguồn nào** (cột kết quả trống): biên LIFF còn đúng
+>   1 slot trống (Change bot r137/r273) · channel trùng bot đã xóa `is_delete=1` (r128 `Not test`) ·
+>   copy Webhook URL (r287/r291, tính năng MỚI của #37744) · nhánh bot mới 未認証 sau khi đổi LOA
+>   (r172-r179) · màn lỗi phát hành (r74).
+> - **Nguồn đã LOẠI, cần user xác nhận**: tab「Get old friend」+ khối Feature #36420 (get old friend —
+>   **user đã xác nhận 2026-09-12** để lại cho FA-038) · toàn bộ `TCsLine_Setting Liên kết BOT` và
+>   tab「check tình trạng kết nối của bot với tool」(FA-038) · 7 tab còn lại của `TCsLine_AddBot` +
+>   khối r242-r244 (FA-032) · tab「Xóa bot」của `TCsLine_Mypage` (FA-036) · khối 2 màn hướng dẫn
+>   r106-r121 của bản #34632 (đã bị #37744 thay giao diện — lấy lại nếu Leader chốt MT-13 ngược).
