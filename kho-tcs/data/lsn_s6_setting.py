@@ -422,18 +422,24 @@ S6 = [
        note="Nguồn: Setting calendar r267-r273."),
 
     tc("予約時のお客様への質問項目", "FUNC-004", "Boundary",
-       "Item 短文回答: validate 質問内容 (required, 50/51 ký tự) và 補足 (200 ký tự)",
+       "Item 短文回答: validate 質問内容 (required, chặn nhập ký tự thứ 51) và 補足 (200 ký tự)",
        CAL,
        "1. Click vào ô 質問内容 rồi click ra ngoài mà không nhập → quan sát\n"
-       "2. Nhập 50 ký tự → click ra ngoài\n3. Nhập 51 ký tự\n"
-       "4. Nhập trùng nội dung với item đã có\n"
-       "5. Bấm「質問の補足を入力」→ nhập 200 ký tự → click ra ngoài\n6. Nhập 201 ký tự",
-       "rỗng · 50 · 51 · trùng · 200 · 201",
-       "- Bước 1: báo required\n- Bước 2: save success\n- Bước 3: báo lỗi vượt ký tự\n"
-       "- Bước 4: save success (CHO PHÉP trùng tên item)\n"
-       "- Bước 5: save success\n- Bước 6: báo lỗi",
+       "2. Nhập 50 ký tự → quan sát bộ đếm → click ra ngoài\n"
+       "3. Gõ tiếp ký tự thứ 51 → quan sát ô nhập và bộ đếm\n"
+       "4. Xoá trắng, dán (paste) chuỗi 60 ký tự → quan sát ô nhập và bộ đếm\n"
+       "5. Nhập trùng nội dung với item đã có\n"
+       "6. Bấm「質問の補足を入力」→ nhập 200 ký tự → click ra ngoài\n7. Nhập 201 ký tự",
+       "rỗng · 50 · gõ ký tự thứ 51 · dán 60 · trùng · 200 · 201",
+       "- Bước 1: báo required\n- Bước 2: bộ đếm 50/50, save success\n"
+       "- Bước 3: ký tự thứ 51 KHÔNG vào được ô, bộ đếm dừng 50/50, không hiện message lỗi\n"
+       "- Bước 4: ô chỉ giữ 50 ký tự đầu, bộ đếm 50/50\n"
+       "- Bước 5: save success (CHO PHÉP trùng tên item)\n"
+       "- Bước 6: save success\n- Bước 7: báo lỗi",
        note="Nguồn: Setting calendar r302, r304-r306, r311-r312. ⚠️ r351-r352 (item text nhiều dòng) "
-            "ghi giới hạn 補足 là 50 ký tự thay vì 200 — KHÔNG NHẤT QUÁN. Xem MT-30."),
+            "ghi giới hạn 補足 là 50 ký tự thay vì 200 — KHÔNG NHẤT QUÁN. Xem MT-30. "
+            "Leader chốt 2026-10-01 (review #40890, Studio NEW-16/NEW-20): ô 質問内容 CHẶN NHẬP ký tự thứ 51 "
+            "(dán thì cắt còn 50), KHÔNG phải cho nhập rồi báo lỗi như TC gốc r304-r306."),
 
     tc("予約時のお客様への質問項目", "UI-INPUT-001", "Normal",
        "Ô 補足: đóng/mở giữ nội dung + placeholder",

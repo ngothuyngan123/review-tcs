@@ -66,7 +66,7 @@ TC không thuộc scope BUG / F* / D* / T* → **case thừa** hoặc member vi�
 
 Coverage matrix **map TC → impact bằng keyword** — không suy luận về **trigger space** hay **fix shape**. Sau khi build matrix xong và status đều OK, **bắt buộc** chạy thêm:
 
-1. **[/review-tc BƯỚC 2 chiều (b)](../.claude/commands/review-tc.md)** — 4 câu hỏi adversarial trên diff thật (Studio `dev_impact` + `spec_delta`)
+1. **[/review-tc BƯỚC 2 chiều (b)](../.claude/commands/review-tc.md)** — 5 câu hỏi adversarial trên diff thật (Studio `dev_impact` + `spec_delta`)
 2. **[anti-patterns.md](anti-patterns.md)** — rà 6 anti-pattern
 
 Nếu chỉ tin matrix mechanical → dễ bỏ lọt **single-trigger generic-fix** (AP-1) và **symptom-only KH report** (AP-2). Xem ví dụ task #36443 (Univapay) trong AP-1.

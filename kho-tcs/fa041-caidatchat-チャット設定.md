@@ -31,7 +31,7 @@
 |---|---|
 | Tổng TC sau khi gộp | **262** |
 | Normal / Abnormal / Boundary | 169 / 40 / 53 |
-| Nhóm UI / API / Data | 126 / 85 / 51 |
+| Nhóm UI / API / Data / Job | 126 / 85 / 51 / 0 |
 | Số quan điểm test được phủ | 40 |
 | Điểm mâu thuẫn cần Leader quyết | **26** |
 | Spec đối chiếu | `spec-features/admin/chat-setting/ (feature-spec 506 dòng · ui-spec 351 · api-spec 418 · logic-spec 344 · job-spec 578 · db-mapping 536) — ⚠️ LẠC HẬU VỀ GIAO DIỆN: spec quét theo bản 2025 (6 tab, CRUD trạng thái qua MODAL, EP-06 gửi cả list), corpus 06-07/2026 tả 8 tab (thêm チャットのCSVエクスポート và 重複送信防止機能) + CRUD INLINE ＋新規追加/Enter. Xem MT-01 và MT-02. ⚠️ Spec TỰ NÊU 3 lỗ hổng mà KHÔNG TC nào kiểm: BR-03 mass assignment (🔴 Nghiêm trọng), BR-04 IDOR trên EP-09 (🟠 Cao), BR-06 backend không kiểm quyền Staff (🟡 Trung bình) — xem MT-14, MT-15. ⚠️ Spec §4.1/§4.2 CHỈ khai bảng `messages_v2s`, KHÔNG biết lịch sử chat nằm ở DB riêng với 6 bảng theo năm (`messages_2020`…`messages_2025`) — Leader cung cấp 2026-09-22, xem MT-26` |

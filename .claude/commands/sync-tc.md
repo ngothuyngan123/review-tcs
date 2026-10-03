@@ -1,6 +1,7 @@
 ---
 description: Push TCs từ folder review APPEND vào tab Google Sheet user đã pre-create (URL có gid).
 argument-hint: <đường dẫn folder review, vd tasks/2026-05-07_KH-36202_staff-limit-bot-standard/>
+model: claude-sonnet-5
 ---
 
 User muốn sync TCs từ `04-tc-list.md` lên Google Sheet **đã được user pre-create tab và chỉ định URL có `?gid=<tab_id>`**. Script APPEND TCs xuống row trống đầu tiên trong tab đó. KHÔNG tạo tab mới.

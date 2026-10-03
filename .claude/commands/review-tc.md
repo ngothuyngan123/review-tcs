@@ -1,6 +1,7 @@
 ---
-description: Review bộ TCs của 1 task — lấy TC theo 3 nguồn ưu tiên (MCP LME TEST STUDIO → link Google Sheet human cung cấp → file 04), dừng ở nguồn đầu tiên có TC. Trả lời coverage 2 chiều (dev-impact + diff code) ĐỦ/CHƯA ĐỦ, rà TC trùng lặp · mâu thuẫn (TC vs TC / spec-features / kho-tcs) · TC thừa ngoài phạm vi, rồi đề xuất TC bổ sung kèm regression. Sinh draft 05-review-report.md 9 section theo 80 quan điểm LME + 12 RULE.
+description: Review bộ TCs của 1 task — lấy TC theo 3 nguồn ưu tiên (MCP LME TEST STUDIO → link Google Sheet human cung cấp → file 04), dừng ở nguồn đầu tiên có TC. Trả lời coverage 2 chiều (dev-impact + diff code) ĐỦ/CHƯA ĐỦ, rà TC trùng lặp · mâu thuẫn (TC vs TC / spec-features / kho-tcs) · TC thừa ngoài phạm vi, rồi đề xuất TC bổ sung kèm regression. Sinh draft 05-review-report.md 9 section theo 80 quan điểm LME + 13 RULE.
 argument-hint: <folder review> [ticket_id | task:<studio_task_id> | <link Google Sheet>]
+model: claude-opus-5-5[1m]
 ---
 
 Bạn là trợ lý cho Test Leader review Test Cases.
@@ -189,7 +190,7 @@ Nguồn theo thứ tự:
 | 2 | Nguồn TC không phải Studio, hoặc `diffAvailable = false` | `03-dev-impact.md` mục 1 (file/function) + mục 2 (cách fix) + mục 3 (caller đã check) |
 | 3 | Không có cả 2 | §1 ghi 1 dòng `Input thiếu: không có diff — chiều (b) chỉ suy từ mô tả cách fix`. **KHÔNG bịa tên file/hàm.** |
 
-Chiều này bắt thứ **chiều (a) bỏ sót**. 4 câu hỏi adversarial bắt buộc trả lời (thay cho bảng 13 fix-shape cũ):
+Chiều này bắt thứ **chiều (a) bỏ sót**. 5 câu hỏi adversarial bắt buộc trả lời (thay cho bảng 13 fix-shape cũ):
 
 | # | Hỏi | Flag nếu TC không trả lời được |
 |---|---|---|
@@ -197,6 +198,9 @@ Chiều này bắt thứ **chiều (a) bỏ sót**. 4 câu hỏi adversarial b�
 | 2 | Điều kiện mới thêm có TC cho **cả 2 nhánh** (true/false) không? Fix dạng **generic catch / xử lý lỗi chung** → có ≥ **3 trigger khác nhau** + 1 trigger **chưa biết** để test fallback? | `[BLOCKER]` nếu generic-fix chỉ test 1 trigger |
 | 3 | Fix chạm **hàm dùng chung** → Dev có kê danh sách nơi bị ảnh hưởng, và TC có test **từng nơi** không? | `[BLOCKER]` nếu không có danh sách; `GAP` cho nơi thiếu TC |
 | 4 | `dev_impact` nêu **hành vi thay đổi so với trước** (siết lại / nới ra) → có TC verify hành vi MỚI **và** TC verify chỗ cũ không hỏng? | `RISK` nếu chỉ test 1 phía |
+| 5 | Dev khẳng định nhánh / chế độ nào đó **"bất biến / không đổi"** → TC của nhánh đó có expected theo **quy tắc nghiệp vụ** không, hay chỉ *"giống hệt trước fix"*? Task có **chốt quy tắc mới** (journal, human chốt, `dev_impact`) → quy tắc đó có áp cho nhánh "bất biến" không? | `RISK` nếu TC nhánh bất biến chỉ có oracle "giống trước fix" · `GAP` + 1 dòng §8 nếu quy tắc mới áp cho nhánh đó mà code nhánh đó không đổi (hành vi cũ có thể **đang sai sẵn**) |
+
+> ⚠️ Câu 5 — **oracle "giống trước fix" không bắt được lỗi có sẵn**: nó chỉ chứng minh fix không làm hỏng thêm, không chứng minh nhánh đó đúng. Bài học review #40128 (2026-08-26): Dev nói chế độ `上限を設定する` (trần N) và `シフトの合算をする` (gộp ca) "vẫn dùng nghỉ-sau đã cấu hình → bất biến"; review chỉ bắt lỗi false pass của TC so 2 nhánh, không hỏi quy tắc vừa chốt *"course kết thúc trùng giờ hết ca thì KHÔNG cộng nghỉ sau"* có áp cho 2 chế độ đó không → 1 tháng sau cùng khách báo **#41448** (ca đến 20:00, khoá 2h chỉ hiện đến 17:00). Nhánh bất biến vẫn phải có ≥ 1 TC `Boundary` với expected = quy tắc.
 
 ### Chốt CÂU TRẢ LỜI cho từng chiều (2 dòng đầu của §1 — bắt buộc)
 
@@ -257,13 +261,22 @@ Trước khi mở index quan điểm, viết ra 3 dòng (nháp nội bộ):
 | 3 | **Job nền** | job nào (remind, sync, batch) đọc nó? |
 | 4 | **Export & tích hợp ngoài** | CSV, Google Sheet, Google Calendar, webhook? |
 
+**Task chạm logic quyết định theo CẤU HÌNH (option setting)** — tính khung trống / trần đặt lịch, điều kiện gửi, phân quyền, plan… → bắt buộc lập **ma trận option setting của màn đó** và hỏi *"option nào cũng sinh ra cùng loại output (khung / tin / quyền) này?"* — **KHÔNG lọc theo hàm trong diff** (option có code không đổi vẫn phải xét, xem câu 5 BƯỚC 2).
+
+| Tính năng | Ma trận tối thiểu phải quét |
+|---|---|
+| Salon (FA-020) — khung trống / trần | mọi option 受付上限 (tối thiểu `上限を設定しない` · `上限を設定する` · `上限をその時間に受付可能なスタッフ数の合計にする`; kho ghi nhận tới 4 option) × `シフトの合算をする` / `しない` × 指名あり / 指名なし × có / không 前後の空き時間. Kho FA-020 `MT-22`: spec chỉ mô tả 2/4 option → không dùng spec làm cớ loại option. |
+| Tính năng khác | Liệt kê option ở `spec-features/<feature>/feature-spec.md` + nhóm tương ứng trong bảng Coverage của kho; không có thì ghi `Input thiếu: chưa rõ danh sách option` ở §5. |
+
+Mỗi ô trong ma trận: có TC cover · hoặc 1 dòng lý do loại (VD *"option này không đi qua chuỗi tính trần"* — phải có căn cứ Dev/code, không tự suy). Ô bị loại chỉ vì *"Dev nói bất biến"* → **KHÔNG được loại**, xử lý theo câu 5 BƯỚC 2.
+
 ⚠️ Quét rộng ≠ đẻ TC cho mọi nhóm. Nhóm nào chỉ **đổi execution plan mà không đổi kết quả** thì ghi 1 dòng yêu cầu Dev xác nhận ở §5, **không** đẻ TC (tránh over-coverage `AP-5`).
 
 **Ghi bảng quét ra scratchpad**, mỗi mã bị loại kèm **1 dòng lý do**. Report không in bảng này, nhưng có file mới tự kiểm được và mới trả lời được khi Leader hỏi *"đã xét quan điểm X chưa?"*.
 
 > ⚡ **Đọc INDEX, KHÔNG nạp toàn văn 2 file gốc** (574 + 375 dòng ≈ 37k token):
 > 1. [framework/checklist-lme.index.md](../../framework/checklist-lme.index.md) — 80 dòng `Mã · Ưu tiên · Catalog · Nhóm · Trigger · Dòng`. Đủ để chốt quan điểm nào Trigger khớp task.
-> 2. `sed -n '58,73p' framework/checklist-lme.md` — 12 RULE, đọc đủ.
+> 2. `sed -n '58,90p' framework/checklist-lme.md` — 13 RULE, đọc đủ.
 > 3. Chỉ với các mã đã chốt là ◯: `sed -n '<Dòng>p' framework/checklist-lme.md` → `Kiểm tra` + `Evidence` (dùng cho BƯỚC 5c và để phán TC có đủ chiều chưa).
 > 4. [framework/catalog-lme.index.md](../../framework/catalog-lme.index.md) §2 — tra ngược `quan điểm ◯ → mục catalog phải mở` + số dòng, rồi `sed -n '<Dòng>p' framework/catalog-lme.md`.
 >
@@ -280,6 +293,7 @@ Quy tắc flag:
 - Quan điểm **Cao** có TC nhưng **thiếu 1 trong 3 loại case** (Normal/Abnormal/Boundary) và không ghi lý do → `[MAJOR] RULE-01`.
 - TC có **output ra ngoài** (LINE app / mobile app / Google / gateway / file export / email) mà Expected dừng ở màn admin → `[MAJOR] RULE-06`.
 - TC **CRUD** chỉ verify UI, không verify DB → `[MAJOR] RULE-07`. Task có UPDATE/DELETE mà không có TC kiểm `WHERE` scope trên 2 tài khoản → `[BLOCKER] DATA-DB-001`.
+- TC có bước **gửi request trực tiếp** (nhóm `API`) mà `Kết quả mong đợi` **không ghi mã HTTP**, ghi chung `4xx`/`5xx`, hoặc ghi mã **lệch bảng quy ước** (vd cross-bot / dữ liệu không tồn tại mà expected `200`) → `[MAJOR] RULE-13`. Expected ghi theo hành vi code Dev thay vì theo quy ước → nêu ở §4 (`CONF-SPEC`, chuẩn = bảng mục 1.1 của `checklist-lme.md`) + 1 dòng §8.
 - Task chạm **media / domain / job nền / loadbalance / bill tiền** mà mọi TC chỉ chạy local/staging → `[MAJOR] RULE-08 / ENV-003`.
 - Task chạm đối tượng **đã version-up** (template group, form `s.lmes.jp` vs `step3.lmes.jp`, remind cũ/mới, header spread cũ/mới) mà TC chỉ test nhánh mới → `[MAJOR] RULE-09 / COMPAT-LEGACY-001`.
 - TC không ghi **loại evidence bắt buộc** ở `Ghi chú` (format cũ: `Output note`) → `[MINOR] RULE-02`.
@@ -292,7 +306,7 @@ Quy tắc flag:
 
 **Định tuyến kết quả**:
 - Quan điểm Trigger khớp mà TC **chưa cover đủ** (GAP / thiếu loại case / chỉ được cover bởi mã lạ) → **§2 report**, 1 dòng / quan điểm.
-- Các flag còn lại (RULE-02 evidence, RULE-06 output cuối, RULE-07 DB, RULE-08 env, RULE-09 legacy, thiếu `Mã quan điểm liên kết`, sai format `TC No.`, thiếu `Trạng thái đánh giá spec`) → **§5 report** — trừ khi nó làm **cả một impact/quan điểm** mất cover thì đưa lên §1 / §2 dưới dạng `RISK`.
+- Các flag còn lại (RULE-02 evidence, RULE-06 output cuối, RULE-07 DB, RULE-08 env, RULE-09 legacy, RULE-13 mã HTTP, thiếu `Mã quan điểm liên kết`, sai format `TC No.`, thiếu `Trạng thái đánh giá spec`) → **§5 report** — trừ khi nó làm **cả một impact/quan điểm** mất cover thì đưa lên §1 / §2 dưới dạng `RISK`.
 - Quan điểm đã cover đủ → **không ghi dòng nào**, chỉ đếm vào "Kết luận" §2.
 
 ---

@@ -5,7 +5,7 @@ Project hỗ trợ **Test Leader / QA member** viết + review Test Cases (TCs) 
 1. **Nội dung bug task** — từ Redmine (AI auto-fill qua **REST API**, `scripts/redmine_fetch.py`) hoặc paste tay vào `01-bug-task.md`
 2. **Đánh giá ảnh hưởng từ Dev** → `03-dev-impact.md`
 3. **TCs cũ** tham chiếu (optional) — link Google Sheet (`?gid=` tab cụ thể) đã share edit cho service account → AI fetch read-only qua MCP google-sheets để tránh viết trùng
-4. **Bộ quan điểm test của dự án (2 tầng, auto-load)** → [framework/checklist-lme.md](framework/checklist-lme.md) (tầng 1 — 80 quan điểm / 18 nhóm + 12 RULE) + [framework/catalog-lme.md](framework/catalog-lme.md) (tầng 2 — input / UI / bản đồ LME / môi trường / media)
+4. **Bộ quan điểm test của dự án (2 tầng, auto-load)** → [framework/checklist-lme.md](framework/checklist-lme.md) (tầng 1 — 80 quan điểm / 18 nhóm + 13 RULE) + [framework/catalog-lme.md](framework/catalog-lme.md) (tầng 2 — input / UI / bản đồ LME / môi trường / media)
 
 ---
 
@@ -49,7 +49,7 @@ lme-review-TCs/
 │   ├── review-checklist.md            # Rubric cho Leader review TAY (skill KHÔNG đọc)
 │   ├── checklist-lme.index.md         # ★ Index tự sinh — ĐỌC THAY cho checklist-lme.md
 │   ├── catalog-lme.index.md           # ★ Index tự sinh — ĐỌC THAY cho catalog-lme.md
-│   ├── checklist-lme.md               # ★ Tầng 1 — 80 quan điểm test LME + 12 RULE
+│   ├── checklist-lme.md               # ★ Tầng 1 — 80 quan điểm test LME + 13 RULE
 │   ├── catalog-lme.md                 # ★ Tầng 2 — catalog A/B/C/D/D2/E (tri thức miền)
 │   ├── coverage-matrix.md             # Ma trận coverage (impact ↔ TC)
 │   ├── anti-patterns.md               # 6 anti-pattern khi viết TC

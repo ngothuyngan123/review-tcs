@@ -36,7 +36,7 @@
 |---|---|
 | Tổng TC sau khi gộp | **345** |
 | Normal / Abnormal / Boundary | 237 / 69 / 39 |
-| Nhóm UI / API / Data | 189 / 110 / 46 |
+| Nhóm UI / API / Data / Job | 189 / 110 / 46 / 0 |
 | Số quan điểm test được phủ | 49 |
 | Điểm mâu thuẫn cần Leader quyết | **22** |
 | Spec đối chiếu | `spec-features/admin/message-send-all/ (chốt 2026-03-26, confidence Cao ~80% · 8 validation issues · 10 open questions — ⚠️ KHÔNG có tính năng 配信数上限アラート #36436, xem MT-20)` |

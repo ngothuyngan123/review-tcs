@@ -1,6 +1,7 @@
 ---
 description: Push TCs bổ sung của reviewer (05-review-report.md §7) về ĐÚNG nơi bộ TC gốc được lấy về — nguồn Studio thì call MCP testcase_create, nguồn Google Sheet thì push lên chính Sheet đó, nguồn file 04 thì hỏi human vị trí push.
 argument-hint: <folder review> [studio | sheet | ask]
+model: claude-sonnet-5
 ---
 
 User muốn sync **toàn bộ TCs bổ sung của reviewer** — bảng tại section **`## 7. TCs đề xuất bổ sung (<n>)`** (tiêu đề có kèm số TC trong ngoặc; parser khớp theo **cụm “đề xuất bổ sung”**, không theo số section — nên hậu tố `(<n>)` không ảnh hưởng, và report cũ đánh số `## 5.` vẫn push được) trong `05-review-report.md` — về **đúng nơi bộ TC gốc được lấy về ở `/review-tc` BƯỚC 0**.
@@ -61,7 +62,7 @@ Verify TRƯỚC khi vào nhánh. Fail → DỪNG và hướng dẫn fix:
    | `ID` | `client_ref` | **Khoá idempotent** theo task. Ký tự ngoài `[A-Za-z0-9._:-]` → thay bằng `-`; giữ nguyên giá trị để chạy lại KHÔNG tạo TC trùng |
    | `Tên case` | `name` | |
    | `Mã quan điểm` | `viewpoint` | |
-   | `Nhóm` | `tc_group` | **lowercase** theo enum Studio: `UI`→`ui` · `API`→`api` · `Data`→`data` |
+   | `Nhóm` | `tc_group` | **lowercase** theo enum Studio: `UI`→`ui` · `API`→`api` · `Data`→`data` · `Job`→`job` |
    | `Màn hình/chức năng` | `screen` | |
    | `Loại case` | `case_type` | enum `Normal` / `Abnormal` / `Boundary` |
    | `Chạy` | `exec_mode` | enum Studio `auto` / `manual` — giá trị §7 đã đúng enum, ghi thẳng |

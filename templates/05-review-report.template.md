@@ -205,7 +205,7 @@
 
 > **Quy tắc cột** — xem [kho-tcs/README.md](../../kho-tcs/README.md) §Format 12 cột. Tóm tắt:
 > - `ID` = `TC-<mã quan điểm bỏ gạch>-<nn>`, VD `TC-PERM002-01`. **Không trùng** ID trong bộ TC gốc và trong kho. ⚠️ KHÔNG dùng prefix tuần tự của kho (`TC-TAG-267`) — build kho đánh số lại mỗi lần chạy.
-> - `Nhóm` = `UI` / `API` / `Data`, suy từ mã quan điểm theo `GROUP_MAP` ở [kho-tcs/data/_common.py](../../kho-tcs/data/_common.py) (khớp tiền tố dài nhất trước; không khớp → `UI`).
+> - `Nhóm` = `UI` / `API` / `Data` / `Job`, suy từ mã quan điểm theo `GROUP_MAP` ở [kho-tcs/data/_common.py](../../kho-tcs/data/_common.py) (khớp tiền tố dài nhất trước; không khớp → `UI`). TC kiểm **job nền chạy / bị chặn** → `Job` (Studio `tc_group = job`), kể cả khi bước là thao tác màn hình / LINE app để kích hoạt hoặc quan sát; chỉ giữ `UI` khi phán quyết đầu tiên nằm ở màn quản trị. Trước khi push, đối chiếu phân bố `tc_group` với bộ TC gốc của Studio cùng task.
 > - `Màn hình/chức năng` = nhóm chức năng trong màn (dùng đúng tên nhóm của file kho nếu kho đã có tính năng đó).
 > - `Tên case` = mô tả thuần, **không** prefix `[<nhóm>]`, nhưng phải chứa keyword để Leader suy được impact.
 > - `Loại case` **chỉ** `Normal` / `Abnormal` / `Boundary` — không có Regression (ghi chữ `regression` ở `Ghi chú`), không có cột Priority.

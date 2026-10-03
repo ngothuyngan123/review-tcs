@@ -129,7 +129,7 @@ def render_checklist_index(vps, rule_range):
          "> **KHÔNG nạp toàn văn** [checklist-lme.md](checklist-lme.md) (574 dòng ≈ 23k token).",
          "> Nguồn sự thật vẫn là file gốc — file này là output tự sinh.",
          ">",
-         "> **12 RULE bắt buộc** — đọc đủ, rẻ: `sed -n '%sp' framework/checklist-lme.md`."
+         "> **13 RULE bắt buộc** (kèm bảng mã HTTP của RULE-13) — đọc đủ, rẻ: `sed -n '%sp' framework/checklist-lme.md`."
          % rule_range,
          "> **§4 \"Quan điểm chưa đủ bằng chứng\"** (FORM-01, CHAT-01, ADM-01/03/04, TPL-01) "
          "KHÔNG có trong bảng này — theo **RULE-11** chỉ được nêu ở mức `[NIT]`.", "",
@@ -251,7 +251,7 @@ def main():
     cl = CHECKLIST.read_text(encoding="utf-8").splitlines()
     ct = CATALOG.read_text(encoding="utf-8").splitlines()
 
-    rule_start = next((i + 1 for i, l in enumerate(cl) if l.startswith("## 1. 12 RULE")), 0)
+    rule_start = next((i + 1 for i, l in enumerate(cl) if (l.startswith("## 1. ") and "RULE" in l)), 0)
     rule_end = block_end(cl, rule_start - 1, ("## ", "---")) if rule_start else 0
 
     vps = parse_viewpoints(cl)

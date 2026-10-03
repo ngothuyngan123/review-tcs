@@ -12,7 +12,7 @@
 | Mục cũ | #box | Nay nằm ở |
 |---|---|---|
 | A.1 Bug root cause · A.2 Function impact · A.3 Data impact · A.4 Feature impact · A.5 Gap & orphan | 18 | **BƯỚC 2** coverage matrix + [coverage-matrix.md](coverage-matrix.md) — ma trận là nháp nội bộ, chỉ `GAP`/`RISK` ra **§1** report |
-| A.6 Fix-shape adversarial check | 5 | **BƯỚC 2 chiều (b)** — 4 câu hỏi adversarial trên diff thật + [anti-patterns.md](anti-patterns.md) AP-1…AP-6; kết quả ra **§1** (chiều `diff code`) + **§4** (anti-pattern) |
+| A.6 Fix-shape adversarial check | 5 | **BƯỚC 2 chiều (b)** — 5 câu hỏi adversarial trên diff thật + [anti-patterns.md](anti-patterns.md) AP-1…AP-6; kết quả ra **§1** (chiều `diff code`) + **§4** (anti-pattern) |
 | F.1 Quan điểm · F.2 Catalog · F.3 RULE | 16 | **BƯỚC 3** — [checklist-lme.index.md](checklist-lme.index.md) + [catalog-lme.index.md](catalog-lme.index.md), kết quả ra **§2** report (chỉ ghi quan điểm còn thiếu) |
 | D Spec alignment | 3 | **BƯỚC 1** (nguồn spec) + §6 report |
 | C — "không trùng lặp TC" | 1 | **BƯỚC 4b** — 4 yếu tố so trùng, kết quả ra **§3** report |

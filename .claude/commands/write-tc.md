@@ -1,6 +1,7 @@
 ---
-description: Sinh draft 04-tc-list.md từ bug + dev-impact + spec, bám đúng template + 80 quan điểm test LME (2 tầng quan điểm/catalog) + 12 RULE + 5 quy tắc vàng. Đối chiếu TC cũ (Studio/Sheet/file 04) + kho-tcs để không viết trùng. Cho QA member dùng trước khi submit cho Leader.
+description: Sinh draft 04-tc-list.md từ bug + dev-impact + spec, bám đúng template + 80 quan điểm test LME (2 tầng quan điểm/catalog) + 13 RULE + 5 quy tắc vàng. Đối chiếu TC cũ (Studio/Sheet/file 04) + kho-tcs để không viết trùng. Cho QA member dùng trước khi submit cho Leader.
 argument-hint: <folder review>
+model: claude-opus-5-5[1m]
 ---
 
 Bạn là trợ lý cho QA member viết Test Cases. Hãy sinh draft TCs cho bug fix task trong folder review được chỉ định theo quy trình.
@@ -124,11 +125,11 @@ In ra trước khi sang Bước 2: `Chế độ ghi: CREATE | APPEND (<n> TC đ�
 
 ### BƯỚC 2 — CHỌN QUAN ĐIỂM TEST (tầng 1) + MỞ CATALOG (tầng 2)
 
-**80 quan điểm / 18 nhóm + 12 RULE**. Quy trình **2 tầng, bắt buộc đủ 2 bước** (bỏ bước 2 là chỗ bug lọt):
+**80 quan điểm / 18 nhóm + 13 RULE**. Quy trình **2 tầng, bắt buộc đủ 2 bước** (bỏ bước 2 là chỗ bug lọt):
 
 > ⚡ **Đọc INDEX, KHÔNG nạp toàn văn 2 file gốc** (574 + 375 dòng ≈ 37k token):
 > 1. [framework/checklist-lme.index.md](../../framework/checklist-lme.index.md) — 80 dòng `Mã · Ưu tiên · Catalog · Nhóm · Trigger · Dòng`. Đủ để duyệt ◯/× ở **2a**.
-> 2. `sed -n '58,73p' framework/checklist-lme.md` — 12 RULE, đọc đủ.
+> 2. `sed -n '58,90p' framework/checklist-lme.md` — 13 RULE, đọc đủ.
 > 3. Chỉ với các mã đã đánh **◯**: `sed -n '<Dòng>p' framework/checklist-lme.md` để lấy `Kiểm tra` + `Evidence`.
 > 4. [framework/catalog-lme.index.md](../../framework/catalog-lme.index.md) §2 — tra ngược `quan điểm ◯ → mục catalog phải mở` + số dòng, rồi `sed` đúng vùng đó ở **2b**.
 >
@@ -229,6 +230,7 @@ Quy tắc:
 - **Các bước thực hiện**: tuần tự, đánh số 1./2./3., dùng `<br>` để xuống dòng trong bảng.
 - **Dữ liệu test/input**: giá trị input cụ thể + **phép tính tay** nếu TC có số đếm/tỷ lệ (VD `5 friend, 3 người mở` / `Phép tính tay: 3/5 = 60%`). Không "data dummy" — dùng giá trị nghiệp vụ hợp lý.
 - **Kết quả mong đợi**: **đo lường được** — giá trị cụ thể, không "hiển thị đúng". VD: "Broadcast gửi đến 200 friends". Áp dụng **RULE-06** (đi tới output cuối chuỗi) + **RULE-07** (khớp DB + màn hình + output).
+  TC có bước gửi request trực tiếp (nhóm `API`) → **bắt buộc ghi mã HTTP cụ thể** theo **RULE-13** (bảng mục 1.1 của `framework/checklist-lme.md`): 200 · 400 · 401 · 403/404 · 422 · 429 · 500 · 502. Code Dev trả lệch quy ước → giữ expected theo quy ước, ghi mã thực tế ở `Ghi chú`.
 - **Kết quả thực thi**: **CHỈ** `Đạt` / `Không đạt` / `Chưa test`. Draft luôn ghi `Chưa test`.
 - **Evidence thực tế**: **để trống** trong draft (QA paste link/ảnh sau khi test, BẮT BUỘC khi Đạt). *Loại* evidence bắt buộc của quan điểm (RULE-02) ghi ở **Ghi chú**.
 - **Môi trường test**: `STAGING` (mặc định) / `DEV` / `PRODUCTION`. **RULE-08**: TC nhóm media / domain / job / loadbalance / bill tiền → ghi `PRODUCTION`.

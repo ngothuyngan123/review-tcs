@@ -11,12 +11,16 @@ COLS = [
     "Kết quả thực thi", "Ghi chú",
 ]
 
-# ── Cột "Nhóm" — tầng test của TC: UI / API / Data ───────────────────────────
+# ── Cột "Nhóm" — tầng test của TC: UI / API / Data / Job ─────────────────────
 # Suy ra TỰ ĐỘNG từ mã quan điểm (khớp theo tiền tố DÀI NHẤT trước).
 #   UI   — kiểm chứng bằng mắt trên màn hình (admin hoặc LINE user)
-#   API  — kiểm chứng ở tầng xử lý phía server: gửi tin, job nền, tích hợp,
+#   API  — kiểm chứng ở tầng xử lý phía server: gửi tin, tích hợp,
 #          thanh toán, phân quyền, đồng thời, hiệu năng
 #   Data — kiểm chứng ở tầng dữ liệu: DB, đếm số, tham chiếu, migration, legacy
+#   Job  — kiểm chứng job nền chạy / bị chặn / retry (callback, scenario, broadcast,
+#          action schedule, remind, notify, download media, batch...). Thao tác trên
+#          màn hình / LINE app chỉ để kích hoạt hoặc quan sát thì vẫn là Job.
+#          Khớp enum tc_group "job" của MCP LME TEST STUDIO.
 # Ghi đè từng TC bằng tham số group="..." của hàm tc().
 GROUP_MAP = (
     ("OUT-PREVIEW",    "UI"),
@@ -37,7 +41,7 @@ GROUP_MAP = (
     ("COMPAT-",        "UI"),
     ("MSG-",           "API"),
     ("INTG-",          "API"),
-    ("JOB-",           "API"),
+    ("JOB-",           "Job"),
     ("SYNC-",          "API"),
     ("NOTI-",          "API"),
     ("OUT-",           "API"),
@@ -51,11 +55,11 @@ GROUP_MAP = (
     ("DEPLOY-",        "API"),
     ("TOOL-",          "API"),
 )
-GROUPS = ("UI", "API", "Data")
+GROUPS = ("UI", "API", "Data", "Job")
 
 
 def group_of(vp):
-    """Suy nhóm (UI/API/Data) từ mã quan điểm. Không khớp tiền tố nào → 'UI'."""
+    """Suy nhóm (UI/API/Data/Job) từ mã quan điểm. Không khớp tiền tố nào → 'UI'."""
     for pref, g in sorted(GROUP_MAP, key=lambda x: -len(x[0])):
         if vp.startswith(pref):
             return g
@@ -476,7 +480,7 @@ def tc(sec, vp, kind, title, pre, steps, data, expect, *, env="STAGING",
     sec   — nhóm chức năng, phải nằm trong SECTIONS. Xuất ra cột "Màn hình/chức năng".
     vp    — mã quan điểm test (checklist-lme.md). Suy ra cột "Nhóm" nếu không truyền `group`.
     kind  — Normal / Abnormal / Boundary.
-    group — UI / API / Data. Bỏ trống → suy tự động bằng group_of(vp).
+    group — UI / API / Data / Job. Bỏ trống → suy tự động bằng group_of(vp).
     env   — không còn là cột riêng; khác STAGING thì được ghép vào cột "Ghi chú".
     spec  — không còn là cột riêng; khác "Spec ghi rõ" thì được ghép vào cột "Ghi chú".
     """

@@ -1,4 +1,4 @@
-# Quan điểm test LME — Tầng 1 (80 quan điểm / 18 nhóm + 12 RULE)
+# Quan điểm test LME — Tầng 1 (80 quan điểm / 18 nhóm + 13 RULE)
 
 > **Nguồn**: [Bảng quan điểm test — HỢP NHẤT ELME v1.0](https://docs.google.com/spreadsheets/d/1IijLnq0gLZDFxOMWOYxXafz1Wnzv3W0g/edit?gid=1184713662#gid=1184713662) (2026-07-10, biên soạn: QA Lead) — file `.xlsx` trên Drive, 13 sheet.
 >
@@ -55,7 +55,7 @@
 
 ---
 
-## 1. 12 RULE bắt buộc
+## 1. 13 RULE bắt buộc
 
 | Mã | Tên rule | Nội dung |
 |---|---|---|
@@ -71,6 +71,23 @@
 | **RULE-10** | **VÒNG ĐỜI CHECKLIST** | Mỗi bug **lọt ra production** bắt buộc sinh 1 dòng quan điểm hoặc 1 dòng catalog mới, có ID + ngày thêm + nguồn bug. Leader review hàng tháng. |
 | **RULE-11** | **NGUỒN DỮ LIỆU KHI CẬP NHẬT BẢNG** | Dùng Redmine: tracker Bug KH + toàn bộ ticket con của ticket tổng hợp hàng tháng `[SNSLine] CHECK REPORT FROM CUSTOMER`. **CHỈ** ticket Closed / Resolved / Fix done / Released mới được dùng làm bằng chứng. |
 | **RULE-12** | **PHẠM VI REGRESSION** | Không chạy lại toàn bộ quan điểm Cao mỗi release. Gồm 3 phần: (1) bộ **smoke cố định** do leader định nghĩa (đăng nhập, gửi tin cơ bản, thanh toán, đặt lịch); (2) **vùng ảnh hưởng theo danh sách của DEV** (REG-SHARED-001); (3) **mọi case đã từng Không đạt và được fix**. |
+| **RULE-13** | **QUY ƯỚC MÃ HTTP KHI TEST API** | Mọi TC có bước **gửi request trực tiếp** (nhóm `API`, gọi thẳng endpoint, sửa tham số) phải ghi **mã HTTP cụ thể** trong `Kết quả mong đợi`, theo bảng quy ước chung ở mục 1.1 ngay dưới. Không viết chung `4xx` / `5xx` (trừ câu phủ định kiểu "không trả 5xx"). |
+
+### 1.1 Bảng quy ước mã HTTP (RULE-13)
+
+| Mã | Khi nào |
+|---|---|
+| **200** | Success |
+| **400** | Sai cấu trúc / sai datatype / sai format |
+| **401** | Authentication failed / thiếu hoặc sai token |
+| **403** hoặc **404** | Bot A access/sửa dữ liệu của bot B · access dữ liệu không tồn tại |
+| **422** | Đúng cấu trúc nhưng giá trị vi phạm validation nghiệp vụ |
+| **429** | Gọi API quá nhiều, vượt rate limit |
+| **500** | Unexpected server error |
+| **502** | Lỗi từ dịch vụ bên thứ ba: LINE API, cổng thanh toán... |
+
+- **400 vs 422**: sai cấu trúc / kiểu / format (thiếu tham số, `"abc"` cho field số) = **400**; cấu trúc đúng mà giá trị vi phạm rule nghiệp vụ (hạn mức gói, biên ngày, enum ngoài danh sách, mã xác thực sai) = **422**.
+- Mã Dev đang trả **lệch bảng** (vd cross-bot trả `200` kèm `success=false`) → giữ expected theo quy ước, ghi mã code đang trả ở `Ghi chú` và báo Dev. **Không sửa expected cho khớp code.**
 
 ---
 

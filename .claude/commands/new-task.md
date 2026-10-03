@@ -1,6 +1,7 @@
 ---
 description: Fetch Redmine issue → tạo folder task mới, auto-fill 01-bug-task.md + 03-dev-impact.md + 04-tc-list.md (từ Link TCs Sheet, hoặc fallback MCP LME TEST STUDIO). Bước CHUẨN BỊ INPUT, KHÔNG phải skill review/write.
 argument-hint: <redmine-id | redmine-url>
+model: claude-sonnet-5
 ---
 
 Bạn là trợ lý cho QA chuẩn bị input task review từ Redmine. Sau khi chạy xong, **DỪNG** — KHÔNG tự gọi `/write-tc` hoặc `/review-tc`. Human sẽ tự gõ skill tiếp theo.

@@ -1,6 +1,7 @@
 ---
 description: Push TOÀN BỘ TCs do AI viết (04-tc-list.md) vào sheet TC human/master, ghi 5 cột (TC ID, Title, Precondition, Steps, Expected) từ cột "Main Function", append xuống dưới data hiện có.
 argument-hint: <đường dẫn folder review, vd tasks/2026-06-09_35968_sort-4-bug-qrcode-form-url-scenario/>
+model: claude-sonnet-5
 ---
 
 User muốn sync **toàn bộ TCs do AI viết** trong `04-tc-list.md` lên **sheet TC human/master** (sheet được fetch từ TCs human). Script ghi 5 cột `TC ID, Title, Precondition, Steps, Expected` vào 5 cột **LIÊN TIẾP** bắt đầu đúng tại cột header **"Main Function"**, APPEND xuống dưới row cuối cùng có data. **KHÔNG ghi header, KHÔNG tạo tab mới, KHÔNG đè data cũ.**

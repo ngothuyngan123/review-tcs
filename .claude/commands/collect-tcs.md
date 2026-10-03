@@ -1,6 +1,7 @@
 ---
 description: Gom TCs rời rạc của 1 tính năng từ nhiều file Google Sheet trên Drive → loại trùng, xử lý conflict theo TC mới nhất, format lại 12 cột của kho, đối chiếu spec-features và xuất ra kho TCs tổng hợp (1 tab / tính năng, tên tab "<Mã màn hình> <Tên VN> (<Tên JP>)").
 argument-hint: <tên tính năng, vd "Tag" hoặc "FA-012" — để trống sẽ liệt kê cho chọn>
+model: claude-opus-5-5[1m]
 ---
 
 Bạn là Test Leader gom kho TCs cho dự án LME. Nhiệm vụ: lấy TCs rời rạc của **1 tính năng** nằm rải ở nhiều file Google Sheet trên Drive, gộp thành **một bộ TCs chuẩn duy nhất**, đối chiếu với spec, và xuất vào **kho TCs tổng hợp** (mỗi tính năng = 1 tab).
@@ -141,7 +142,7 @@ Soi 5 loại lệch:
 | # | Cột | Ghi chú |
 |---|---|---|
 | 1 | `ID` | `TC-<PREFIX>-<nn>` — `build.py` tự sinh |
-| 2 | `Nhóm` | `UI` / `API` / `Data` — tầng kiểm chứng, tự suy từ mã quan điểm |
+| 2 | `Nhóm` | `UI` / `API` / `Data` / `Job` — tầng kiểm chứng, tự suy từ mã quan điểm |
 | 3 | `Mã quan điểm` | mã trong [framework/checklist-lme.md](../../framework/checklist-lme.md) |
 | 4 | `Màn hình/chức năng` | nhóm chức năng trong màn — chính là tham số `sec` của `tc()` |
 | 5 | `Loại case` | `Normal` / `Abnormal` / `Boundary` |
@@ -158,12 +159,14 @@ Soi 5 loại lệch:
 `Trạng thái đánh giá spec` **không mất thông tin**: vẫn truyền `env=` / `spec=` cho `tc()` như cũ,
 `build.py` tự ghép vào đầu cột `Ghi chú` dạng `Môi trường: PRODUCTION · Đánh giá spec: Đã hỏi leader · <ghi chú>`.
 
-### Cột `Nhóm` (UI / API / Data)
+### Cột `Nhóm` (UI / API / Data / Job)
 
 - `UI` — kiểm chứng bằng mắt trên màn hình (admin hoặc LINE user).
-- `API` — kiểm chứng ở tầng xử lý server: gửi tin, job nền, tích hợp ngoài, thanh toán,
+- `API` — kiểm chứng ở tầng xử lý server: gửi tin, tích hợp ngoài, thanh toán,
   phân quyền, đồng thời, hiệu năng.
 - `Data` — kiểm chứng ở tầng dữ liệu: DB, đếm số, tham chiếu, migration, dữ liệu cũ.
+- `Job` — kiểm chứng job nền chạy / bị chặn / retry (callback, scenario, broadcast, action schedule, remind, notify, download media, batch). Thao tác màn hình / LINE app chỉ để kích hoạt hoặc quan sát thì vẫn là `Job`. Khớp enum `tc_group = job` của Studio.
+  Tiền tố `JOB-` tự suy ra `Job`; TC job nền mang mã khác thì ghi đè `group="Job"`.
 
 Suy **tự động** từ mã quan điểm theo bảng `GROUP_MAP` trong
 [kho-tcs/data/_common.py](../../kho-tcs/data/_common.py) — không cần khai báo tay.

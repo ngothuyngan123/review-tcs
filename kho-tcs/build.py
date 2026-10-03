@@ -1330,7 +1330,7 @@ def to_md(feat, rows, ccols, conflicts):
             "| Chỉ số | Giá trị |", "|---|---|",
             f"| Tổng TC sau khi gộp | **{n}** |",
             f"| Normal / Abnormal / Boundary | {dist.get('Normal',0)} / {dist.get('Abnormal',0)} / {dist.get('Boundary',0)} |",
-            f"| Nhóm UI / API / Data | {gdist.get('UI',0)} / {gdist.get('API',0)} / {gdist.get('Data',0)} |",
+            f"| Nhóm UI / API / Data / Job | {gdist.get('UI',0)} / {gdist.get('API',0)} / {gdist.get('Data',0)} / {gdist.get('Job',0)} |",
             f"| Số quan điểm test được phủ | {len(vps)} |",
             f"| Điểm mâu thuẫn cần Leader quyết | **{len(conflicts)}** |",
             f"| Spec đối chiếu | `{feat['spec']}` |", ""]
@@ -1385,7 +1385,7 @@ README_ROWS = [
     [],
     ["GIÁ TRỊ CỐ ĐỊNH CỦA CỘT"],
     ["ID", "TC-<PREFIX>-01, -02, ... (PREFIX: TAG / CHT / FORM / RM / FRI / SCE / BIL / EBK / BLP / TMT / RPL / BK / LSN / SLN) — đánh số TUẦN TỰ theo thứ tự màn hình/chức năng, không đánh lại theo mã quan điểm."],
-    ["Nhóm", "UI / API / Data — tầng kiểm chứng của TC. UI = nhìn thấy trên màn hình (admin hoặc LINE user). API = xử lý phía server: gửi tin, job nền, tích hợp ngoài, thanh toán, phân quyền, đồng thời, hiệu năng. Data = tầng dữ liệu: DB, đếm số, tham chiếu, migration, dữ liệu cũ."],
+    ["Nhóm", "UI / API / Data / Job — tầng kiểm chứng của TC. UI = nhìn thấy trên màn hình (admin hoặc LINE user). API = xử lý phía server: gửi tin, tích hợp ngoài, thanh toán, phân quyền, đồng thời, hiệu năng. Data = tầng dữ liệu: DB, đếm số, tham chiếu, migration, dữ liệu cũ. Job = job nền chạy / bị chặn / retry (callback, scenario, broadcast, action schedule, remind, notify, download media, batch) — thao tác màn hình hay LINE app chỉ để kích hoạt / quan sát thì vẫn là Job."],
     ["", "Nhóm được SUY TỰ ĐỘNG từ mã quan điểm (bảng GROUP_MAP trong kho-tcs/data/_common.py). Sai chỗ nào thì ghi đè bằng tham số group=\"...\" của hàm tc()."],
     ["Mã quan điểm", "Mã trong framework/checklist-lme.md — cột để map coverage."],
     ["Màn hình/chức năng", "Nhóm chức năng trong màn (VD Tạo folder, Edit tag, Action gắn tag). Quyết định thứ tự TC trong tab; khai báo ở SECTIONS_* trong kho-tcs/data/_common.py."],

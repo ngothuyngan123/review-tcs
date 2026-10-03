@@ -81,7 +81,7 @@ Mặc định **STAGING** (`staging.lme.jp`). Trường hợp đặc biệt:
 
 ### Base quan điểm test LME (2 tầng)
 
-**Tầng 1 — quan điểm**: [framework/checklist-lme.md](../framework/checklist-lme.md) (80 quan điểm + 12 RULE).
+**Tầng 1 — quan điểm**: [framework/checklist-lme.md](../framework/checklist-lme.md) (80 quan điểm + 13 RULE).
 **Tầng 2 — catalog**: [framework/catalog-lme.md](../framework/catalog-lme.md).
 
 Điền bảng quan điểm đã duyệt cho task này (◯ = áp dụng / × = không, **× bắt buộc ghi lý do** — RULE-03):

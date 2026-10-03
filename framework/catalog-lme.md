@@ -4,7 +4,7 @@
 >
 > Tầng 2 trả lời: **"ở đâu trong LME, nhập dữ liệu gì"**. Đây là **tri thức miền KHÔNG suy ra được từ đặc tả** — bỏ qua tầng này là chỗ bug lọt.
 >
-> Tầng 1 (quan điểm + 12 RULE): [checklist-lme.md](checklist-lme.md). Mỗi dòng ở đây ghi **Quan điểm liên kết** để tra ngược.
+> Tầng 1 (quan điểm + 13 RULE): [checklist-lme.md](checklist-lme.md). Mỗi dòng ở đây ghi **Quan điểm liên kết** để tra ngược.
 
 **Cách dùng**: tick ◯ một quan điểm ở tầng 1 → mở **đúng catalog** ghi ở dòng quan điểm đó → lấy dữ liệu và vị trí cụ thể để viết TC.
 

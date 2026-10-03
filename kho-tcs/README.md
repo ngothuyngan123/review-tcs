@@ -27,7 +27,7 @@ trong [templates/LME-SYSTEM-SPEC.md](../templates/LME-SYSTEM-SPEC.md).
 | # | Cột | Giá trị |
 |---|---|---|
 | 1 | `ID` | `TC-<PREFIX>-<nn>` — tuần tự theo thứ tự màn hình/chức năng |
-| 2 | `Nhóm` | `UI` / `API` / `Data` — tầng kiểm chứng, suy tự động từ mã quan điểm |
+| 2 | `Nhóm` | `UI` / `API` / `Data` / `Job` — tầng kiểm chứng, suy tự động từ mã quan điểm |
 | 3 | `Mã quan điểm` | mã trong [framework/checklist-lme.md](../framework/checklist-lme.md) |
 | 4 | `Màn hình/chức năng` | nhóm chức năng trong màn (tham số `sec` của `tc()`) |
 | 5 | `Loại case` | `Normal` / `Abnormal` / `Boundary` |
@@ -44,6 +44,7 @@ trong [templates/LME-SYSTEM-SPEC.md](../templates/LME-SYSTEM-SPEC.md).
 - Cột `Nhóm` suy từ bảng `GROUP_MAP` trong [data/_common.py](data/_common.py) (khớp tiền tố mã
   quan điểm dài nhất trước). Suy sai chỗ nào thì ghi đè từng TC bằng `group="API"` trong `tc()`.
   Mã quan điểm mới không khớp tiền tố nào → mặc định `UI`, nhớ bổ sung vào bảng.
+  `Job` — kiểm chứng job nền chạy / bị chặn / retry (callback, scenario, broadcast, action schedule, remind, notify, download media, batch). Thao tác màn hình / LINE app chỉ để kích hoạt hoặc quan sát thì vẫn là `Job`. Khớp enum `tc_group = job` của Studio. Tiền tố `JOB-` tự suy ra `Job`; TC job nền mang mã khác (`ENV-`, `REG-`, `STATE-`…) thì ghi đè `group="Job"`.
 - `env=` và `spec=` của `tc()` **giữ nguyên** trong file data; build tự ghép vào đầu cột `Ghi chú`
   nên không mất RULE-08 (media · domain · job · loadbalance · bill tiền · race · performance
   bắt buộc chạy PRODUCTION).
