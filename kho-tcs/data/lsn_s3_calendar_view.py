@@ -140,15 +140,20 @@ S3 = [
 
     tc("Tab 本日/新着の予約", "LIST-001", "Normal",
        "Phân trang tab 本日/新着: đổi số item/page và thao tác ở trang 2",
-       CAL + "\n- Tab 新着の予約 có 45 booking",
-       "1. Chọn số item/page = 20 → kiểm số trang\n2. Sang trang 2, kiểm data và số thứ tự item\n"
-       "3. Ở trang 2 bấm 詳細 mở modal booking và thực hiện approve",
-       "45 booking",
-       "- Bước 1: có 3 trang\n- Bước 2: hiện đúng item 21-40, không trùng với trang 1\n"
-       "- Bước 3: approve thành công, danh sách trang 2 cập nhật status",
-       spec="Spec không ghi",
+       CAL + "\n- Tab 新着の予約 có 55 booking",
+       "1. Mở dropdown số item/page → kiểm các lựa chọn\n2. Chọn「50件」→ kiểm số trang\n"
+       "3. Sang trang 2, kiểm data và số thứ tự item\n"
+       "4. Ở trang 2 bấm 詳細 mở modal booking và thực hiện approve\n"
+       "5. Đổi sang「100件」→ kiểm số trang",
+       "55 booking",
+       "- Bước 1: chỉ có 2 lựa chọn「50件」/「100件」\n- Bước 2: có 2 trang\n"
+       "- Bước 3: hiện đúng item 51-55, không trùng với trang 1\n"
+       "- Bước 4: approve thành công, danh sách trang 2 cập nhật status\n"
+       "- Bước 5: còn 1 trang, đủ 55 booking",
+       spec="Đã hỏi leader",
        note="Nguồn: Today&NewBooking r17-r19, r29-r31 — TC gốc CHỈ CÓ TIÊU ĐỀ, kết quả mong đợi "
-            "do AI bổ sung. Cần Leader xác nhận số item/page mặc định."),
+            "do AI bổ sung. Leader chốt 2026-10-07 (review #41998): tab 本日/新着 (cả 新着の予約 "
+            "và 本日の予約) chỉ phân trang 50 / 100."),
 
     tc("Tab 本日/新着の予約", "STATE-001", "Abnormal",
        "Course OFF → ẩn booking của course đó khỏi cả 4 chế độ xem, số lượng ngoài cũng giảm",
@@ -509,13 +514,17 @@ S3 = [
     tc("Calendar theo list", "LIST-001", "Normal",
        "Phân trang tab 予約一覧 và thao tác ở trang 2",
        CAL + "\n- Tab 予約一覧 có 55 booking",
-       "1. Chọn số item/page = 20 → kiểm số trang, item start-end mỗi trang\n"
+       "1. Chọn số item/page「50件」→ kiểm số trang, item start-end mỗi trang\n"
        "2. Sang trang 2 → bấm 詳細 mở modal, thực hiện approve/deny/cancel/refund/xóa booking\n"
-       "3. Ở trang 2 dùng chức năng search theo friend name\n4. Ở trang 2 thao tác action đồng loạt",
+       "3. Ở trang 2 dùng chức năng search theo friend name\n4. Ở trang 2 thao tác action đồng loạt\n"
+       "5. Đổi sang「100件」→ kiểm số trang",
        "55 booking",
-       "- Bước 1: 3 trang, item start-end đúng (1-20, 21-40, 41-55)\n"
-       "- Bước 2-4: mọi thao tác đều thành công như ở trang 1",
-       note="Nguồn: Quản lý calendar_new r126-r131, r448."),
+       "- Dropdown số item/page chỉ có「50件」/「100件」\n"
+       "- Bước 1: 2 trang, item start-end đúng (1-50, 51-55)\n"
+       "- Bước 2-4: mọi thao tác đều thành công như ở trang 1\n"
+       "- Bước 5: còn 1 trang, đủ 55 booking",
+       note="Nguồn: Quản lý calendar_new r126-r131, r448. Leader chốt 2026-10-07 (review #41998): "
+            "tab 予約一覧 chỉ phân trang 50 / 100."),
 
     tc("Calendar theo list", "UI-001", "Normal",
        "Tab 受付枠一覧: các cột dữ liệu và công thức 予約確定/残数",

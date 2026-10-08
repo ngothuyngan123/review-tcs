@@ -6,20 +6,24 @@
   "spreadsheet_id": "REPLACE_OR_LEAVE_PLACEHOLDER_TO_FORCE_PER_TASK_DECLARATION",
 
   "columns": [
-    { "header": "TC ID",           "source": "tc_id" },
-    { "header": "Title",           "source": "title" },
-    { "header": "Type",            "source": "type" },
-    { "header": "Priority",        "source": "priority" },
-    { "header": "Precondition",    "source": "precondition" },
-    { "header": "Steps",           "source": "steps" },
-    { "header": "Expected result", "source": "expected" },
-    { "header": "Output note",     "empty": true },
-    { "header": "Assignee",        "empty": true },
+    { "header": "ID",                 "source": "tc_id" },
+    { "header": "Nhóm",               "source": "group" },
+    { "header": "Mã quan điểm",       "source": "viewpoint" },
+    { "header": "Màn hình/chức năng", "source": "screen" },
+    { "header": "Loại case",          "source": "type" },
+    { "header": "Chạy",               "source": "exec_mode" },
+    { "header": "Phạm vi ENV",        "source": "environment" },
+    { "header": "Tên case",           "source": "title" },
+    { "header": "Tiền điều kiện",     "source": "precondition" },
+    { "header": "Các bước thực hiện", "source": "steps" },
+    { "header": "Dữ liệu nhập",       "source": "data_input" },
+    { "header": "Kết quả mong đợi",   "source": "expected" },
     {
-      "header": "Status",
+      "header": "Kết quả thực thi",
       "empty": true,
-      "dropdown": ["OK", "NG", "Not test", "NG -> Đã fix"]
-    }
+      "dropdown": ["Đạt", "Không đạt", "Chưa test"]
+    },
+    { "header": "Ghi chú",            "source": "note" }
   ],
 
   "_column_flags": {
@@ -30,9 +34,11 @@
   },
 
   "_source_keys_dynamic": [
-    "tc_id", "title", "environment", "precondition", "steps",
-    "expected", "priority", "type", "map_to_impact"
+    "tc_id", "title", "type", "priority", "precondition", "steps", "expected",
+    "environment", "map_to_impact", "group", "viewpoint", "screen", "exec_mode",
+    "data_input", "result", "spec_status", "note"
   ],
+  "_source_keys_note": "push_tc.py đọc header bảng TC theo TÊN, nhận cả 3 format file 04: 14 cột (chuẩn từ 2026-10-07) · 16 cột canonical · 10 cột cũ. Key không có trong format của file → ô trống. Bảng ánh xạ key ↔ header: TC_FIELD_HEADERS trong scripts/push_tc.py.",
   "_source_keys_static": [
     "bug_id", "date", "slug", "tester", "submit_date", "version", "link_goc"
   ]

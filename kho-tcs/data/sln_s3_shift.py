@@ -44,7 +44,8 @@ S3 = [
        "S1, S2 ON · S3 OFF",
        "- Mặc định「選択してください」\n- Hiện S1, S2 theo đúng thứ tự màn list staff\n"
        "- KHÔNG hiện S3 (đang OFF)\n- Calendar chưa có staff: dropdown rỗng",
-       note="Nguồn: Quản lý calendar r1401-r1403."),
+       note="Nguồn: Quản lý calendar r1401-r1403. Leader xác nhận lại 2026-10-05: màn ca làm việc "
+            "vẫn KHÔNG hiện staff OFF (khác modal「予約追加」và modal filter — 2 nơi đó có hiện)."),
 
     tc("Ca làm việc — thêm & ghi đè", "FUNC-DATE-001", "Abnormal",
        "Không chọn được ngày quá khứ; ngày hôm nay giờ quá khứ vẫn thêm được",

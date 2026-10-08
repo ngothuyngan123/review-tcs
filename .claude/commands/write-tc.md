@@ -17,8 +17,8 @@ Nếu **arg1 trống** → liệt kê các folder con trong `tasks/` (sắp xế
 Đọc và tóm tắt ngắn gọn:
 1. `<folder>/01-bug-task.md` (BẮT BUỘC) — bug là gì, steps reproduce, expected/actual.
    - File 01 là bản **rút gọn** (2026-09-05): chỉ có `Bug ID / Ticket` · `Module / Màn hình` · Mô tả bug (**bản dịch tiếng Việt**, không còn khối 原文 JP) · Steps · Expected · Actual · Attachment · Ghi chú Leader · Dữ liệu định danh ca lỗi · Journal Redmine. **KHÔNG còn** field `Auto-filled` / `Môi trường phát hiện` / `Priority` và **KHÔNG còn** checkbox "Tester verify" → không check verify gate ở file 01.
-   - **Môi trường lỗi** (nếu cần): đọc ở `Ghi chú thêm của Leader`; không ghi ở đó → coi như chưa rõ, ghi `Môi trường test` của TC theo RULE-08 + note cần confirm.
-   - **`Dữ liệu định danh ca lỗi`** (nếu có) là nguồn dựng `Điều kiện tiền đề` + `Dữ liệu test/input` của TC — ưu tiên dùng ID thật ở đây thay vì bịa dữ liệu mới.
+   - **Môi trường lỗi** (nếu cần): đọc ở `Ghi chú thêm của Leader`; không ghi ở đó → coi như chưa rõ, ghi `Phạm vi ENV` của TC theo quy tắc cột `Phạm vi ENV` ở BƯỚC 4 (mặc định `dev, local, prd, staging`; RULE-08 phải chứa `prd`) + note cần confirm.
+   - **`Dữ liệu định danh ca lỗi`** (nếu có) là nguồn dựng `Tiền điều kiện` + `Dữ liệu nhập` của TC — ưu tiên dùng ID thật ở đây thay vì bịa dữ liệu mới.
    - **Nếu file CHƯA tồn tại** → DỪNG, in: "Cần `01-bug-task.md`. Có 2 cách: (1) chạy `/new-task <redmine-id>` để auto-fill từ Redmine; (2) paste tay theo `templates/01-bug-task.template.md`."
 2. **Spec** — đọc thẳng từ nguồn, **KHÔNG tạo `02-spec-reference.md`** (đã bỏ khỏi bộ file chuẩn; folder cũ còn file này thì vẫn dùng được). **Thứ tự ưu tiên** (dừng ở nguồn đầu tiên trả lời được "hành vi ĐÚNG của chức năng này là gì"):
 
@@ -29,7 +29,7 @@ Nếu **arg1 trống** → liệt kê các folder con trong `tasks/` (sắp xế
 
    - Ghi note ở Bước 7 đã dùng nguồn spec nào (link section cụ thể).
    - ⚠️ **KHÔNG WebFetch https://lme.jp/manual/** (bỏ từ 2026-09-08) — spec chỉ đọc trong [spec-features/](../../spec-features/); không có ở đó thì coi như **không có spec**, không đi tìm nguồn web thay thế.
-   - **Không nguồn nào có spec** cho chức năng → mọi TC liên quan ghi `Trạng thái đánh giá spec` = `Spec không ghi` + nêu **cần hỏi ai** ở `Ghi chú`, và đưa vào cảnh báo Bước 7. **KHÔNG tự bịa business rule.**
+   - **Không nguồn nào có spec** cho chức năng → mọi TC liên quan ghi `Đánh giá spec: Spec không ghi` + nêu **cần hỏi ai** ở `Ghi chú`, và đưa vào cảnh báo Bước 7. **KHÔNG tự bịa business rule.**
    - Mọi **business rule** đọc được phải có ≥ 1 TC verify.
 3. `<folder>/03-dev-impact.md` (BẮT BUỘC) — trích đầy đủ:
    - Mục 1: root cause
@@ -116,11 +116,14 @@ Sau khi lấy được TC cũ, **trích lọc** các TC **liên quan scope task 
 
 Ở chế độ `APPEND`, trích ra từ file đích (giữ trong working memory):
 1. **Toàn bộ TC đã có** → đây là tập chống trùng bắt buộc ở Bước 3f + Bước 6 (so theo **4 yếu tố**, không so chuỗi).
-2. **Số thứ tự lớn nhất của từng `TC No.` theo mã quan điểm** → TC mới đánh số **tiếp nối**, không đánh lại từ `01`. VD file đã có `TC-REGSHARED001-01` … `-06` → TC mới bắt đầu `TC-REGSHARED001-07`.
-3. **Format bảng đang dùng** (16 cột canonical hay 10 cột cũ trước 2026-07-16) → TC append **bám đúng format đang có của file**, KHÔNG convert file cũ sang format mới.
+2. **Số thứ tự lớn nhất của từng ID (`ID` ở format 14 cột, `TC No.` / `TC ID` ở format cũ) theo mã quan điểm** → TC mới đánh số **tiếp nối**, không đánh lại từ `01`. VD file đã có `TC-REGSHARED001-01` … `-06` → TC mới bắt đầu `TC-REGSHARED001-07`.
+3. **Format bảng đang dùng** → TC append **bám đúng format đang có của file**, KHÔNG convert file cũ sang format mới:
+   - **14 cột** (chuẩn từ 2026-10-07 — header bắt đầu `| ID | Nhóm | Mã quan điểm |`)
+   - **16 cột canonical** (2026-07-16 → 2026-10-06 — header bắt đầu `| TC No. | Mã quan điểm liên kết |`; snapshot Studio do `scripts/parse_studio_tcs.py` sinh cũng dùng format này)
+   - **10 cột cũ** (trước 2026-07-16 — header bắt đầu `| TC ID | Title |`)
 4. Dòng đầu file có sẵn `<!-- sync-target: ... -->` / `<!-- sync-tcs: ... -->` / `<!-- source: ... -->` chưa → quyết định ở Bước 7 có chèn `sync-target` hay không.
 
-In ra trước khi sang Bước 2: `Chế độ ghi: CREATE | APPEND (<n> TC đã có, format <16 cột | 10 cột cũ>)`.
+In ra trước khi sang Bước 2: `Chế độ ghi: CREATE (14 cột) | APPEND (<n> TC đã có, format <14 cột | 16 cột | 10 cột cũ>)`.
 
 
 ### BƯỚC 2 — CHỌN QUAN ĐIỂM TEST (tầng 1) + MỞ CATALOG (tầng 2)
@@ -213,36 +216,47 @@ Mục tiêu: bộ TC mới ở file 04 chỉ chứa **delta** (bug + impact mớ
    | **Conflict expected** — TC sắp viết có `Kết quả mong đợi` **mâu thuẫn** TC kho không? | **KHÔNG tự chọn bên.** Vẫn viết TC theo cách fix ở file 03, nhưng `Trạng thái đánh giá spec` = `Spec không ghi`, `Ghi chú` ghi `⚠️ conflict với <ID kho>: "<expected kho>"`, và đưa vào cảnh báo Bước 7 + note đầu file 04 để Leader/Dev chốt. |
    | **Đã có sẵn** — TC kho đã cover đúng ô yêu cầu này chưa? | Có → **KHÔNG viết TC mới trùng**; track nội bộ "đã có ở kho `<ID kho>`" và liệt kê ở Bước 7. |
 
-   ⚠️ Kho dùng **12 cột riêng** (`ID` = `TC-<PREFIX>-<nn>`), KHÁC 16 cột canonical của file 04 → chỉ **dẫn chiếu ID + tên case**, KHÔNG copy nguyên dòng kho vào file 04.
+   ⚠️ Kho dùng **12 cột riêng** (`ID` = `TC-<PREFIX>-<nn>`), file 04 dùng 14 cột = 12 cột kho + `Chạy` + `Phạm vi ENV`, nhưng `ID` kho là số tuần tự → chỉ **dẫn chiếu ID + tên case**, KHÔNG copy nguyên dòng kho vào file 04.
 
 ### BƯỚC 4 — SINH TC THEO TEMPLATE
-Output theo format `templates/04-tc-list.template.md` — bám **ĐÚNG sheet canonical "7. Ví dụ test case"** ([Bảng quan điểm test — HỢP NHẤT ELME v1.0](https://docs.google.com/spreadsheets/d/1IijLnq0gLZDFxOMWOYxXafz1Wnzv3W0g/edit?gid=1251796928#gid=1251796928)). Bảng TC có **16 cột**:
+Output theo format `templates/04-tc-list.template.md` — **14 cột, GIỐNG HỆT bảng §7 "TCs đề xuất bổ sung" của `/review-tc`** (Leader chốt 2026-10-07, thay 16 cột canonical cũ). TC do `/write-tc` viết và TC do `/review-tc` đề xuất dùng chung 1 format → copy qua lại / push lên Studio không cần ánh xạ cột:
 
-| TC No. | Mã quan điểm liên kết | Loại case | Tiêu đề test case | Điều kiện tiền đề | Các bước thực hiện | Dữ liệu test/input | Kết quả mong đợi | Kết quả thực thi | Evidence thực tế | Môi trường test | Người thực hiện | Ngày thực hiện | Số ticket bug | Trạng thái đánh giá spec | Ghi chú |
+| ID | Nhóm | Mã quan điểm | Màn hình/chức năng | Loại case | Chạy | Phạm vi ENV | Tên case | Tiền điều kiện | Các bước thực hiện | Dữ liệu nhập | Kết quả mong đợi | Kết quả thực thi | Ghi chú |
 
-Quy tắc:
-- **TC No.**: `TC-<mã quan điểm bỏ dấu gạch>-<nn>`, đánh lại từ `01` cho **mỗi** quan điểm. VD `MSG-002` → `TC-MSG002-01/-02/-03`; `DATA-COUNT-001` → `TC-DATACOUNT001-01`. **KHÔNG** dùng TC001/TC002 nữa.
-  - ⚠️ **Chế độ `APPEND`** (file 04 đã có TC — xem 1.4c): số thứ tự **tiếp nối** số lớn nhất của cùng mã quan điểm trong file đích, KHÔNG đánh lại từ `01`. VD file đã có `TC-MSG001-01/-02` → TC mới là `TC-MSG001-03`. Trùng `TC No.` với dòng đã có = lỗi, phải sửa trước khi ghi.
-- **Mã quan điểm liên kết**: mã tầng 1 mà TC cụ thể hóa (VD `PERM-002`). **BẮT BUỘC** — đây là cột để Leader/`/review-tc` map coverage.
-- **Loại case**: **CHỈ 3 giá trị** `Normal` / `Abnormal` / `Boundary`. **KHÔNG có Regression** — TC verify tính năng cũ không hỏng xếp vào `Normal` (luồng cũ chạy đúng) hoặc `Abnormal` (điều kiện lỗi cũ), và ghi chữ `regression` ở **Ghi chú**.
-- **Tiêu đề test case**: mô tả MỤC ĐÍCH cụ thể + **chứa keyword** giúp Leader suy luận impact (tên function / DB table / màn hình). VD: "generateLinkInviteStaff: bot standard 10/10 → fail" → Leader nhận ra ngay map F1.
-- **Điều kiện tiền đề**: account, data seed, feature flag, timezone — **đầy đủ**, người khác đọc dựng được env. Mỗi ý 1 dòng bắt đầu bằng `- `, dùng `<br>` xuống dòng.
-- **Các bước thực hiện**: tuần tự, đánh số 1./2./3., dùng `<br>` để xuống dòng trong bảng.
-- **Dữ liệu test/input**: giá trị input cụ thể + **phép tính tay** nếu TC có số đếm/tỷ lệ (VD `5 friend, 3 người mở` / `Phép tính tay: 3/5 = 60%`). Không "data dummy" — dùng giá trị nghiệp vụ hợp lý.
-- **Kết quả mong đợi**: **đo lường được** — giá trị cụ thể, không "hiển thị đúng". VD: "Broadcast gửi đến 200 friends". Áp dụng **RULE-06** (đi tới output cuối chuỗi) + **RULE-07** (khớp DB + màn hình + output).
-  TC có bước gửi request trực tiếp (nhóm `API`) → **bắt buộc ghi mã HTTP cụ thể** theo **RULE-13** (bảng mục 1.1 của `framework/checklist-lme.md`): 200 · 400 · 401 · 403/404 · 422 · 429 · 500 · 502. Code Dev trả lệch quy ước → giữ expected theo quy ước, ghi mã thực tế ở `Ghi chú`.
-- **Kết quả thực thi**: **CHỈ** `Đạt` / `Không đạt` / `Chưa test`. Draft luôn ghi `Chưa test`.
-- **Evidence thực tế**: **để trống** trong draft (QA paste link/ảnh sau khi test, BẮT BUỘC khi Đạt). *Loại* evidence bắt buộc của quan điểm (RULE-02) ghi ở **Ghi chú**.
-- **Môi trường test**: `STAGING` (mặc định) / `DEV` / `PRODUCTION`. **RULE-08**: TC nhóm media / domain / job / loadbalance / bill tiền → ghi `PRODUCTION`.
-- **Người thực hiện** / **Ngày thực hiện** / **Số ticket bug**: **để trống** trong draft. QA fill sau khi run.
-- **Trạng thái đánh giá spec**: **CHỈ** `Spec ghi rõ` / `Spec không ghi` / `Đã hỏi leader`. Spec không định nghĩa hành vi → chọn `Spec không ghi` + ghi rõ **đã hỏi ai** ở Ghi chú. **KHÔNG tự suy diễn rồi cho Đạt.**
-- **Ghi chú**: loại evidence bắt buộc (RULE-02) · lý do nếu quan điểm Cao thiếu 1 trong 3 loại case (RULE-01) · cảnh báo escalate · đánh dấu `regression` · liên kết quan điểm khác.
+**Quy tắc từng cột = đúng mục "Quy tắc cột" §7 của [templates/05-review-report.template.md](../../templates/05-review-report.template.md)** — đọc ở đó, đây là nguồn duy nhất, KHÔNG chép lại để tránh 2 nơi lệch nhau. Tóm tắt các điểm hay sai:
+
+- **`ID`**: `TC-<mã quan điểm bỏ dấu gạch>-<nn>`, đánh từ `01` cho **mỗi** quan điểm. VD `MSG-002` → `TC-MSG002-01`; `DATA-COUNT-001` → `TC-DATACOUNT001-01`. **KHÔNG** dùng TC001/TC002, **KHÔNG** dùng prefix tuần tự của kho (`TC-TAG-267`).
+  - ⚠️ **Chế độ `APPEND`** (file 04 đã có TC — xem 1.4c): số thứ tự **tiếp nối** số lớn nhất của cùng mã quan điểm trong file đích. VD file đã có `TC-MSG001-01/-02` → TC mới là `TC-MSG001-03`. Trùng `ID` với dòng đã có = lỗi, phải sửa trước khi ghi.
+- **`Nhóm`**: `UI` / `API` / `Data` / `Job` — suy từ `GROUP_MAP` ([kho-tcs/data/_common.py](../../kho-tcs/data/_common.py)) nhưng **cách kiểm chứng thắng**: TC gửi request trực tiếp tới endpoint → `API`; TC chỉ thao tác màn hình → không xếp `API`; TC kiểm job nền chạy / bị chặn → `Job`.
+- **`Mã quan điểm`**: mã tầng 1 mà TC cụ thể hóa (VD `PERM-002`). **BẮT BUỘC** — cột để Leader / `/review-tc` map coverage.
+- **`Màn hình/chức năng`**: `<Tên VN/EN> <Tên JP>: <nội dung test ngắn gọn>`. VD `Friend list 友だちリスト: Filter friend info 友だち情報 kiểu text テキスト`. Màn không có tên JP → `MCP (API filter_friends): <nội dung>`.
+- **`Loại case`**: **CHỈ** `Normal` / `Abnormal` / `Boundary`. **KHÔNG có Regression** — TC verify tính năng cũ không hỏng xếp `Normal` / `Abnormal` + ghi chữ `regression` ở `Ghi chú`.
+- **`Chạy`**: `auto` / `manual` → Studio `exec_mode`, **mặc định `auto`** (kể cả nhóm `UI` và bước "bạn bè thao tác trên LINE"). `manual` **chỉ** khi scope chỉ có `prd` · thiết bị thật · mail thật · mắt người phán đoán → ghi `manual vì <lý do>` ở `Ghi chú`.
+- **`Phạm vi ENV`**: env code Studio, chỉ 3 tổ hợp — `dev, local, prd, staging` (**mặc định**) · `prd` (chỉ khi phải kiểm trên tài khoản / dữ liệu khách hàng thật → `chỉ prd vì <lý do>`) · `dev, local, staging` (abnormal ảnh hưởng server → `không chạy prd vì <lý do>`). **RULE-08** (media · domain · job · loadbalance · bill tiền) → scope **phải chứa `prd`**.
+- **`Tên case`**: mô tả MỤC ĐÍCH cụ thể + **chứa keyword** để Leader suy được impact (tên function / DB table / màn hình). VD `generateLinkInviteStaff: bot standard 10/10 → fail` → Leader nhận ra ngay map F1. Không prefix `[<nhóm>]`.
+- **`Tiền điều kiện`**: account, data seed, feature flag, timezone — **đầy đủ**, người khác đọc dựng được env. Mỗi ý 1 dòng bắt đầu bằng `- `, ngăn bằng `<br>`.
+- ⚠️ **Mỗi TC phải tự đầy đủ** — TC lên Studio / Sheet đứng riêng từng dòng, TC khác và bảng tổng quan không đi theo:
+  - `Tiền điều kiện` **chép đủ** dữ liệu TC dùng (từng bạn ở trạng thái nào, giá trị friend info / QR / tag…). **CẤM** `Như TC-FUNC001-01`, `Bộ dữ liệu như TC-…`, `xem bảng ở đầu file`. Nhiều TC chung 1 bộ dữ liệu → chép lại phần cần dùng vào từng TC.
+  - `Các bước` / `Dữ liệu nhập` / `Kết quả mong đợi` **CẤM** trỏ sang TC khác (`Đúng bằng TC-…`, `số như TC-…`); ghi thẳng con số + tập người **kèm lý do** từng người có / không có. Trỏ tới bước trong chính TC (`Lặp bước 2–3 với …`) thì được.
+  - Bạn bè test viết tắt **`F01`, `F02` …**, khai báo ở `Tiền điều kiện` (`システム表示名 <PREFIX>_F01 … — gọi tắt F01 …`). Không dùng G / H / U.
+  - Tham chiếu chéo (TC kho, TC cũ) chỉ để ở `Ghi chú`.
+- **`Các bước thực hiện`**: **mỗi bước 1 dòng**, đánh số `1. ` `2. `, ngăn bằng `<br>`; không gộp nhiều thao tác / nhiều màn vào 1 bước.
+- **`Dữ liệu nhập`**: giá trị input cụ thể + **phép tính tay** nếu TC có số đếm/tỷ lệ (VD `5 friend, 3 người mở` / `Phép tính tay: 3/5 = 60%`). Không "data dummy".
+- **`Kết quả mong đợi`**: **mỗi kết quả 1 dòng** bắt đầu bằng `- `, ngăn bằng `<br>`; **đo lường được** (giá trị cụ thể, không "hiển thị đúng"). Áp **RULE-06** (đi tới output cuối chuỗi) + **RULE-07** (khớp DB + màn hình + output). TC nhóm `API` → **bắt buộc mã HTTP cụ thể** theo **RULE-13** (200 · 400 · 401 · 403/404 · 422 · 429 · 500 · 502); code Dev trả lệch quy ước → giữ expected theo quy ước, ghi mã thực tế ở `Ghi chú`.
+- **Nhãn tiếng Việt trước thuật ngữ màn hình tiếng Nhật** ở `Tên case` · `Tiền điều kiện` · `Các bước` · `Dữ liệu nhập` · `Kết quả mong đợi` (VD `Detail hợp đồng 契約詳細`).
+- **`Kết quả thực thi`**: **để trống** trong draft — người test / Studio tự điền.
+- **`Ghi chú`**: ngăn bằng ` · `, theo thứ tự:
+  1. **Map impact** `BUG` / `F<n>` / `D<n>` / `T<n>` mà TC cover — **thay cho `Lấp G/Q/R` của `/review-tc`** (đây là chỗ Leader trace TC → `03-dev-impact.md`).
+  2. `regression` (+ `dẫn từ <ID kho>` nếu có).
+  3. `Đánh giá spec: Spec ghi rõ | Spec không ghi (đã hỏi <ai>) | Đã hỏi leader` — thay cột `Trạng thái đánh giá spec` cũ. **Không tự suy diễn rồi cho Đạt.**
+  4. `Evidence: <loại>` (RULE-02).
+  5. Lý do nếu quan điểm Cao thiếu 1 trong 3 loại case (RULE-01) · lý do `manual` / `chỉ prd` / `không chạy prd` · cảnh báo conflict.
 
 Tỷ lệ gợi ý cho cả bộ TC: `Normal` ~40% / `Abnormal` ~35% / `Boundary` ~25% (điều chỉnh theo bản chất task — task phân quyền/validation thì Abnormal + Boundary sẽ nhiều hơn).
 
-> **KHÔNG có cột Priority** — độ ưu tiên suy ra từ **ưu tiên của mã quan điểm** ở tầng 1, nên không lặp lại trong bảng.
+> **Đã bỏ so với 16 cột cũ**: `Evidence thực tế` · `Người thực hiện` · `Ngày thực hiện` · `Số ticket bug` (người test ghi trên Studio / Sheet sau khi chạy) · `Trạng thái đánh giá spec` (dồn vào `Ghi chú`) · `Môi trường test` (đổi tên thành `Phạm vi ENV`).
 >
-> **KHÔNG có cột "Map to Impact"** — coverage map qua cột `Mã quan điểm liên kết` + keyword trong `Tiêu đề test case`. Track mapping impact (BUG/F/D/T) nội bộ để verify ở Bước 6, ghi vào **Ghi chú** nếu cần làm rõ, KHÔNG thêm cột mới.
+> **KHÔNG có cột Priority** (ưu tiên suy từ mã quan điểm) · **KHÔNG có cột "Map to Impact"** (map impact ghi ở đầu `Ghi chú`).
 
 ### BƯỚC 5 — FILL CÁC SECTION KHÁC CỦA FILE 04
 Theo template, ngoài bảng TC, file `04-tc-list.md` còn:
@@ -253,14 +267,17 @@ Theo template, ngoài bảng TC, file `04-tc-list.md` còn:
 Trước khi ghi file, tự track mapping nội bộ (impact + quan điểm → TC nào cover) và verify:
 - [ ] Mọi impact F/D/T trong `03-dev-impact.md` ĐỀU có ≥ 1 TC verify (không sót — kể cả từ TC mới HOẶC TC cũ đã cover)
 - [ ] **Mọi quan điểm ◯ ưu tiên Cao có đủ 3 loại case** (`Normal` + `Abnormal` + `Boundary`) — thiếu 1 loại phải có lý do ghi ở cột `Ghi chú` (RULE-01)
-- [ ] **Mọi TC có `Mã quan điểm liên kết`** và `TC No.` đúng format `TC-<mã quan điểm bỏ gạch>-<nn>`
-- [ ] **Mọi TC có `Trạng thái đánh giá spec`**; case `Spec không ghi` đã ghi rõ **đã hỏi ai** ở `Ghi chú` (không tự suy diễn)
-- [ ] **Mọi TC có `Kết quả thực thi` = `Chưa test`** và `Evidence thực tế` để trống trong draft
+- [ ] **Mọi TC có `Mã quan điểm`** và `ID` đúng format `TC-<mã quan điểm bỏ gạch>-<nn>`
+- [ ] **Mọi TC có `Đánh giá spec: ...` ở `Ghi chú`**; case `Spec không ghi` đã ghi rõ **đã hỏi ai** (không tự suy diễn)
+- [ ] **Mọi TC mở đầu `Ghi chú` bằng impact cover** (`BUG` / `F<n>` / `D<n>` / `T<n>`)
+- [ ] **Mọi TC có `Màn hình/chức năng` đúng mẫu** `<Tên VN/EN> <Tên JP>: <nội dung>`; `Chạy` = `manual` đều có lý do; `Phạm vi ENV` thuộc 3 tổ hợp hợp lệ
+- [ ] **Mọi TC để trống `Kết quả thực thi`** trong draft
 - [ ] **Mọi quan điểm đánh × đều có lý do** (RULE-03); × ở quan điểm Cao → đưa vào cảnh báo Bước 7
 - [ ] **Mọi TC có output ra ngoài đều verify tới output cuối chuỗi** (LINE app / app / Google / gateway / file / mail) — RULE-06
 - [ ] **Mọi TC CRUD verify đủ 3 tầng** (DB + màn hình + output); có TC kiểm `WHERE` scope trên 2 tài khoản nếu task có UPDATE/DELETE — RULE-07
 - [ ] **Mọi TC đều có `Ghi chú` ghi loại evidence bắt buộc** (RULE-02)
 - [ ] Mọi TC có Title/Steps đủ rõ để Leader suy luận impact (tên function / DB / feature có trong title)
+- [ ] **Mọi TC tự đầy đủ**: không `Tiền điều kiện` / `Các bước` / `Kết quả mong đợi` nào chứa `Như TC-…` / `TC-<mã>` / `xem bảng …`; bạn bè viết tắt `F01 …` và đã khai báo trong chính TC
 - [ ] BUG có ít nhất 1 TC riêng (TC đó có từ "reproduce" hoặc tả đúng flow KH)
 - [ ] Mỗi T trong 4.3 có ≥ 1 TC verify không hỏng (Ghi chú = `regression`)
 - [ ] Mỗi D trong 4.2 có ≥ 1 `Abnormal` hoặc `Boundary`
@@ -271,8 +288,8 @@ Trước khi ghi file, tự track mapping nội bộ (impact + quan điểm → 
   - [ ] **(chế độ `APPEND`)** TC mới KHÔNG trùng **TC đã có trong chính `04-tc-list.md`** (đọc ở 1.4c) — đây là chiều **dễ sót nhất** vì file đích thường chính là nguồn TC cũ; trùng thì bỏ, track "đã có ở file 04 `<TC No.>`"
   - [ ] TC mới KHÔNG trùng **TC cũ** đã cover (nguồn ở Bước 1.4b)
   - [ ] TC mới KHÔNG trùng **TC kho** `kho-tcs/` (Bước 3f) — trùng thì bỏ, track "đã có ở kho `<ID kho>`"
-- [ ] **(chế độ `APPEND`)** Không `TC No.` nào của TC mới trùng `TC No.` đã có trong file đích; số thứ tự tiếp nối đúng theo từng mã quan điểm
-- [ ] **(chế độ `APPEND`)** TC mới bám **đúng format bảng đang có** của file đích (16 cột canonical hay 10 cột cũ), không trộn 2 format
+- [ ] **(chế độ `APPEND`)** Không `ID` nào của TC mới trùng ID đã có trong file đích; số thứ tự tiếp nối đúng theo từng mã quan điểm
+- [ ] **(chế độ `APPEND`)** TC mới bám **đúng format bảng đang có** của file đích (14 cột / 16 cột / 10 cột cũ), không trộn 2 format
 - [ ] KHÔNG có TC nào "override" / "sửa" / "ghi đè" TC cũ hoặc TC kho — đều là read-only
 - [ ] TC có `Kết quả mong đợi` **mâu thuẫn TC kho** đã ghi `⚠️ conflict với <ID kho>` ở `Ghi chú` + đưa vào cảnh báo Bước 7 (không tự chọn bên)
 
@@ -292,7 +309,7 @@ Nếu fail bất kỳ mục nào → bổ sung TC hoặc đặt lại Title rõ 
   ```
 - Mỗi dòng TC mới ghi thêm ở cột `Ghi chú`: `bổ sung YYYY-MM-DD by /write-tc`.
 - **Không có TC nào cần bổ sung** (mọi ô yêu cầu ở Bước 3 đã được TC sẵn có / TC cũ / TC kho cover) → **KHÔNG ghi file**, in: "Không có TC nào cần bổ sung — `04-tc-list.md` giữ nguyên `<n>` TC. Chi tiết ô yêu cầu nào đã được cover bởi TC nào: ...".
-- File đích dùng **10 cột cũ** (task trước 2026-07-16) → TC append viết **đúng 10 cột đó**, KHÔNG convert file sang 16 cột, KHÔNG trộn 2 format trong 1 bảng. Ghi cảnh báo `[NIT]` ở tóm tắt.
+- File đích dùng **format cũ** (16 cột canonical, hoặc 10 cột trước 2026-07-16) → TC append viết **đúng format đó** (cột chỉ format cũ có thì điền theo quy tắc cũ: `Kết quả thực thi` = `Chưa test`, `Trạng thái đánh giá spec` tách khỏi `Ghi chú`…), KHÔNG convert file sang 14 cột, KHÔNG trộn 2 format trong 1 bảng. Ghi cảnh báo `[NIT]` ở tóm tắt: "file 04 đang ở format cũ — TC mới bám format cũ".
 
 **Sync target metadata** (dùng `sync_url` lưu ở Bước 1.4a): chèn HTML comment ở **dòng đầu tiên** của file 04 (trước cả heading), đúng 1 dòng:
 ```

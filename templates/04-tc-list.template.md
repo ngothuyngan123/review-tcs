@@ -4,9 +4,11 @@
 
 > File này là **output của member**, **input của Leader**.
 >
-> **Format bảng TC bám đúng sheet canonical "7. Ví dụ test case"** của [Bảng quan điểm test — HỢP NHẤT ELME v1.0](https://docs.google.com/spreadsheets/d/1IijLnq0gLZDFxOMWOYxXafz1Wnzv3W0g/edit?gid=1251796928#gid=1251796928). Không tự đổi tên cột / thêm cột.
+> **Format bảng TC = 14 cột, giống hệt bảng §7 "TCs đề xuất bổ sung" của `05-review-report.md`** (Leader chốt 2026-10-07). TC member / `/write-tc` viết và TC `/review-tc` đề xuất dùng chung 1 format. Không tự đổi tên cột / thêm cột.
 >
-> **Config sync TC human** (dòng `<!-- sync-tcs: ... -->` ở đầu file): target Google Sheet của `/sync-ai-tc` (push TC AI viết trong file này) và của `/sync-review-tc` **khi đích là Sheet**. Ghi 5 cột `TC No., Tiêu đề test case, Điều kiện tiền đề, Các bước thực hiện, Kết quả mong đợi` vào sheet TC human, bắt đầu tại cột `anchor` ("Main Function"), append xuống dưới data hiện có.
+> File 04 cũ giữ nguyên format lúc tạo, không convert: **16 cột canonical** (2026-07-16 → 2026-10-06, kể cả snapshot Studio do `scripts/parse_studio_tcs.py` sinh) · **10 cột** (trước 2026-07-16).
+>
+> **Config sync TC human** (dòng `<!-- sync-tcs: ... -->` ở đầu file): target Google Sheet của `/sync-ai-tc` (push TC AI viết trong file này) và của `/sync-review-tc` **khi đích là Sheet**. Ghi 5 cột `ID, Tên case, Tiền điều kiện, Các bước thực hiện, Kết quả mong đợi` vào sheet TC human, bắt đầu tại cột `anchor` ("Main Function"), append xuống dưới data hiện có.
 >
 > ⚠️ `/sync-review-tc` **định tuyến theo nguồn TC gốc** ghi ở §0 của `05-review-report.md`: nguồn Studio → push thẳng MCP `testcase_create` (config này KHÔNG dùng tới) · nguồn Sheet → append vào chính Sheet đó · nguồn file 04 → hỏi human.
 > - `url` = URL Google Sheet TC human/master · `sheet` = tên tab · `anchor` = cột header canh vị trí (mặc định `Main Function`).
@@ -26,43 +28,45 @@
 
 ## TC List
 
-> **16 cột canonical.** Mỗi quan điểm ưu tiên **Cao** phải tách đủ **3 test case: Normal + Abnormal + Boundary** (RULE-01) — xem ví dụ mẫu ở sheet "7. Ví dụ test case".
+> **14 cột.** Mỗi quan điểm ưu tiên **Cao** phải tách đủ **3 test case: Normal + Abnormal + Boundary** (RULE-01).
 
-| TC No. | Mã quan điểm liên kết | Loại case | Tiêu đề test case | Điều kiện tiền đề | Các bước thực hiện | Dữ liệu test/input | Kết quả mong đợi | Kết quả thực thi | Evidence thực tế | Môi trường test | Người thực hiện | Ngày thực hiện | Số ticket bug | Trạng thái đánh giá spec | Ghi chú |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| TC-XXX000-01 | | Normal | | | | | | Chưa test | | STAGING | | | | Spec ghi rõ | |
-| TC-XXX000-02 | | Abnormal | | | | | | Chưa test | | STAGING | | | | | |
-| TC-XXX000-03 | | Boundary | | | | | | Chưa test | | STAGING | | | | | |
+| ID | Nhóm | Mã quan điểm | Màn hình/chức năng | Loại case | Chạy | Phạm vi ENV | Tên case | Tiền điều kiện | Các bước thực hiện | Dữ liệu nhập | Kết quả mong đợi | Kết quả thực thi | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TC-XXX000-01 | UI | | `<Tên VN/EN> <Tên JP>: <nội dung>` | Normal | auto | dev, local, prd, staging | | | | | | | `BUG` · Đánh giá spec: Spec ghi rõ · Evidence: `<loại>` |
+| TC-XXX000-02 | API | | | Abnormal | auto | dev, local, staging | | | | | | | `F1` · không chạy prd vì `<case ảnh hưởng server>` · Đánh giá spec: Spec ghi rõ · Evidence: `<loại>` |
+| TC-XXX000-03 | UI | | | Boundary | auto | dev, local, prd, staging | | | | | | | `T1` · regression · dẫn từ `<ID kho>` · Đánh giá spec: Spec không ghi (đã hỏi `<ai>`) · Evidence: `<loại>` |
 
 ### Chú thích cột
 
-| Cột | Quy tắc |
+**Quy tắc từng cột = mục "Quy tắc cột" §7 của [05-review-report.template.md](05-review-report.template.md)** — nguồn duy nhất, đọc ở đó. Chỉ khác ở `Ghi chú`:
+
+| Cột | Quy tắc tóm tắt |
 |---|---|
-| **TC No.** | `TC-<mã quan điểm bỏ dấu gạch>-<số thứ tự 2 chữ số>`, đánh lại từ `01` cho **mỗi** quan điểm. VD: `MSG-002` → `TC-MSG002-01`; `DATA-COUNT-001` → `TC-DATACOUNT001-01`; `PERM-001` → `TC-PERM001-03`. |
-| **Mã quan điểm liên kết** | Mã ở tầng 1 ([checklist-lme.md](../framework/checklist-lme.md)) mà TC này cụ thể hóa. VD `PERM-002`. **Bắt buộc** — đây là cột để Leader/`/review-tc` map coverage. |
-| **Loại case** | **CHỈ 3 giá trị**: `Normal` / `Abnormal` / `Boundary`. Không có loại nào khác. TC regression xếp vào `Normal` (luồng cũ vẫn chạy đúng) hoặc `Abnormal` (điều kiện lỗi cũ), ghi rõ "regression" ở **Ghi chú**. |
-| **Tiêu đề test case** | Mô tả MỤC ĐÍCH cụ thể + chứa **keyword** giúp Leader suy luận impact (tên function / DB table / màn hình). VD: `generateLinkInviteStaff: bot standard 10/10 → fail`. |
-| **Điều kiện tiền đề** | Account, data seed, feature flag, timezone — **đầy đủ**, người khác đọc dựng được env. Mỗi ý 1 dòng, bắt đầu bằng `- `. |
-| **Các bước thực hiện** | Tuần tự, đánh số `1.` `2.` `3.`. Dùng `<br>` để xuống dòng trong bảng markdown. |
-| **Dữ liệu test/input** | Giá trị input cụ thể + **phép tính tay** nếu TC có số đếm/tỷ lệ. VD: `5 friend, 3 người mở` / `Phép tính tay: 3/5 = 60%`. Không để "data dummy". |
-| **Kết quả mong đợi** | **Đo lường được** — giá trị cụ thể, không "hiển thị đúng". Áp dụng **RULE-06** (đi tới output cuối chuỗi: LINE app / mobile app / Google / gateway / file / mail) + **RULE-07** (khớp DB + màn hình + output). |
-| **Kết quả thực thi** | **CHỈ 3 giá trị**: `Đạt` / `Không đạt` / `Chưa test`. Draft luôn để `Chưa test`. |
-| **Evidence thực tế** | **Để trống khi viết draft.** QA paste link/ảnh sau khi test — **BẮT BUỘC khi Đạt** (RULE-02). *Loại* evidence bắt buộc ghi ở **Ghi chú**. |
-| **Môi trường test** | `STAGING` (mặc định) / `DEV` / `PRODUCTION`. **RULE-08**: media · domain · job · loadbalance · bill tiền → **không** kết luận từ staging, phải ghi `PRODUCTION`. |
-| **Người thực hiện** / **Ngày thực hiện** | Để trống khi viết draft. QA fill sau khi run. |
-| **Số ticket bug** | Để trống. Fill khi `Không đạt` → số ticket Redmine đã raise. |
-| **Trạng thái đánh giá spec** | **CHỈ 3 giá trị**: `Spec ghi rõ` / `Spec không ghi` / `Đã hỏi leader`. Spec không định nghĩa hành vi → chọn `Spec không ghi` + ghi rõ **đã hỏi ai** ở Ghi chú. **Không tự suy diễn rồi cho Đạt.** |
-| **Ghi chú** | Loại evidence bắt buộc (RULE-02) · lý do nếu quan điểm Cao thiếu 1 trong 3 loại case (RULE-01) · cảnh báo escalate · liên kết quan điểm khác · đánh dấu "regression". |
+| **ID** | `TC-<mã quan điểm bỏ dấu gạch>-<nn>`, đánh từ `01` cho **mỗi** quan điểm. VD `MSG-002` → `TC-MSG002-01`; `DATA-COUNT-001` → `TC-DATACOUNT001-01`. |
+| **Nhóm** | `UI` / `API` / `Data` / `Job` — theo `GROUP_MAP`, nhưng **cách kiểm chứng thắng** (gửi request trực tiếp → `API`; chỉ thao tác màn hình → không `API`; kiểm job nền → `Job`). |
+| **Mã quan điểm** | Mã tầng 1 ([checklist-lme.md](../framework/checklist-lme.md)) mà TC cụ thể hóa. **Bắt buộc** — cột để Leader / `/review-tc` map coverage. |
+| **Màn hình/chức năng** | `<Tên VN/EN> <Tên JP>: <nội dung test ngắn gọn>`. VD `Friend list 友だちリスト: Filter friend info 友だち情報 kiểu text テキスト`. |
+| **Loại case** | **Chỉ** `Normal` / `Abnormal` / `Boundary`. TC regression xếp `Normal` / `Abnormal` + ghi `regression` ở Ghi chú. |
+| **Chạy** | `auto` / `manual` (Studio `exec_mode`), **mặc định `auto`**. `manual` chỉ khi scope chỉ `prd` · thiết bị thật · mail thật · mắt người phán đoán → ghi `manual vì <lý do>`. |
+| **Phạm vi ENV** | Env code Studio, 3 tổ hợp: `dev, local, prd, staging` (**mặc định**) · `prd` (tài khoản khách hàng thật) · `dev, local, staging` (abnormal ảnh hưởng server). **RULE-08** → phải chứa `prd`. |
+| **Tên case** | Mục đích cụ thể + **keyword** để Leader suy impact (function / DB table / màn hình). Không prefix `[<nhóm>]`. |
+| **Tiền điều kiện** | Account, data seed, feature flag, timezone — **đầy đủ**. Mỗi ý 1 dòng `- `, ngăn `<br>`. **TC phải tự đầy đủ**: chép đủ dữ liệu TC dùng (từng bạn ở trạng thái nào…); **cấm** `Như TC-…` / `như NEW-…` / `xem bảng …` — lên test tool từng TC đứng riêng. Bạn bè test viết tắt `F01`, `F02` … (khai báo `システム表示名 <PREFIX>_F01 …`). |
+| **Các bước thực hiện** | Mỗi bước 1 dòng, đánh số `1.` `2.`, ngăn `<br>`. |
+| **Dữ liệu nhập** | Giá trị cụ thể + **phép tính tay** nếu có số đếm / tỷ lệ. Không "data dummy". |
+| **Kết quả mong đợi** | Mỗi kết quả 1 dòng `- `, ngăn `<br>`; **đo lường được**, ghi thẳng số + tập người kèm lý do (`7 bạn — F03 (đã dừng), F04 (đã đọc xong)…`); **cấm** `Đúng bằng TC-…`. **RULE-06** (output cuối chuỗi) + **RULE-07** (DB + màn hình + output); nhóm `API` ghi mã HTTP (**RULE-13**). |
+| **Kết quả thực thi** | **Để trống** khi viết draft. |
+| **Ghi chú** | Ngăn bằng ` · `: **(1) impact cover** `BUG` / `F<n>` / `D<n>` / `T<n>` (thay `Lấp G/Q/R` của §7) · (2) `regression` + `dẫn từ <ID kho>` · (3) `Đánh giá spec: Spec ghi rõ / Spec không ghi (đã hỏi <ai>) / Đã hỏi leader` · (4) `Evidence: <loại>` (RULE-02) · (5) lý do thiếu loại case (RULE-01) / lý do `manual` / `chỉ prd` / `không chạy prd` / cảnh báo conflict. |
 
 > **RULE-01 — pattern tối thiểu**: quan điểm ưu tiên **Cao** → **≥ 3 TC: Normal + Abnormal + Boundary**. Thiếu 1 trong 3 → **bắt buộc ghi lý do** ở Ghi chú (VD "quan điểm không có khái niệm biên"). Trung bình/Thấp → tối thiểu 1 Normal, khuyến khích thêm Abnormal.
 >
-> **Không có cột Priority** — độ ưu tiên suy ra từ **ưu tiên của mã quan điểm** ở tầng 1.
+> **Không có cột Priority** (ưu tiên suy từ mã quan điểm) · **không có cột Map to Impact** (impact ghi đầu `Ghi chú`). Kết quả chạy, evidence, người chạy, ticket bug ghi trên Studio / Sheet sau khi test, không ghi trong file này.
 
 ### Environment (note)
 
-Mặc định **STAGING** (`staging.lme.jp`). Trường hợp đặc biệt:
-- `DEV` (`form.watermeru.com`) — test sớm / verify source / reproduce race condition
-- `PRODUCTION` (`step.lme.jp`) — smoke sau deploy; **bắt buộc** với media / domain / job / loadbalance / bill tiền (RULE-08). **Tránh** tạo/xoá data thật.
+Mặc định chạy **cả 4 env** `dev, local, prd, staging`. Domain tham chiếu:
+- `staging` — `staging.lme.jp`
+- `dev` — `form.watermeru.com` (test sớm / verify source / reproduce race condition)
+- `prd` — `step.lme.jp`. Có trong scope **bắt buộc** với media / domain / job / loadbalance / bill tiền (RULE-08). **Tránh** tạo/xoá data thật; case abnormal có thể ảnh hưởng server → bỏ `prd` khỏi scope (`dev, local, staging`).
 
 ---
 
@@ -76,8 +80,8 @@ Mặc định **STAGING** (`staging.lme.jp`). Trường hợp đặc biệt:
 - [ ] Có **ít nhất 1 TC** verify trực tiếp bug fix (reproduce flow KH)
 - [ ] Có **ít nhất 1 TC** verify tính năng cũ không hỏng cho mỗi tính năng trong 4.3 (ghi "regression" ở Ghi chú)
 - [ ] Có **ít nhất 1 Abnormal + 1 Boundary** cho mỗi data quan trọng trong 4.2
-- [ ] Mọi TC có `Mã quan điểm liên kết`, steps rõ ràng, `Kết quả mong đợi` đo lường được
-- [ ] `Tiêu đề test case` chứa **keyword** giúp Leader nhận ra impact TC đó cover
+- [ ] Mọi TC có `Mã quan điểm`, steps rõ ràng, `Kết quả mong đợi` đo lường được
+- [ ] `Tên case` chứa **keyword** giúp Leader nhận ra impact TC đó cover
 
 ### Base quan điểm test LME (2 tầng)
 
@@ -96,7 +100,7 @@ Mặc định **STAGING** (`staging.lme.jp`). Trường hợp đặc biệt:
 - [ ] Mọi × đều có lý do; × ở quan điểm **Cao** đã báo Leader duyệt (**RULE-03**)
 - [ ] TC có output ra ngoài (LINE app / mobile app / Google / gateway / file / mail) → `Kết quả mong đợi` đi tới **output cuối trên thiết bị thật** (**RULE-06**)
 - [ ] TC CRUD verify đủ **3 tầng** DB + màn hình + output; có TC kiểm `WHERE` scope trên 2 tài khoản nếu task có UPDATE/DELETE (**RULE-07**)
-- [ ] Task chạm **media / domain / job / loadbalance / bill tiền** → có TC ghi `Môi trường test = PRODUCTION` (**RULE-08**)
+- [ ] Task chạm **media / domain / job / loadbalance / bill tiền** → TC liên quan có `Phạm vi ENV` **chứa `prd`** (**RULE-08**)
 - [ ] Task chạm đối tượng đã từng version-up → test **cả nhánh cũ và mới** (**RULE-09**)
 - [ ] Mỗi TC đã ghi **loại evidence bắt buộc** ở Ghi chú (**RULE-02**)
-- [ ] Mọi TC có `Trạng thái đánh giá spec`; case `Spec không ghi` đã ghi rõ **đã hỏi ai**
+- [ ] Mọi TC có `Đánh giá spec: ...` ở Ghi chú; case `Spec không ghi` đã ghi rõ **đã hỏi ai**

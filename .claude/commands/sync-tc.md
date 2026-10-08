@@ -61,7 +61,7 @@ Forward URL cho user. Nhắc:
 | `No target spreadsheet resolved` | Cả CLI args, HTML comment, config đều thiếu | Truyền `--spreadsheet <URL>`, hoặc add HTML comment vào 04-tc-list.md |
 | `Config not found` | Chưa copy từ example | `Copy-Item scripts/sync-tc.config.example.json scripts/sync-tc.config.json` |
 | `Credentials not found` | Chưa setup service account | Trỏ đến `docs/MCP-SETUP.md` |
-| `No TCs found` | File 04 không có bảng TC valid | Verify format bảng `\| TC ID \| Title \| ...` chuẩn template |
+| `No TCs found` | File 04 không có bảng TC valid | Cột đầu của header bảng TC phải là `ID` (14 cột, chuẩn từ 2026-10-07) / `TC No.` (16 cột) / `TC ID` (10 cột cũ); mỗi dòng TC có ID + tên case |
 
 ### QUY TẮC
 - KHÔNG sửa file `04-tc-list.md` trong quá trình sync (trừ trường hợp ở Bước 1 phải add HTML comment nếu thiếu — có hỏi user trước).

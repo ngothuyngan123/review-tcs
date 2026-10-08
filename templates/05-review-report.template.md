@@ -109,14 +109,16 @@
 > BƯỚC 4c. Hỏi: *TC này có **trái** một chuẩn nào đó không?* — 3 loại:
 > `CONF-TC` = 2 TC cùng `đối tượng + thao tác` + tiền đề tương đương nhưng `Kết quả mong đợi` **loại trừ nhau** ·
 > `CONF-SPEC` = expected trái **Business rule** ở `spec-features/<feature>/feature-spec.md` ·
-> `CONF-KHO` = expected trái **TC kho** ở `kho-tcs/fa<xxx>-*.md` cùng chức năng.
-> **Bắt buộc fill kể cả khi sạch.** **KHÔNG tự chọn bên, KHÔNG sửa TC** — mỗi dòng nêu đủ 2 khả năng.
+> `CONF-KHO` = expected trái **TC kho** ở `kho-tcs/fa<xxx>-*.md` cùng chức năng ·
+> `CONF-IGNORE` = đánh giá ảnh hưởng của Dev / diff có **tính năng đã bỏ** ở `framework/ignore-features.md` → đề nghị xóa TC trên tool, không tạo TC bổ sung, không sinh dòng §8.
+> **Bắt buộc fill kể cả khi sạch.** **KHÔNG tự chọn bên, KHÔNG sửa TC** — mỗi dòng nêu đủ 2 khả năng (trừ `CONF-IGNORE`).
 
 | # | Loại | TC liên quan | Nội dung check trùng nhau | Expected A | Expected B / nguồn đối chiếu | Khả năng sai | Severity | Ai chốt |
 |---|---|---|---|---|---|---|---|---|
 | C1 | `CONF-TC` | `NEW-8` vs `NEW-15` | `<cùng thao tác + tiền đề gì>` | `<expected của NEW-8>` | `<expected của NEW-15>` | `1 trong 2 TC sai chuẩn` | `[MAJOR]` | `Dev / Leader` |
 | C2 | `CONF-SPEC` | `NEW-3` | `<hành vi gì>` | `<expected của TC>` | `feature-spec.md §<mục> BR-<nn>: "<trích>"` | `TC sai` / `spec cũ hơn bản fix → cần update` | `[MAJOR]` | `Dev / PM` |
 | C3 | `CONF-KHO` | `NEW-21` | `<hành vi gì>` | `<expected của TC>` | `<ID kho> "<tên case>"` | `TC sai` / `kho cũ hơn bản fix → cần update` | `[MAJOR]` | `Leader` |
+| C4 | `CONF-IGNORE` | `NEW-31` / `không có TC` | `<F*/T* hoặc file diff Dev ghi>` | — | `ignore-features.md IG-<xx> — <tên tính năng> đã bỏ` | `Đánh giá ảnh hưởng ghi tính năng đã bỏ` → xóa `<NEW-xx>` trên test tool, không tạo TC bổ sung | `[MINOR]` | `Dev` |
 
 **Đã rà**: `<n>` TC × `spec-features/<feature>/feature-spec.md` + `kho-tcs/<file>.md` — `<không phát hiện mâu thuẫn>` /
 `<liệt kê C1..Cn>`. Không có file kho / spec của tính năng → ghi rõ (`kho-tcs chưa có FA-xxx` / `không có spec`),
@@ -199,25 +201,39 @@
 
 | ID | Nhóm | Mã quan điểm | Màn hình/chức năng | Loại case | Chạy | Phạm vi ENV | Tên case | Tiền điều kiện | Các bước thực hiện | Dữ liệu nhập | Kết quả mong đợi | Kết quả thực thi | Ghi chú |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| TC-XXX000-01 | UI | | | Normal | auto | staging | | | | | | | Lấp `<G1 / Q1>` · Đánh giá spec: Spec ghi rõ · Evidence: `<loại>` |
-| TC-XXX000-02 | API | | | Abnormal | manual | product | | | | | | | Lấp `<G2>` · RULE-08 · manual vì môi trường production · Evidence: `<loại>` |
-| TC-XXX000-03 | UI | | | Normal | auto | staging | | | | | | | Lấp `<R1>` · regression · dẫn từ `<ID kho / dòng dev_impact>` · Evidence: `<loại>` |
+| TC-XXX000-01 | UI | | | Normal | auto | dev, local, prd, staging | | | | | | | Lấp `<G1 / Q1>` · Đánh giá spec: Spec ghi rõ · Evidence: `<loại>` |
+| TC-XXX000-02 | API | | | Normal | manual | prd | | | | | | | Lấp `<G2>` · chỉ prd vì kiểm trên tài khoản khách hàng thật · manual vì môi trường production · Evidence: `<loại>` |
+| TC-XXX000-03 | API | | | Abnormal | auto | dev, local, staging | | | | | | | Lấp `<G3>` · không chạy prd vì case abnormal ảnh hưởng server · Evidence: `<loại>` |
+| TC-XXX000-04 | UI | | | Normal | auto | dev, local, prd, staging | | | | | | | Lấp `<R1>` · regression · dẫn từ `<ID kho / dòng dev_impact>` · Evidence: `<loại>` |
 
 > **Quy tắc cột** — xem [kho-tcs/README.md](../../kho-tcs/README.md) §Format 12 cột. Tóm tắt:
 > - `ID` = `TC-<mã quan điểm bỏ gạch>-<nn>`, VD `TC-PERM002-01`. **Không trùng** ID trong bộ TC gốc và trong kho. ⚠️ KHÔNG dùng prefix tuần tự của kho (`TC-TAG-267`) — build kho đánh số lại mỗi lần chạy.
-> - `Nhóm` = `UI` / `API` / `Data` / `Job`, suy từ mã quan điểm theo `GROUP_MAP` ở [kho-tcs/data/_common.py](../../kho-tcs/data/_common.py) (khớp tiền tố dài nhất trước; không khớp → `UI`). TC kiểm **job nền chạy / bị chặn** → `Job` (Studio `tc_group = job`), kể cả khi bước là thao tác màn hình / LINE app để kích hoạt hoặc quan sát; chỉ giữ `UI` khi phán quyết đầu tiên nằm ở màn quản trị. Trước khi push, đối chiếu phân bố `tc_group` với bộ TC gốc của Studio cùng task.
-> - `Màn hình/chức năng` = nhóm chức năng trong màn (dùng đúng tên nhóm của file kho nếu kho đã có tính năng đó).
+> - `Nhóm` = `UI` / `API` / `Data` / `Job`, suy từ mã quan điểm theo `GROUP_MAP` ở [kho-tcs/data/_common.py](../../kho-tcs/data/_common.py) (khớp tiền tố dài nhất trước; không khớp → `UI`). TC kiểm **job nền chạy / bị chặn** → `Job` (Studio `tc_group = job`), kể cả khi bước là thao tác màn hình / LINE app để kích hoạt hoặc quan sát; chỉ giữ `UI` khi phán quyết đầu tiên nằm ở màn quản trị. ⚠️ **Cách kiểm chứng thắng `GROUP_MAP`**: TC có bước **gửi request trực tiếp tới endpoint** (gọi tay POST/GET, sửa tham số, curl/Postman) → `API`, bất kể mã quan điểm (VD `DATA-DB-001` gửi POST → `API`, không phải `Data`). Ngược lại TC **chỉ thao tác trên màn hình** (kể cả chặn request bằng DevTools rồi quan sát UI) → **không** xếp `API` dù `GROUP_MAP` suy ra `API` — dùng `UI` (hoặc `Data` nếu phán quyết là query DB, `Job` nếu kiểm job nền). Trước khi push, đối chiếu phân bố `tc_group` với bộ TC gốc của Studio cùng task.
+> - `Màn hình/chức năng` = **`<Tên VN/EN> <Tên JP>: <nội dung test ngắn gọn>`** (Leader chốt 2026-10-07). Thuật ngữ JP trong phần nội dung kèm bản dịch VN/EN đứng trước. VD `Broadcast 一斉配信: Gửi thật theo điều kiện trạng thái scenario 「ステップ購読状況」` · `Friend list 友だちリスト: Filter friend info 友だち情報 kiểu text テキスト`. Màn không có tên JP (VD MCP) → `MCP (API filter_friends): <nội dung>`.
 > - `Tên case` = mô tả thuần, **không** prefix `[<nhóm>]`, nhưng phải chứa keyword để Leader suy được impact.
+> - **Mỗi TC phải tự đầy đủ** (Leader chốt 2026-10-07) — TC được push lên Studio / Sheet **từng dòng riêng lẻ**, bảng tổng quan / TC khác / NEW-xx của report **không đi theo**:
+>   - `Tiền điều kiện` **chép đủ** dữ liệu TC dùng (từng bạn bè ở trạng thái nào, giá trị friend info, QR, tag…). **CẤM** viết `Như TC-FUNC001-01`, `Bộ dữ liệu như NEW-17`, `xem bảng đầu §7`. Nhiều TC dùng chung 1 bộ dữ liệu → chép lại vào từng TC (chỉ phần TC đó cần).
+>   - `Các bước` / `Dữ liệu nhập` / `Kết quả mong đợi` **CẤM** trỏ sang TC khác (`Đúng bằng TC-…`, `số như NEW-19`, `theo cột Kỳ vọng bảng M`) — ghi thẳng con số + tập người. Trỏ tới bước trong **chính TC đó** (`Lặp bước 2–3 với …`) thì được.
+>   - `Kết quả mong đợi` liệt kê **tập kết quả + lý do** từng người có / không có. VD `- 購読していない: **7 bạn** — F03 (đã dừng), F04 (đã đọc xong), F05, F07–F10 (chưa đăng ký)` thay vì `7 — F03, F04, F05, F07–F10`.
+>   - Bạn bè test viết tắt **`F01`, `F02` …** (F = friend), khai báo rõ ở `Tiền điều kiện`: `システム表示名 <PREFIX>_F01 … (gọi tắt F01 …)`. Không dùng `G01` / `H01` / `U1`.
+>   - Tham chiếu chéo (TC kho, NEW-xx, căn cứ) chỉ đặt ở `Ghi chú`.
+> - `Các bước thực hiện` = **mỗi bước 1 dòng**, ngăn bằng `<br>`, đánh số `1. ` `2. ` … VD `1. Mở 契約詳細.<br>2. Bấm 「決済に進む」.` KHÔNG viết liền `1. … 2. …` trong 1 dòng, KHÔNG gộp nhiều thao tác / nhiều màn vào 1 bước. Bước "lặp cho từng dòng dữ liệu" tách thành 1 bước riêng.
+> - `Kết quả mong đợi` = **mỗi kết quả 1 dòng**, ngăn bằng `<br>`, mỗi dòng bắt đầu bằng `- `. VD `- Univapay thu 10.780<br>- 決済履歴 1 dòng 10,780円`. KHÔNG viết thành 1 đoạn văn.
+> - **Nhãn tiếng Việt trước thuật ngữ màn hình tiếng Nhật** (áp cho Tên case · Tiền điều kiện · Các bước · Dữ liệu nhập · Kết quả mong đợi): `Detail hợp đồng 契約詳細` · `Kỳ hạn thanh toán お支払い期間` · `Số tiền bill ご利用料金` · `Ngày thanh toán tiếp theo 次回決済日` · `Lịch sử biên lai thanh toán 決済履歴` · `Status hợp đồng ステータス`. Có 「」 thì nhãn đứng trước ngoặc: `Số tiền bill 「ご利用料金」`. KHÔNG chèn nhãn vào giữa câu thông báo JP dài (`「次回決済日：…から年払いに変更されます」` giữ nguyên) hay tên màn ghép (`お支払い期間の変更`).
 > - `Loại case` **chỉ** `Normal` / `Abnormal` / `Boundary` — không có Regression (ghi chữ `regression` ở `Ghi chú`), không có cột Priority.
 > - `Chạy` **chỉ** `auto` / `manual` → Studio `exec_mode`. **Mặc định `auto`** — bám quy tắc chọn `exec_mode` của Studio (`skill_doc_get`: "⛔ ĐỪNG mặc định manual"):
 >   - `auto` khi runner Studio kiểm chứng tự động được ở local bằng **bất kỳ tầng nào**: browser tự động (kể cả TC nhóm `UI`), gọi API, dispatch job / mô phỏng callback LINE, unit/integration, kiểm tra tĩnh source. **Nhóm `UI` ≠ `manual`.** Bước "bạn bè thao tác trên LINE" (gửi tin, trả lời trích dẫn, bấm nút, kết bạn) **không** phải lý do `manual` — runner mô phỏng được callback.
->   - `manual` **CHỈ** khi bắt buộc 1 trong 4: **(1)** `Phạm vi ENV = product` (production / dữ liệu khách hàng thật); **(2)** thiết bị thật — app admin mobile, kết quả phải nhìn trên app LINE thật (RULE-06), camera quét QR; **(3)** email / mail thật trong hộp thư; **(4)** mắt người phán đoán — so ảnh trước/sau, font, màu, bố cục.
+>   - `manual` **CHỈ** khi bắt buộc 1 trong 4: **(1)** `Phạm vi ENV` **chỉ có** `prd` (production / dữ liệu khách hàng thật) — scope 4 env có kèm `prd` thì **không** phải lý do `manual`; **(2)** thiết bị thật — app admin mobile, kết quả phải nhìn trên app LINE thật (RULE-06), camera quét QR; **(3)** email / mail thật trong hộp thư; **(4)** mắt người phán đoán — so ảnh trước/sau, font, màu, bố cục.
 >   - TC `manual` **bắt buộc** ghi lý do ở `Ghi chú`: `manual vì <1 trong 4 lý do>`. Không nêu được lý do thuộc 4 nhóm trên → để `auto`.
-> - `Phạm vi ENV` **chỉ** `Tất cả` / `staging` / `product` → Studio `env_scope`. Mặc định `staging`; **RULE-08** (media · domain · job · loadbalance · bill tiền · race · performance) → bắt buộc `product`; cần đối chiếu nhiều env → `Tất cả`.
+> - `Phạm vi ENV` = **ghi thẳng env code của Studio** (`env_list`: `dev` · `local` · `prd` · `staging`), ngăn bằng `, ` — **giống hệt giá trị push lên `env_scope`**, KHÔNG có bước quy đổi. Chỉ dùng 3 tổ hợp:
+>   - `dev, local, prd, staging` — **MẶC ĐỊNH**.
+>   - `prd` — **chỉ** khi case phải kiểm trên **tài khoản / dữ liệu khách hàng thật**. Ghi lý do ở `Ghi chú`: `chỉ prd vì <lý do>`.
+>   - `dev, local, staging` — case **abnormal có thể ảnh hưởng server** (làm chậm / treo / quá tải / bẩn dữ liệu dùng chung) → **không được test trên prd**. Ghi `không chạy prd vì <lý do>` ở `Ghi chú`.
+>   - **RULE-08** (media · domain · job · loadbalance · bill tiền): "không được kết luận từ staging" = scope **phải chứa `prd`**, KHÔNG có nghĩa chỉ chạy prd → mặc định 4 env đã đáp ứng. TC RULE-08 **không được** dùng tổ hợp `dev, local, staging`; nếu case đó vừa dính RULE-08 vừa ảnh hưởng server → giữ 4 env + ghi cảnh báo ở `Ghi chú`, Leader quyết.
 > - `Kết quả thực thi` **để trống** — người test tự điền (khác file 04 ghi `Chưa test`).
 > - `Ghi chú` gộp, ngăn bằng ` · `: **bắt buộc** `Lấp G<x> / Q<x> / R<x>` (TC `R<x>` thêm `regression` + căn cứ) · `Đánh giá spec: ...` · `Evidence: <loại>` (RULE-02) · `regression` · `dẫn từ <ID kho>`. **Không** ghi `Môi trường: ...` ở đây nữa — đã có cột `Phạm vi ENV`.
 >   ⚠️ `Ghi chú` là cột **chỉ dùng trong file 05 này** — `/sync-review-tc` **KHÔNG** đẩy nó lên Studio hay Google Sheet. Thông tin nào cần có mặt trên test tool thì phải nằm ở cột riêng (`Phạm vi ENV`, `Chạy`, `Mã quan điểm`, ...), đừng nhét vào `Ghi chú`.
-> - Copy sang `04-tc-list.md` (16 cột) → ánh xạ: `ID`→`TC No.` · `Tên case`→`Tiêu đề test case` · `Mã quan điểm`→`Mã quan điểm liên kết` · `Tiền điều kiện`→`Điều kiện tiền đề` · `Dữ liệu nhập`→`Dữ liệu test/input` · `Phạm vi ENV`→`Môi trường test`; tách `Ghi chú` trả lại `Trạng thái đánh giá spec`; `Kết quả thực thi` = `Chưa test`; `Nhóm`/`Màn hình/chức năng`/`Chạy` giữ trong `Ghi chú`.
+> - Copy sang `04-tc-list.md`: file 04 viết từ 2026-10-07 dùng **chung 14 cột này** → copy nguyên dòng, chỉ đổi đầu `Ghi chú` từ `Lấp G/Q/R` sang impact cover (`BUG` / `F<n>` / `D<n>` / `T<n>`). File 04 cũ 16 cột → ánh xạ: `ID`→`TC No.` · `Tên case`→`Tiêu đề test case` · `Mã quan điểm`→`Mã quan điểm liên kết` · `Tiền điều kiện`→`Điều kiện tiền đề` · `Dữ liệu nhập`→`Dữ liệu test/input` · `Phạm vi ENV`→`Môi trường test`; tách `Đánh giá spec` ra `Trạng thái đánh giá spec`; `Kết quả thực thi` = `Chưa test`; `Nhóm`/`Màn hình/chức năng`/`Chạy` giữ trong `Ghi chú`.
 
 ---
 
@@ -231,4 +247,4 @@
 |---|---|---|---|---|
 | 1 | | | `<C1 CONF-TC / C2 CONF-SPEC / C3 CONF-KHO ở §4>` | `Dev / Leader / PM` |
 
-<!-- Mỗi dòng ở §4 phải có đúng 1 dòng tương ứng ở đây. -->
+<!-- Mỗi dòng ở §4 phải có đúng 1 dòng tương ứng ở đây — trừ dòng `CONF-IGNORE`. -->

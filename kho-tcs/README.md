@@ -44,6 +44,9 @@ trong [templates/LME-SYSTEM-SPEC.md](../templates/LME-SYSTEM-SPEC.md).
 - Cột `Nhóm` suy từ bảng `GROUP_MAP` trong [data/_common.py](data/_common.py) (khớp tiền tố mã
   quan điểm dài nhất trước). Suy sai chỗ nào thì ghi đè từng TC bằng `group="API"` trong `tc()`.
   Mã quan điểm mới không khớp tiền tố nào → mặc định `UI`, nhớ bổ sung vào bảng.
+  ⚠️ **Cách kiểm chứng thắng `GROUP_MAP`**: TC có bước **gửi request trực tiếp tới endpoint**
+  (gọi tay POST/GET, sửa tham số) → `group="API"` bất kể mã quan điểm; TC **chỉ thao tác trên màn hình**
+  → không xếp `API` dù tiền tố suy ra `API` (dùng `UI` / `Data` / `Job` theo nơi phán quyết).
   `Job` — kiểm chứng job nền chạy / bị chặn / retry (callback, scenario, broadcast, action schedule, remind, notify, download media, batch). Thao tác màn hình / LINE app chỉ để kích hoạt hoặc quan sát thì vẫn là `Job`. Khớp enum `tc_group = job` của Studio. Tiền tố `JOB-` tự suy ra `Job`; TC job nền mang mã khác (`ENV-`, `REG-`, `STATE-`…) thì ghi đè `group="Job"`.
 - `env=` và `spec=` của `tc()` **giữ nguyên** trong file data; build tự ghép vào đầu cột `Ghi chú`
   nên không mất RULE-08 (media · domain · job · loadbalance · bill tiền · race · performance

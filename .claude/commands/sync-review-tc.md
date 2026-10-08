@@ -7,7 +7,11 @@ model: claude-sonnet-5
 User muốn sync **toàn bộ TCs bổ sung của reviewer** — bảng tại section **`## 7. TCs đề xuất bổ sung (<n>)`** (tiêu đề có kèm số TC trong ngoặc; parser khớp theo **cụm “đề xuất bổ sung”**, không theo số section — nên hậu tố `(<n>)` không ảnh hưởng, và report cũ đánh số `## 5.` vẫn push được) trong `05-review-report.md` — về **đúng nơi bộ TC gốc được lấy về ở `/review-tc` BƯỚC 0**.
 
 **Arguments:** `$ARGUMENTS`
-- **arg1** = folder review, vd `tasks/2026-08-26_40128_salon-dat-lich-ngoai-khung-gio-ca/`. Trống → liệt kê folder con trong `tasks/` (mới nhất trước), hỏi human chọn. KHÔNG tự đoán.
+- **arg1** = folder review, vd `tasks/2026-08-26_40128_salon-dat-lich-ngoai-khung-gio-ca/`. Trống → xử lý theo thứ tự:
+  1. **Folder của phiên hiện tại**: trong phiên này đã tạo hoặc sửa `tasks/<folder>/05-review-report.md` (qua `/review-tc` hoặc sửa tay theo yêu cầu human) → dùng folder đó, **KHÔNG hỏi chọn folder riêng**. Nhiều folder như vậy → lấy folder có report được ghi **gần nhất**.
+     - In ngay: `Folder: <path> (tự lấy từ phiên hiện tại — arg1 trống)`.
+     - Tên folder **bắt buộc** hiện trong câu xác nhận ghi ở 2A bước 4 / 2B, để human chọn "Dừng" nếu đoán sai. Đây là lần hỏi duy nhất của cả lệnh.
+  2. **Phiên mới, chưa đụng report nào** → liệt kê folder con trong `tasks/` (mới nhất trước), hỏi human chọn. KHÔNG tự đoán theo thời gian sửa file.
 - **arg2** (tùy chọn) = ép đích push, bỏ qua bước tự dò ở BƯỚC 0: `studio` · `sheet` · `ask` (luôn hỏi human).
 
 > **Nguyên tắc**: TC bổ sung phải quay về **cùng nơi** với bộ TC gốc, để member/Leader chỉ nhìn 1 chỗ. Không tự ý đổi đích, không push vào 2 nơi cùng lúc.
@@ -66,11 +70,11 @@ Verify TRƯỚC khi vào nhánh. Fail → DỪNG và hướng dẫn fix:
    | `Màn hình/chức năng` | `screen` | |
    | `Loại case` | `case_type` | enum `Normal` / `Abnormal` / `Boundary` |
    | `Chạy` | `exec_mode` | enum Studio `auto` / `manual` — giá trị §7 đã đúng enum, ghi thẳng |
-   | `Phạm vi ENV` | `env_scope` | **array tên env của Studio** (`env_list`: `dev` · `local` · `prd` · `staging`). Quy đổi: `staging` → `["staging"]` · `product` → **`["prd"]`** (⚠️ Studio dùng code `prd`, KHÔNG phải `product`/`production`) · `Tất cả` → `["dev","local","prd","staging"]` |
-   | `Tiền điều kiện` | `precondition` | |
-   | `Các bước thực hiện` | `steps` | **array** — tách theo `<br>` hoặc số thứ tự `1./2./3.` |
-   | `Dữ liệu nhập` | `data_input` | |
-   | `Kết quả mong đợi` | `expected` | |
+   | `Phạm vi ENV` | `env_scope` | §7 đã ghi **đúng env code Studio** (`env_list`: `dev` · `local` · `prd` · `staging`) → chỉ **tách theo `,`, trim** thành array, KHÔNG quy đổi. VD `dev, local, staging` → `["dev","local","staging"]`. Gặp giá trị ngoài 4 code trên → DỪNG, báo human sửa §7 (không tự đoán). ⚠️ Report cũ còn nhãn `Tất cả` / `staging` / `product` → xem ghi chú legacy bên dưới |
+   | `Tiền điều kiện` | `precondition` | `<br>` → `\n` |
+   | `Các bước thực hiện` | `steps` | **array, mỗi phần tử = 1 bước**. Tách theo `<br>`; ô cũ không có `<br>` thì tách tại số thứ tự `1. ` / `2. ` (regex `\s+(?=\d+\.\s)`, không cắt nhầm số tiền kiểu `10.780`). **Bỏ tiền tố `N. `** ở đầu mỗi phần tử, vì Studio tự đánh số khi hiển thị (đẩy cả số sẽ ra `1. 1. …`). Bỏ phần tử rỗng. VD `1. Mở A.<br>2. Bấm B` → `["Mở A.", "Bấm B"]` |
+   | `Dữ liệu nhập` | `data_input` | `<br>` → `\n` |
+   | `Kết quả mong đợi` | `expected` | **string, mỗi kết quả 1 dòng**: đổi `<br>` → `\n`, **giữ** tiền tố `- ` ở đầu dòng. VD `- Thu 10.780<br>- Không hiện 116,424円` → `"- Thu 10.780\n- Không hiện 116,424円"`. KHÔNG nối các dòng lại thành 1 đoạn |
    | — | `feature` | điền nếu suy được từ task; không chắc → bỏ trống, KHÔNG bịa |
 
    **KHÔNG map — bỏ hẳn, không đẩy lên Studio**:
@@ -78,16 +82,18 @@ Verify TRƯỚC khi vào nhánh. Fail → DỪNG và hướng dẫn fix:
    - `Kết quả thực thi` (luôn để trống) — Studio quản lý kết quả qua `result_submit`; TC tạo mới luôn là **draft chưa chạy**.
 
    > Report **cũ 12 cột** (chưa có `Chạy` / `Phạm vi ENV`) → `exec_mode` suy theo quy tắc cột `Chạy` ở [templates/05-review-report.template.md](../../templates/05-review-report.template.md) §7 (mặc định `auto`; `manual` chỉ khi steps bắt buộc production / thiết bị thật / mail thật / mắt người phán đoán) và **in ra bảng xác nhận** để human sửa trước khi ghi; `env_scope` **bỏ trống**. KHÔNG đọc `Ghi chú` để đoán env.
-   > Report **cũ 16 cột canonical** → `TC No.`→`client_ref` · `Tiêu đề test case`→`name` · `Mã quan điểm liên kết`→`viewpoint` · `Điều kiện tiền đề`→`precondition` · `Dữ liệu test/input`→`data_input` · `Môi trường test`→`env_scope` (quy đổi như trên) · `Trạng thái đánh giá spec`→`spec_status` — đây là **cột riêng**, không phải `Ghi chú`, nên vẫn map.
+   > Report **trước 2026-10-03** ghi `Phạm vi ENV` bằng nhãn → quy đổi legacy: `Tất cả` → `["dev","local","prd","staging"]` · `product` → `["prd"]` · `staging` → `["staging"]` (giữ nguyên nghĩa cũ, KHÔNG tự nới sang `dev, local, staging`). In rõ trong bảng xác nhận để human sửa nếu cần.
+   > Report **cũ 16 cột canonical** → `TC No.`→`client_ref` · `Tiêu đề test case`→`name` · `Mã quan điểm liên kết`→`viewpoint` · `Điều kiện tiền đề`→`precondition` · `Dữ liệu test/input`→`data_input` · `Môi trường test`→`env_scope` (env code Studio → tách `,` như trên; giá trị legacy `STAGING` → `["staging"]` · `DEV` → `["dev"]` · `PRODUCTION` → `["prd"]`) · `Trạng thái đánh giá spec`→`spec_status` — đây là **cột riêng**, không phải `Ghi chú`, nên vẫn map.
 
 4. **XÁC NHẬN TRƯỚC KHI GHI** (bắt buộc — đây là mutation lên hệ thống ngoài, Studio audit dưới actor `username@mcp`). In bảng:
 
    ```
+   Folder: <arg1>   (ghi "(tự lấy từ phiên hiện tại)" nếu arg1 trống)
    Đích: Studio task #<id> (round <n>, branch <...>)
    Số TC sẽ tạo: <n>
    | client_ref | name | case_type | viewpoint | exec_mode | env_scope |
    ```
-   Hỏi human confirm. **Chưa confirm → KHÔNG gọi `testcase_create`.**
+   Hỏi human confirm **đúng 1 câu**, gộp cả folder + đích + danh sách TC (lựa chọn: "Đồng ý, tạo <n> TC" / "Dừng, không push"). **Chưa confirm → KHÔNG gọi `testcase_create`.**
 
 5. **Gọi** `testcase_create(task_id=<id>, rows=[...])` — **tối đa 100 row/lần**, nhiều hơn thì chia batch theo thứ tự §7.
 
@@ -120,7 +126,7 @@ uv run scripts/push_tc_anchored.py <arg1> --source 05 --url "<URL>" --sheet "<t�
 ```
 > `--row` dùng khi cột anchor "Main Function" chỉ có data ở dòng đầu mỗi block (merged-style) khiến auto-detect đếm sai và có nguy cơ đè data cũ.
 
-Trước khi confirm: đọc stderr `Source: 05-review-report.md §7 ... → N TC` · `Resolved tab: ...` · `Row trống kế tiếp: ...` — verify đúng tab + đúng số TC. Sai → cancel.
+Trước khi confirm: đọc stderr `Source: 05-review-report.md §7 ... → N TC` · `Resolved tab: ...` · `Row trống kế tiếp: ...` — verify đúng tab + đúng số TC. Sai → cancel. Câu confirm của human phải ghi cả `Folder: <arg1>` (kèm "(tự lấy từ phiên hiện tại)" nếu arg1 trống), gộp chung 1 câu với cảnh báo push trùng nếu có.
 
 Script ghi **đúng 5 cột** `TC ID, Title, Precondition, Steps, Expected` vào 5 cột **LIÊN TIẾP** bắt đầu tại cột anchor, APPEND xuống dưới row cuối có data. **KHÔNG ghi header, KHÔNG tạo tab mới, KHÔNG đè data cũ.**
 
@@ -175,7 +181,7 @@ OK: ghi <n> TC vào tab '<tab>' cột <start>:<end>, row <start_row>-<end_row>
 - **Đích push bám theo nguồn TC gốc** (§0 report): Studio → MCP · Sheet → chính Sheet đó · file 04 → hỏi human. **Không đổi đích, không push vào 2 nơi cùng lúc.**
 - Nguồn TC = bảng **§7 của file 05**, format **14 cột** (12 cột kho + `Chạy` + `Phạm vi ENV`). Report cũ (12 cột chưa có 2 cột này, hoặc 16 cột canonical) vẫn parse được. Bỏ qua row template trống.
 - **Cột `Ghi chú` là dữ liệu LOCAL — KHÔNG sync lên bất kỳ đích nào.** Studio: không ghi `note`, không đào `spec_status`/`env_hint` từ nó. Sheet: vốn chỉ ghi 5 cột nên đã không đụng tới. Nội dung `Ghi chú` (lấp GAP nào, evidence, `regression`, `dẫn từ <ID kho>`) chỉ phục vụ Leader/member đọc report.
-- `Phạm vi ENV = product` phải quy đổi thành env code **`prd`** của Studio — sai code là TC rơi sai phạm vi chạy.
+- `Phạm vi ENV` ở §7 **= `env_scope` push lên** (cùng env code Studio, chỉ tách `,`) — lúc viết và lúc push dùng chung 1 bộ giá trị, không có bảng quy đổi. Code lạ → DỪNG báo human.
 - **Xác nhận với human trước mọi lần ghi ra ngoài** (Studio `testcase_create` và Sheet append) — in đích + số TC + danh sách `TC No.` trước khi chạy.
 - **KHÔNG sửa file 05** khi sync. Sheet: KHÔNG tạo tab mới, KHÔNG ghi header, KHÔNG đè data cũ — chỉ APPEND.
 - Studio idempotent qua `client_ref`; **Sheet KHÔNG idempotent** → phải pre-check trùng trước khi append.
@@ -183,4 +189,4 @@ OK: ghi <n> TC vào tab '<tab>' cột <start>:<end>, row <start_row>-<end_row>
 - Không xác định được nguồn hoặc đích → **hỏi human**, KHÔNG đoán.
 - **Xong → DỪNG.** Không tự chain skill khác.
 
-Bắt đầu: xác định folder (arg1) → đọc §0 xác định nguồn TC gốc → in `Nguồn → Đích → Nhánh` → pre-flight §7 → chạy đúng nhánh 2A / 2B / 2C.
+Bắt đầu: xác định folder (arg1; trống → folder của phiên hiện tại, phiên mới mới hỏi) → đọc §0 xác định nguồn TC gốc → in `Nguồn → Đích → Nhánh` → pre-flight §7 → chạy đúng nhánh 2A / 2B / 2C.

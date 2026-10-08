@@ -127,17 +127,28 @@ File `scripts/sync-tc.config.json` array `columns` định nghĩa cột Sheet. M
 
 ### Source keys động (Mode 1 — 1 row / 1 TC)
 
-| Source | Mô tả |
-|---|---|
-| `tc_id` | TC ID (TC001, TC002,...) |
-| `title` | Title |
-| `environment` | Dev / Staging / Production |
-| `precondition` | Precondition |
-| `steps` | Steps (giữ `\n` xuống dòng từ `<br>` trong markdown) |
-| `expected` | Expected result |
-| `priority` | High / Medium / Low |
-| `type` | Positive / Negative / Boundary / Regression |
-| `map_to_impact` | BUG / F1 / D1 / T1,... |
+`push_tc.py` đọc bảng TC trong file 04 **theo tên header**, nhận cả 3 format: **14 cột** (chuẩn từ 2026-10-07) · **16 cột canonical** · **10 cột cũ**. Key không có trong format của file → ô trống. Bảng ánh xạ đầy đủ: `TC_FIELD_HEADERS` trong `scripts/push_tc.py`.
+
+| Source | Header 14 cột | Header 16 cột | Header 10 cột cũ |
+|---|---|---|---|
+| `tc_id` | ID | TC No. | TC ID |
+| `title` | Tên case | Tiêu đề test case | Title |
+| `type` | Loại case | Loại case | Type |
+| `group` | Nhóm | — | — |
+| `viewpoint` | Mã quan điểm | Mã quan điểm liên kết | — |
+| `screen` | Màn hình/chức năng | — | — |
+| `exec_mode` | Chạy | — | — |
+| `environment` | Phạm vi ENV | Môi trường test | Environment |
+| `precondition` | Tiền điều kiện | Điều kiện tiền đề | Precondition |
+| `steps` | Các bước thực hiện (giữ `
+` xuống dòng từ `<br>`) | Các bước thực hiện | Steps |
+| `data_input` | Dữ liệu nhập | Dữ liệu test/input | — |
+| `expected` | Kết quả mong đợi | Kết quả mong đợi | Expected result |
+| `result` | Kết quả thực thi | Kết quả thực thi | — |
+| `spec_status` | — (nằm trong Ghi chú) | Trạng thái đánh giá spec | — |
+| `note` | Ghi chú | Ghi chú | — |
+| `priority` | — | — | Priority |
+| `map_to_impact` | — | — | Map to Impact |
 
 ### Source keys static (Mode 2 — giá trị giống nhau cho mọi row)
 
@@ -153,22 +164,28 @@ Set `"static": true`:
 | `version` | header file 04 → "Version TCs" |
 | `link_goc` | header file 04 → "Link TC gốc (nếu có)" |
 
-### Format mặc định (đang setup)
+### Format mặc định (`sync-tc.config.example.json`)
 
-10 cột — 7 cột data từ TC + 3 cột manual fill:
+**14 cột — giống file 04 / §7 report** (đổi 2026-10-07 từ 10 cột cũ):
 
 | # | Header | Mode | Nguồn |
 |---|---|---|---|
-| 1 | TC ID | dynamic | `tc_id` |
-| 2 | Title | dynamic | `title` |
-| 3 | Type | dynamic | `type` |
-| 4 | Priority | dynamic | `priority` |
-| 5 | Precondition | dynamic | `precondition` |
-| 6 | Steps | dynamic | `steps` |
-| 7 | Expected result | dynamic | `expected` |
-| 8 | Output note | empty | — |
-| 9 | Assignee | empty | — |
-| 10 | Status | empty + dropdown | OK / NG / Not test / NG -> Đã fix |
+| 1 | ID | dynamic | `tc_id` |
+| 2 | Nhóm | dynamic | `group` |
+| 3 | Mã quan điểm | dynamic | `viewpoint` |
+| 4 | Màn hình/chức năng | dynamic | `screen` |
+| 5 | Loại case | dynamic | `type` |
+| 6 | Chạy | dynamic | `exec_mode` |
+| 7 | Phạm vi ENV | dynamic | `environment` |
+| 8 | Tên case | dynamic | `title` |
+| 9 | Tiền điều kiện | dynamic | `precondition` |
+| 10 | Các bước thực hiện | dynamic | `steps` |
+| 11 | Dữ liệu nhập | dynamic | `data_input` |
+| 12 | Kết quả mong đợi | dynamic | `expected` |
+| 13 | Kết quả thực thi | empty + dropdown | Đạt / Không đạt / Chưa test |
+| 14 | Ghi chú | dynamic | `note` |
+
+> ⚠️ `scripts/sync-tc.config.json` (gitignored, mỗi máy 1 bản) **không tự đổi theo** — máy nào còn bản 10 cột cũ thì copy lại mảng `columns` từ file example, hoặc giữ 10 cột nếu Sheet đích vẫn dùng layout cũ (script vẫn điền được `tc_id` / `title` / `type` / `precondition` / `steps` / `expected` từ file 04 14 cột).
 
 ## Auto-formatting
 
@@ -186,7 +203,7 @@ Mỗi lần sync:
 | `403 Permission denied` | Sheet chưa share / share Viewer | Share folder Drive chứa Sheet với service account (Editor), hoặc share Sheet riêng lẻ |
 | `No target spreadsheet resolved` | Thiếu cả CLI + HTML comment + config | Add HTML comment vào 04-tc-list.md, hoặc truyền `--spreadsheet <URL>` |
 | `Config not found` | Chưa copy từ example | `Copy-Item scripts/sync-tc.config.example.json scripts/sync-tc.config.json` |
-| `No TCs found in 04-tc-list.md` | File 04 không có bảng TC valid | Verify format bảng `\| TC ID \| Title \| ... \|` đúng template |
+| `No TCs found in 04-tc-list.md` | File 04 không có bảng TC valid | Cột đầu của header bảng TC phải là `ID` (14 cột) / `TC No.` (16 cột) / `TC ID` (10 cột), mỗi dòng TC có ID + tên case |
 | `uvx: command not found` | Chưa cài uv | `powershell -c "irm https://astral.sh/uv/install.ps1 \| iex"` |
 
 ## So sánh /sync-tc vs MCP google-sheets

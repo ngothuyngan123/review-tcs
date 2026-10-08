@@ -485,18 +485,22 @@ S2 = [
             "1 lần mở modal, ghi rõ kết quả từng nhánh)."),
 
     tc("Modal filter booking & shift", "LIST-001", "Normal",
-       "Filter theo コース / スタッフ — đồng bộ thứ tự sort và ẩn item OFF",
+       "Filter theo コース / スタッフ — đồng bộ thứ tự sort, VẪN hiện item OFF",
        CAL + "\n- Có 3 course (1 course đang OFF) và 3 staff (1 staff đang OFF)",
        "1. Sort lại danh sách course ở màn QL course → mở modal filter\n"
        "2. OFF 1 course → mở modal filter\n3. Không chọn course → lọc\n"
        "4. Chọn 1 course → lọc\n5. Chọn nhiều course → lọc\n6. Chọn「全選択」→ lọc\n"
-       "7. Lặp lại các bước tương ứng cho staff\n8. Với calendar 個人 → quan sát vùng staff",
+       "7. Chọn course đang OFF → lọc\n8. Lặp lại các bước tương ứng cho staff\n"
+       "9. Với calendar 個人 → quan sát vùng staff",
        "3 course (1 OFF) · 3 staff (1 OFF)",
        "- Danh sách trong modal khớp thứ tự đã sort ở màn quản lý\n"
-       "- Course/staff OFF: KHÔNG hiện trong modal filter\n"
+       "- Course/staff OFF: VẪN hiện trong modal filter\n"
+       "- Chọn item OFF: lọc ra đúng booking/ca của item đó\n"
        "- Không chọn = 全選択 = KHÔNG lọc\n- Chọn 1 hoặc nhiều: lọc đúng theo lựa chọn\n"
        "- Calendar 個人: vùng chọn staff bị ẩn",
-       note="Nguồn: Quản lý calendar r820-r837."),
+       note="Nguồn: Quản lý calendar r820-r837. Cập nhật 2026-10-05 theo xác nhận của Leader: "
+            "modal filter hiện tại CÓ hiển thị course/staff OFF (corpus cũ ghi ẩn item OFF — đã lỗi thời). "
+            "Bước 7 (lọc theo item OFF) suy từ việc item OFF được hiển thị — verify khi chạy."),
 
     tc("Modal filter booking & shift", "LIST-001", "Normal",
        "Filter theo 予約ステータス — ánh xạ đúng sang giá trị status",
@@ -688,26 +692,35 @@ S2 = [
        note="Nguồn: Quản lý calendar r1024, r1127."),
 
     tc("Admin thêm booking thủ công", "FUNC-002", "Normal",
-       "Dropdown コース: default, thứ tự, ẩn course OFF, không chọn vẫn book được",
+       "Dropdown コース: default, thứ tự, VẪN hiện course OFF, không chọn vẫn book được",
        CAL + "\n- Modal「予約追加」đang mở; có 3 course (1 course OFF, 1 course không có system_name)",
        "1. Quan sát giá trị mặc định\n2. Mở dropdown → đối chiếu thứ tự và nội dung\n"
-       "3. Không chọn course → đăng ký booking",
+       "3. Không chọn course → đăng ký booking\n4. Chọn course đang OFF → đăng ký booking",
        "3 course như mô tả",
        "- Mặc định「選択してください」\n- Thứ tự khớp màn QL course; hiện tên quản lý course\n"
-       "- Course OFF KHÔNG hiện; course không có system_name thì hiện course_name\n"
-       "- Không chọn course: vẫn booking thành công, phần thông tin course hiện「指定なし」",
-       note="Nguồn: Quản lý calendar r1026-r1028."),
+       "- Course OFF VẪN hiện trong dropdown; course không có system_name thì hiện course_name\n"
+       "- Không chọn course: vẫn booking thành công, phần thông tin course hiện「指定なし」\n"
+       "- Chọn course OFF: booking thành công, gán đúng course đó",
+       note="Nguồn: Quản lý calendar r1026-r1028. Cập nhật 2026-10-05 theo xác nhận của Leader: "
+            "modal「予約追加」hiện tại CÓ hiển thị course OFF (corpus cũ ghi ẩn course OFF — đã lỗi thời). "
+            "Bước 4 suy từ việc course OFF được hiển thị để admin chọn — verify khi chạy."),
 
     tc("Admin thêm booking thủ công", "FUNC-002", "Normal",
-       "Dropdown スタッフ: ẩn staff OFF nhưng VẪN hiện staff không thực hiện course",
+       "Dropdown スタッフ: VẪN hiện staff OFF và staff không thực hiện course",
        CAL + "\n- Modal「予約追加」đang mở; có S1 (thực hiện course C1), S2 (KHÔNG thực hiện C1), "
              "S3 (đang OFF)",
-       "1. Chọn course C1 → mở dropdown staff\n2. Không chọn staff → đăng ký\n3. Chọn S1 → đăng ký",
+       "1. Chọn course C1 → mở dropdown staff\n2. Không chọn staff → đăng ký\n3. Chọn S1 → đăng ký\n"
+       "4. Chọn S3 (đang OFF) → đăng ký",
        "3 staff như mô tả",
-       "- Dropdown hiện S1 và S2 (staff không thực hiện course vẫn hiện để admin book được), "
-       "KHÔNG hiện S3 (đang OFF)\n"
-       "- Không chọn staff: booking vào 指定なし\n- Chọn S1: booking gán cho S1",
-       note="Nguồn: Quản lý calendar r1030-r1033. ⚠ Corpus đánh dấu NG cho「hiển thị tên quản lý staff」→ "
+       "- Dropdown hiện S1, S2 (staff không thực hiện course vẫn hiện để admin book được) "
+       "và S3 (đang OFF)\n"
+       "- Không chọn staff: booking vào 指定なし\n- Chọn S1: booking gán cho S1\n"
+       "- Chọn S3: booking thành công, gán cho S3",
+       note="Nguồn: Quản lý calendar r1030-r1033. Cập nhật 2026-10-05 theo xác nhận của Leader: "
+            "modal「予約追加」hiện tại CÓ hiển thị staff OFF (corpus cũ ghi ẩn staff OFF — đã lỗi thời). "
+            "Bước 4 suy từ việc staff OFF được hiển thị để admin chọn — verify khi chạy. "
+            "Staff OFF đã bị gỡ liên kết Google (#41121) → booking này không được sync lên Google. "
+            "⚠ Corpus đánh dấu NG cho「hiển thị tên quản lý staff」→ "
             "cần verify lại cột tên hiển thị trong dropdown."),
 
     tc("Admin thêm booking thủ công", "FUNC-DATE-001", "Abnormal",

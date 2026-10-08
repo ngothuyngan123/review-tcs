@@ -172,6 +172,9 @@ Suy **tự động** từ mã quan điểm theo bảng `GROUP_MAP` trong
 [kho-tcs/data/_common.py](../../kho-tcs/data/_common.py) — không cần khai báo tay.
 Chỗ nào bảng suy sai thì ghi đè từng TC bằng `group="API"` trong lời gọi `tc()`.
 Thêm quan điểm mới mà chưa có trong `GROUP_MAP` → mặc định rơi vào `UI`, **nhớ bổ sung tiền tố vào bảng**.
+⚠️ **Cách kiểm chứng thắng `GROUP_MAP`**: TC có bước **gửi request trực tiếp tới endpoint** (gọi tay POST/GET,
+sửa tham số) → ghi đè `group="API"` bất kể mã quan điểm; TC **chỉ thao tác trên màn hình** → không xếp `API`
+dù tiền tố suy ra `API` (dùng `UI` / `Data` / `Job` theo nơi phán quyết).
 
 ### Đánh số và tiêu đề
 

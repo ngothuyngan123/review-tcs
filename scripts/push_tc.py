@@ -107,6 +107,34 @@ def parse_folder_name(folder: Path) -> dict:
     return {"date": "", "bug_id": folder.name, "slug": ""}
 
 
+# Bảng TC trong 04-tc-list.md có 3 format (đọc header theo tên, không theo vị trí):
+#   14 cột — chuẩn từ 2026-10-07, giống §7 của 05-review-report (ID | Nhóm | Mã quan điểm | ...)
+#   16 cột canonical — 2026-07-16 → 2026-10-06 (TC No. | Mã quan điểm liên kết | ...)
+#   10 cột cũ — trước 2026-07-16 (TC ID | Title | Type | Priority | ...)
+TC_ID_HEADERS = ("tc id", "tc no.", "id")
+
+# source key (dùng trong sync-tc.config.json) -> tên header (lower) theo thứ tự ưu tiên
+TC_FIELD_HEADERS = {
+    "tc_id": ("id", "tc no.", "tc id"),
+    "title": ("tên case", "tiêu đề test case", "title"),
+    "type": ("loại case", "type"),
+    "priority": ("priority",),
+    "precondition": ("tiền điều kiện", "điều kiện tiền đề", "precondition"),
+    "steps": ("các bước thực hiện", "steps"),
+    "expected": ("kết quả mong đợi", "expected result", "expected"),
+    "environment": ("phạm vi env", "môi trường test", "environment"),
+    "map_to_impact": ("map to impact",),
+    "group": ("nhóm",),
+    "viewpoint": ("mã quan điểm", "mã quan điểm liên kết"),
+    "screen": ("màn hình/chức năng",),
+    "exec_mode": ("chạy",),
+    "data_input": ("dữ liệu nhập", "dữ liệu test/input"),
+    "result": ("kết quả thực thi",),
+    "spec_status": ("trạng thái đánh giá spec",),
+    "note": ("ghi chú",),
+}
+
+
 def parse_tc_file(path: Path) -> dict:
     """Parse 04-tc-list.md → {meta: {...}, tcs: [{...}]}."""
     if not path.exists():
@@ -139,27 +167,26 @@ def parse_tc_file(path: Path) -> dict:
                 meta[key] = val
             continue
 
-        if line.startswith("| TC ID |"):
-            tc_headers = [c.strip() for c in line.strip("|").split("|")]
-            in_tc_table = True
-            continue
+        if line.startswith("|") and not in_tc_table:
+            header_cells = [c.strip() for c in line.strip("|").split("|")]
+            if header_cells and header_cells[0].lower() in TC_ID_HEADERS:
+                tc_headers = header_cells
+                in_tc_table = True
+                continue
         if in_tc_table and line.startswith("|---"):
             continue
         if in_tc_table and line.startswith("|"):
             cells = [c.strip().replace("<br>", "\n") for c in line.strip("|").split("|")]
-            if len(cells) == len(tc_headers) and cells[0].startswith("TC"):
-                row = dict(zip(tc_headers, cells))
-                tcs.append({
-                    "tc_id": row.get("TC ID", ""),
-                    "title": row.get("Title", ""),
-                    "environment": row.get("Environment", ""),
-                    "precondition": row.get("Precondition", ""),
-                    "steps": row.get("Steps", ""),
-                    "expected": row.get("Expected", ""),
-                    "priority": row.get("Priority", ""),
-                    "type": row.get("Type", ""),
-                    "map_to_impact": row.get("Map to Impact", ""),
-                })
+            if len(cells) == len(tc_headers) and cells[0]:
+                row = {h.lower(): v for h, v in zip(tc_headers, cells)}
+                tc = {
+                    key: next((row[h] for h in names if h in row), "")
+                    for key, names in TC_FIELD_HEADERS.items()
+                }
+                # Bỏ dòng mẫu của template (ID có, tên case trống). ID không bắt buộc prefix "TC":
+                # snapshot Studio dùng ID hiển thị trên tool (NEW-7, #23747).
+                if tc["title"]:
+                    tcs.append(tc)
             continue
         if in_tc_table and not line.startswith("|"):
             in_tc_table = False

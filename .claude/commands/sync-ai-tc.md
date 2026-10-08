@@ -59,7 +59,7 @@ Forward URL cho user. Nhắc: TC được APPEND xuống dưới (không đè da
 | `Không tìm thấy tab tên '<x>'` | Sai tên tab | Verify tên tab (script in list tab hợp lệ) |
 | `Không tìm thấy cột header 'Main Function'` | Sheet không có cột tên đó trong 15 dòng đầu | Kiểm tra header, hoặc truyền `--anchor "<tên cột đúng>"` |
 | `403 Permission denied` | Sheet chưa share Editor | Share Sheet → paste `client_email` từ service account, quyền **Editor** |
-| `Không có TC nào parse được` | Bảng TC trong file 04 sai format | Verify bảng `\| TC ID \| Title \| ... \|` chuẩn template |
+| `Không có TC nào parse được` | Bảng TC trong file 04 sai format | Header bảng TC phải có cột ID (`ID` / `TC No.` / `TC ID`) + tên case (`Tên case` / `Tiêu đề test case` / `Title`) — script nhận cả file 04 14 cột (chuẩn từ 2026-10-07), 16 cột và 10 cột cũ |
 
 ### QUY TẮC
 - KHÔNG sửa `04-tc-list.md` khi sync (trừ Bước 1 add config nếu thiếu — hỏi user trước).

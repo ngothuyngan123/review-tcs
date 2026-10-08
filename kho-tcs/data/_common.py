@@ -22,6 +22,8 @@ COLS = [
 #          màn hình / LINE app chỉ để kích hoạt hoặc quan sát thì vẫn là Job.
 #          Khớp enum tc_group "job" của MCP LME TEST STUDIO.
 # Ghi đè từng TC bằng tham số group="..." của hàm tc().
+# Cách kiểm chứng thắng bảng này: TC gửi request trực tiếp tới endpoint -> group="API"
+# bất kể mã quan điểm; TC chỉ thao tác trên màn hình -> không để "API".
 GROUP_MAP = (
     ("OUT-PREVIEW",    "UI"),
     ("OUT-EXPORT",     "API"),

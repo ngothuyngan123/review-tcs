@@ -101,13 +101,14 @@ Dùng khi 0.2 không ra TC, **hoặc** human đã đưa link ở `arg2` / trong 
 
 - Link Sheet → `python scripts/fetch_grid.py <spreadsheet_id> <out.json> "<tên tab>"`. **Bắt buộc dùng script này** khi Sheet có cấu trúc cây `Main Function / Sub1..Sub5` với ô gộp — đọc bằng `values.get` thuần sẽ gán TC sai nhóm cha. File `.xlsx` trên Drive → `scripts/fetch_xlsx.py`.
 - Ghi vào `<arg1>/04-tc-list.md` kèm header `<!-- source: sheet <url> · gid=<gid> · rows <a>-<b> · fetched YYYY-MM-DD -->`, theo quy tắc ghi đè ở **0.2b**.
-- Nguồn không đúng 16 cột canonical → review theo đúng format nguồn, chỉ nhắc `[NIT]`; map quan điểm suy từ nội dung TC.
+- Nguồn không thuộc 3 format của file 04 (14 / 16 / 10 cột — xem 0.4) → review theo đúng format nguồn, chỉ nhắc `[NIT]`; map quan điểm suy từ nội dung TC.
 - Fetch lỗi (thiếu `credentials/google-service-account.json` / chưa share quyền / `gid` sai) → in **đúng lý do**, xuống **0.4**. KHÔNG retry vô hạn.
 
 ### 0.4 — NGUỒN 3: file `04-tc-list.md` trong folder
 
 Chỉ dùng khi **cả 0.2 và 0.3** không ra TC. Đọc file, xác định format:
-- **16 cột canonical** (chuẩn hiện tại — danh sách cột ở [CLAUDE.md](../../CLAUDE.md) §Format bảng TC).
+- **14 cột** (chuẩn từ 2026-10-07 — giống hệt bảng §7 của report; TC do `/write-tc` / member viết). Map impact đọc ở **đầu `Ghi chú`** (`BUG` / `F<n>` / `D<n>` / `T<n>`); đánh giá spec ở `Ghi chú` (`Đánh giá spec: ...`); `Kết quả thực thi` để trống = chưa chạy.
+- **16 cột canonical** (2026-07-16 → 2026-10-06, và snapshot Studio / Sheet do `/new-task` · `/review-tc` ghi) → review bình thường, **KHÔNG** bắt member convert.
 - **10 cột cũ** (task trước 2026-07-16: TC ID / Title / Type / Priority / ... / Output note / Assignee / Status) → review bình thường theo format đó, **KHÔNG** bắt member convert; chỉ nhắc `[NIT]`.
 
 File 04 KHÔNG có cột "Map to Impact" → map quan điểm đọc thẳng cột `Mã quan điểm liên kết`; map **impact BUG/F/D/T** phải suy luận từ tiêu đề / tiền đề / steps / expected.
@@ -165,6 +166,12 @@ Chỉ 4 check, đọc thẳng từ digest script / bảng TC — không cần b�
    - **Không nguồn nào có spec** cho chức năng → ghi `Input thiếu: spec cho <chức năng>` + `[MAJOR]`: "không có chuẩn để đánh giá Expected — TC ghi `Spec không ghi` mà chưa hỏi ai đều là rủi ro tự suy diễn". **KHÔNG tự bịa business rule.**
    - Mọi **business rule** đọc được phải có ≥ 1 TC verify (đối chiếu ở BƯỚC 3 + §8 report).
 3. **`03-dev-impact.md`** (BẮT BUỘC) — trích: mục 1 root cause · mục 2 cách fix · mục 3 function caller đã check · 4.1 `F*` · 4.2 `D*` · 4.3 `T*`.
+4. **[framework/ignore-features.md](../../framework/ignore-features.md)** (BẮT BUỘC, file ngắn — đọc đủ) — danh sách tính năng / hàm cũ LME **đã bỏ**. Đối chiếu cột `Nhận diện` với:
+   - `F*` / `T*` / mục 3 của `03-dev-impact.md`;
+   - `spec_delta.files[]` + `dev_impact` của Studio;
+   - `screen` / tiêu đề / steps của từng TC ở BƯỚC 0.
+
+   Ghi ra scratchpad danh sách **mục khớp** (mã `IG-xx` → `F*/T*` / file diff / TC nào). Danh sách này dùng ở BƯỚC 2 (loại khỏi mẫu số), 4c (`CONF-IGNORE`), 4d và 5 (không đề xuất TC).
 
 ⚠️ **KHÔNG check gate auto-fill** (bỏ 2026-09-21): checkbox "Tester verify auto-fill chính xác" ở `03-dev-impact.md` chưa tick **không** phải issue — `/review-tc` không flag, không ghi vào report. (Checkbox vẫn còn trong template + `/new-task` + `/write-tc`, chỉ skill review thôi không dùng.)
 
@@ -211,6 +218,7 @@ Report phải trả lời thẳng câu hỏi của Leader: *"TCs đã cover đ�
 | **(a) dev-impact** | số mục Dev tự kê: `BUG` (root cause) + từng `F*` + `D*` + `T*` ở `03-dev-impact.md` mục 4 | `dev-impact: <x>/<y> mục có TC — **ĐỦ** / **CHƯA ĐỦ**` |
 | **(b) diff code** | số điểm kiểm chứng suy từ diff: mỗi file/điểm sửa trong `spec_delta.files[]` + mỗi rủi ro hồi quy + mỗi hành vi đổi so với trước mà Studio `dev_impact` nêu | `diff code: <x>/<y> điểm có TC — **ĐỦ** / **CHƯA ĐỦ**` |
 
+- **Mục thuộc tính năng IGNORE** (khớp [framework/ignore-features.md](../../framework/ignore-features.md) ở BƯỚC 1 mục 4) → **loại khỏi mẫu số cả 2 chiều**, không bao giờ thành `GAP` / `RISK` / `G<x>`. Ghi chú loại ngay trong dòng trả lời, vd `30/33 mục có TC (… trừ F9 / T10 — IG-01 Booking Manager cũ)`. Báo cáo chi tiết ở §4 `CONF-IGNORE`.
 - Chỉ được ghi **ĐỦ** khi **mọi** mục của chiều đó có ≥ 1 TC **và** không mục nào ở trạng thái `RISK`. Còn `RISK` → ghi **CHƯA ĐỦ**.
 - Không có diff (`diffAvailable = false` **và** file 03 không mô tả điểm sửa) → chiều (b) ghi **`KHÔNG ĐÁNH GIÁ ĐƯỢC — Input thiếu: Studio chưa có diff`**. **Không được ghi ĐỦ.**
 - **Mỗi dòng `G<x>` ở §1 BẮT BUỘC có TC tương ứng ở §7.** Chỉ **2 ngoại lệ** được thay TC bằng 1 câu giải thích:
@@ -297,8 +305,8 @@ Quy tắc flag:
 - Task chạm **media / domain / job nền / loadbalance / bill tiền** mà mọi TC chỉ chạy local/staging → `[MAJOR] RULE-08 / ENV-003`.
 - Task chạm đối tượng **đã version-up** (template group, form `s.lmes.jp` vs `step3.lmes.jp`, remind cũ/mới, header spread cũ/mới) mà TC chỉ test nhánh mới → `[MAJOR] RULE-09 / COMPAT-LEGACY-001`.
 - TC không ghi **loại evidence bắt buộc** ở `Ghi chú` (format cũ: `Output note`) → `[MINOR] RULE-02`.
-- TC thiếu `Mã quan điểm liên kết`, hoặc `TC No.` sai format `TC-<mã quan điểm bỏ gạch>-<nn>` → `[MINOR]` (chỉ với format canonical).
-- TC thiếu `Trạng thái đánh giá spec`, hoặc ghi `Spec không ghi` mà không nêu đã hỏi ai → `[MAJOR]` (nguy cơ tự suy diễn rồi cho Đạt).
+- TC thiếu mã quan điểm (`Mã quan điểm` ở 14 cột / `Mã quan điểm liên kết` ở 16 cột), hoặc ID (`ID` / `TC No.`) sai format `TC-<mã quan điểm bỏ gạch>-<nn>` → `[MINOR]` (chỉ với format 14 / 16 cột; không áp cho ID hiển thị của Studio `NEW-xx`).
+- TC thiếu đánh giá spec (cột `Trạng thái đánh giá spec` ở 16 cột / `Đánh giá spec: ...` trong `Ghi chú` ở 14 cột), hoặc ghi `Spec không ghi` mà không nêu đã hỏi ai → `[MAJOR]` (nguy cơ tự suy diễn rồi cho Đạt).
 - Member đã tick "Base quan điểm LME" trong file 04 nhưng TC thực tế chưa cover → `[MAJOR]`.
 - **Quan điểm chỉ được cover bởi TC mang mã Studio lạ** (mục 0.6 #6) → tính là **chưa cover**, flag theo ưu tiên như trên.
 
@@ -306,7 +314,7 @@ Quy tắc flag:
 
 **Định tuyến kết quả**:
 - Quan điểm Trigger khớp mà TC **chưa cover đủ** (GAP / thiếu loại case / chỉ được cover bởi mã lạ) → **§2 report**, 1 dòng / quan điểm.
-- Các flag còn lại (RULE-02 evidence, RULE-06 output cuối, RULE-07 DB, RULE-08 env, RULE-09 legacy, RULE-13 mã HTTP, thiếu `Mã quan điểm liên kết`, sai format `TC No.`, thiếu `Trạng thái đánh giá spec`) → **§5 report** — trừ khi nó làm **cả một impact/quan điểm** mất cover thì đưa lên §1 / §2 dưới dạng `RISK`.
+- Các flag còn lại (RULE-02 evidence, RULE-06 output cuối, RULE-07 DB, RULE-08 env, RULE-09 legacy, RULE-13 mã HTTP, thiếu mã quan điểm, sai format ID, thiếu đánh giá spec) → **§5 report** — trừ khi nó làm **cả một impact/quan điểm** mất cover thì đưa lên §1 / §2 dưới dạng `RISK`.
 - Quan điểm đã cover đủ → **không ghi dòng nào**, chỉ đếm vào "Kết luận" §2.
 
 ---
@@ -361,13 +369,21 @@ Không phát hiện trùng → **vẫn phải ghi** §3: "Đã rà `<n>` TC, kh�
 
 ### 4c — Rà MÂU THUẪN trong TCs (bắt buộc — kết quả → **§4 report**)
 
-Khác 4b: 4b hỏi *"2 TC có thừa nhau không"*, 4c hỏi *"TC này có **trái** với một chuẩn nào đó không"*. Rà **3 loại**:
+Khác 4b: 4b hỏi *"2 TC có thừa nhau không"*, 4c hỏi *"TC này có **trái** với một chuẩn nào đó không"*. Rà **4 loại**:
 
 | Mã | Đối chiếu với | Dấu hiệu | Severity |
 |---|---|---|---|
 | `CONF-TC` | chính bộ TC lấy ở BƯỚC 0 | 2 TC cùng `đối tượng + thao tác` + tiền đề tương đương nhưng `Kết quả mong đợi` **loại trừ nhau** (vd TC A: "hiện thông báo lỗi" / TC B: "lưu thành công"). So theo **ý định**, khác câu chữ vẫn tính | `[MAJOR]` |
 | `CONF-SPEC` | `spec-features/<feature>/feature-spec.md` (BƯỚC 1) | `Kết quả mong đợi` của TC **trái Business rule** trong spec | `[MAJOR]` — trái đúng rule thuộc root cause / `BUG` → `[BLOCKER]` |
 | `CONF-KHO` | `kho-tcs/fa<xxx>-*.md` của tính năng | `Kết quả mong đợi` của TC **trái TC kho** cùng chức năng | `[MAJOR]` |
+| `CONF-IGNORE` | [framework/ignore-features.md](../../framework/ignore-features.md) (BƯỚC 1 mục 4) | Đánh giá ảnh hưởng của Dev (`F*` / `T*` / mục 3 file 03) **hoặc** diff Studio có tính năng / hàm cũ đã bỏ | `[MINOR]` |
+
+**`CONF-IGNORE` — xử lý riêng, KHÁC 3 loại còn lại**:
+- Đây **không** phải chuyện chọn bên: tính năng đã bỏ là sự thật đã chốt → **không** nêu "2 khả năng", **không** sinh dòng §8.
+- Mỗi mã `IG-xx` khớp = **1 dòng §4**: cột `TC liên quan` = mọi TC ở BƯỚC 0 test tính năng đó (`NEW-xx`, hoặc `không có TC`); cột `Nội dung check trùng nhau` = `F*/T*` / file diff Dev ghi; cột `Expected B / nguồn đối chiếu` = `ignore-features.md IG-xx — <tên tính năng> đã bỏ`; cột `Khả năng sai` = `Đánh giá ảnh hưởng ghi tính năng đã bỏ`; cột `Ai chốt` = `Dev` (bỏ mục khỏi đánh giá ảnh hưởng).
+- Đề xuất bắt buộc ghi trong dòng: **"Xóa `<NEW-xx>` trên test tool (Studio `testcase_delete` / member xóa ở Sheet) — không tạo TC bổ sung cho phần này."** Không có TC → chỉ ghi "không tạo TC bổ sung".
+- TC đã ghi ở `CONF-IGNORE` **không** ghi lại ở §6, và gate "TC duy nhất cover" của 4d **không áp dụng** (tính năng đã bỏ thì không có gì để cover).
+- **KHÔNG tự xóa TC** — chỉ đề nghị, human xóa trên tool.
 
 **Cách đọc — targeted, KHÔNG nạp cả file** (dùng đúng kỹ thuật BƯỚC 5a; kho 350–810 dòng):
 
@@ -383,7 +399,7 @@ sed -n '<vùng>p' kho-tcs/fa<xxx>-*.md                 # đọc đúng vùng
 
 **Quy tắc xử lý**:
 - **KHÔNG tự chọn bên, KHÔNG sửa TC.** Mỗi dòng phải nêu **2 khả năng**: *TC sai chuẩn* hay *spec / kho cũ hơn bản fix nên cần update*.
-- Mỗi dòng §4 **đồng thời** sinh 1 dòng ở **§8 "Spec update needed"** với cột `Ai chốt` = `Dev` / `Leader` / `PM`.
+- Mỗi dòng §4 **đồng thời** sinh 1 dòng ở **§8 "Spec update needed"** với cột `Ai chốt` = `Dev` / `Leader` / `PM` — **trừ `CONF-IGNORE`** (không sinh §8).
 - `CONF-SPEC` / `CONF-KHO` làm một vùng ảnh hưởng hoặc quan điểm **mất chuẩn để đánh giá Đạt/Không đạt** → thêm dòng `RISK` tương ứng ở §1 / §2.
 - **Bắt buộc fill kể cả khi sạch**: "Đã rà `<n>` TC × `<file spec + file kho đã đọc>` — không phát hiện mâu thuẫn."
 
@@ -398,6 +414,8 @@ Trả lời câu hỏi: *"Có TC nào không cần test trong phạm vi task nà
 
 **Cộng thêm 1 nhóm** (dù map được tên chức năng): TC test **layer KHÔNG bị chạm code** — root fix nằm ở layer A, TC lại đi test layer downstream không có thay đổi nào trong diff.
 
+⚠️ TC test **tính năng IGNORE** đã ghi ở §4 `CONF-IGNORE` → **không** ghi lại ở §6.
+
 **Gate bắt buộc trước khi ghi 1 dòng**:
 - TC đó có phải **TC duy nhất** cover một impact / quan điểm nào không → **có thì KHÔNG flag**.
 - TC regression **dẫn được** từ rủi ro hồi quy của Studio, hoặc từ vùng regression bắt được ở kho-tcs (BƯỚC 5a) → **KHÔNG phải TC thừa**, dù không map thẳng vào `F*/D*/T*`.
@@ -411,6 +429,8 @@ Severity: `[MINOR]` = đề nghị bỏ khỏi phạm vi task · `[NIT]` = nên 
 ---
 
 ## BƯỚC 5 — ĐỀ XUẤT TC BỔ SUNG
+
+⛔ **KHÔNG đề xuất TC nào (`G` / `Q` / `R`) cho tính năng IGNORE** ([framework/ignore-features.md](../../framework/ignore-features.md)), kể cả khi diff vẫn sửa file của nó hoặc kho-tcs còn TC cho nó.
 
 ### 5a — Đối chiếu kho TCs TRƯỚC khi viết (bắt buộc)
 
@@ -430,12 +450,12 @@ Trước khi viết bất kỳ TC đề xuất nào, đọc TC cũ liên quan tr
    | **Conflict expected** — TC sắp đề xuất có `Kết quả mong đợi` **mâu thuẫn** TC kho không? | **KHÔNG tự chọn bên.** Dừng đề xuất TC đó, ghi 1 dòng `CONF-KHO` ở **§4** (định nghĩa ở BƯỚC 4c) **và** 1 dòng ở **§8 "Spec update needed"** để Leader/Dev chốt. |
    | **Đã có sẵn** — TC kho đã cover đúng GAP này chưa? | Có → **KHÔNG viết TC mới**; §7 ghi 1 dòng "G<x>: dùng lại `<ID kho>` — `<tên case>`", nêu rõ cần chỉnh gì cho hợp bug hiện tại. |
 
-   ⚠️ Kho dùng **12 cột riêng** (`ID` = `TC-<PREFIX>-<nn>`), KHÁC 16 cột canonical → chỉ **dẫn chiếu ID + tên case**, KHÔNG copy nguyên dòng kho vào §7.
+   ⚠️ Kho dùng **12 cột riêng** (`ID` = `TC-<PREFIX>-<nn>`), `ID` kho là số tuần tự, build lại là đổi → chỉ **dẫn chiếu ID + tên case**, KHÔNG copy nguyên dòng kho vào §7.
 
 ### 5b — Chống trùng với bộ TC ở BƯỚC 0
 
 Mỗi TC đề xuất (kể cả TC `R<x>`) phải qua **2 lần check trùng** trước khi ghi vào §7, dùng đúng **4 yếu tố** ở BƯỚC 4b:
-- vs **bộ TC BƯỚC 0** — trùng → **KHÔNG thêm TC mới**; TC cũ thiếu chiều thì ghi issue "bổ sung steps/expected cho `<TC No.>`" ở §5 thay vì đẻ TC mới.
+- vs **bộ TC BƯỚC 0** — trùng → **KHÔNG thêm TC mới**; TC cũ thiếu chiều thì ghi issue "bổ sung steps/expected cho `<ID>`" ở §5 thay vì đẻ TC mới.
 - vs **các TC khác trong chính §7** — 2 GAP có thể dẫn tới cùng 1 TC → gộp làm 1, `Ghi chú` ghi cả 2 mã.
 
 §7 **bắt buộc** có dòng xác nhận: "Đã đối chiếu `<n>` TC ở BƯỚC 0 + `<file kho>` — không TC đề xuất nào trùng."
@@ -452,14 +472,16 @@ TC bổ sung sinh từ **3 nguồn**:
 
 ⚠️ `R<x>` là chỗ duy nhất AI được chủ động thêm TC ngoài §1 / §2 — nhưng vẫn cấm bịa: không có căn cứ trong Studio / kho / danh sách caller thì thôi.
 
-**Quy tắc 14 cột nằm ở [templates/05-review-report.template.md](../../templates/05-review-report.template.md) §7** (12 cột kho + `Chạy` + `Phạm vi ENV`) — đọc thẳng ở đó, KHÔNG lặp lại tại đây. 6 điểm hay sai nhất:
+**Quy tắc 14 cột nằm ở [templates/05-review-report.template.md](../../templates/05-review-report.template.md) §7** (12 cột kho + `Chạy` + `Phạm vi ENV`) — đọc thẳng ở đó, KHÔNG lặp lại tại đây. 8 điểm hay sai nhất:
 
 1. `ID` = `TC-<mã quan điểm bỏ gạch>-<nn>` (VD `TC-PERM002-01`) — **không** dùng prefix tuần tự của kho (`TC-TAG-267`), vì `kho-tcs/build.py` đánh số lại mỗi lần build.
 2. `Mã quan điểm` **bắt buộc** — đây là cột map coverage.
-3. `Phạm vi ENV` mặc định `staging`; **RULE-08** (media · domain · job nền · loadbalance · bill tiền · race · performance) → bắt buộc `product`.
+3. `Phạm vi ENV` ghi thẳng env code Studio (= giá trị push `env_scope`, không quy đổi). **Mặc định `dev, local, prd, staging`**; kiểm trên tài khoản khách hàng thật → `prd`; abnormal ảnh hưởng server → `dev, local, staging`. **RULE-08** (media · domain · job nền · loadbalance · bill tiền) = scope **phải chứa `prd`**, không phải chỉ prd.
 4. `Kết quả thực thi` **để trống** (khác file 04 ghi `Chưa test`).
 5. `Ghi chú` bắt buộc mở đầu bằng `Lấp G<x>` / `Lấp Q<x>` / `Lấp R<x>` để trace ngược về §1 / §2 / căn cứ regression; TC `R<x>` thêm chữ `regression`.
-6. `Chạy` **mặc định `auto`** — kể cả TC nhóm `UI` và TC có bước "bạn bè thao tác trên LINE" (runner dùng browser tự động + mô phỏng callback). `manual` **chỉ** khi bắt buộc production / thiết bị thật / mail thật / mắt người phán đoán, và phải ghi `manual vì <lý do>` ở `Ghi chú`.
+6. `Chạy` **mặc định `auto`** — kể cả TC nhóm `UI` và TC có bước "bạn bè thao tác trên LINE" (runner dùng browser tự động + mô phỏng callback). `manual` **chỉ** khi scope chỉ có `prd` / thiết bị thật / mail thật / mắt người phán đoán, và phải ghi `manual vì <lý do>` ở `Ghi chú`.
+7. `Nhóm` theo **cách kiểm chứng**, thắng `GROUP_MAP`: TC có bước **gửi request trực tiếp tới endpoint** → `API` bất kể mã quan điểm (VD `DATA-DB-001` gửi POST → `API`, không phải `Data`). TC **chỉ thao tác trên màn hình** (kể cả chặn request bằng DevTools rồi nhìn UI) → **không** xếp `API` dù `GROUP_MAP` ra `API` (VD `OUT-TRUTH-001` thao tác UI → `UI`). Bài học review #41489 (2026-10-03).
+8. **Mỗi TC tự đầy đủ** (Leader chốt 2026-10-07): `Tiền điều kiện` chép đủ dữ liệu TC dùng; **cấm** `Như TC-…` / `như NEW-…` / `xem bảng đầu §7` / `Đúng bằng TC-…` ở mọi cột lên tool — §7 push lên Studio từng dòng, bảng tổng quan không đi theo. `Kết quả mong đợi` ghi số + tập người kèm lý do. Bạn bè test viết tắt `F01`, `F02` …. Tham chiếu chéo chỉ ở `Ghi chú`.
 
 - `GAP` ở quan điểm ưu tiên **Cao** (§2) → đề xuất đủ **3 loại case** (RULE-01).
 - Steps lấy từ **Cách kiểm tra** của quan điểm ([checklist-lme.md](../../framework/checklist-lme.md)) + dữ liệu cụ thể ([catalog-lme.md](../../framework/catalog-lme.md)) — member đọc là dựng được env và chạy được.
@@ -477,7 +499,7 @@ Ghi `<arg1>/05-review-report.md` theo [templates/05-review-report.template.md](.
 | **§1 Coverage — dev-impact + diff code** | **2 dòng trả lời ĐỦ / CHƯA ĐỦ** (chiều a + chiều b) + 1 dòng Kết luận + bảng **chỉ các dòng `GAP`/`RISK`**, mã `G<x>`, cột `Chiều` = `dev-impact` / `diff code`. **Không còn dòng `orphan`** | BƯỚC 2 |
 | **§2 Thiếu so với quan điểm test** | 1 dòng Kết luận + bảng **chỉ quan điểm chưa cover đủ**, mã `Q<x>` | BƯỚC 3 |
 | **§3 TC trùng lặp** | Bắt buộc fill kể cả khi không trùng. Chỉ `DUP-EXACT` / `DUP-SUBSET` / `DUP-INFLATE` | BƯỚC 4b |
-| **§4 Mâu thuẫn trong TCs** | 3 loại `CONF-TC` (TC vs TC) · `CONF-SPEC` (vs `spec-features/`) · `CONF-KHO` (vs `kho-tcs/`). **Bắt buộc fill kể cả khi sạch.** Mỗi dòng kèm 1 dòng ở §8 | BƯỚC 4c |
+| **§4 Mâu thuẫn trong TCs** | 4 loại `CONF-TC` (TC vs TC) · `CONF-SPEC` (vs `spec-features/`) · `CONF-KHO` (vs `kho-tcs/`) · `CONF-IGNORE` (Dev ghi tính năng đã bỏ → đề nghị xóa TC, không tạo TC bổ sung). **Bắt buộc fill kể cả khi sạch.** Mỗi dòng kèm 1 dòng ở §8, trừ `CONF-IGNORE` | BƯỚC 4c |
 | **§5 Issues khác** | 1 bảng theo severity — chất lượng **nguồn** (0.6 + spec thiếu ở BƯỚC 1) trên cùng, rồi chất lượng **từng TC** (4a) + anti-pattern. **Không chứa GAP coverage, không chứa mâu thuẫn.** | BƯỚC 0.6 + 1 + 2 + 3 + 4a |
 | **§6 TCs thừa / ngoài phạm vi task** | TC không cần test trong phạm vi task (đủ 3 tiêu chí, hoặc test layer không bị chạm code). **Bắt buộc fill kể cả khi không có** | BƯỚC 4d |
 | **§7 TCs đề xuất bổ sung (`<n>`)** | Tiêu đề **bắt buộc kèm số TC đề xuất trong ngoặc** — `## 7. TCs đề xuất bổ sung (20)`, `<n>` = số dòng TC thật trong bảng (không đếm row template rỗng / dòng dùng lại TC kho); không có TC nào → `(0)`. Bảng **14 cột**, kèm bảng xác nhận đã đối chiếu kho-tcs + chống trùng. Sinh từ **`G<x>` + `Q<x>` + `R<x>` (regression AI đánh giá)** | BƯỚC 5 |
@@ -502,6 +524,7 @@ File 05 đã tồn tại → ghi `05-review-report.round<N>.md`, KHÔNG đè rep
 - **Dừng ở nguồn TC đầu tiên có kết quả** — không gộp TC từ 2 nguồn, không đối chiếu chéo; nguồn đã dùng phải in ra trước khi review.
 - **Không đề nghị xóa TC duy nhất** cover một impact/quan điểm — chuyển sang đề xuất gộp (BƯỚC 4b).
 - **Không tự chọn bên khi expected mâu thuẫn** — `CONF-TC` (2 TC), `CONF-SPEC` (TC vs `spec-features/`), `CONF-KHO` (TC vs `kho-tcs/`) đều ghi ở §4 + đẩy lên Leader/Dev qua §8, nêu đủ 2 khả năng (TC sai / spec-kho cần update). BƯỚC 4c.
+- **Tính năng IGNORE** ([framework/ignore-features.md](../../framework/ignore-features.md)) — không tính coverage, báo `CONF-IGNORE` ở §4 khi Dev / diff có nhắc, đề nghị xóa TC đang có trên tool, **không** đề xuất TC bổ sung. BƯỚC 1 mục 4 · 2 · 4c · 5.
 - **TC thừa chỉ ĐỀ NGHỊ bỏ, không tự xóa** — và không flag TC duy nhất cover một impact/quan điểm, cũng không flag TC regression dẫn được từ rủi ro hồi quy Studio / kho-tcs. BƯỚC 4d.
 - **KHÔNG đọc payload `testcase_list` vào context** — luôn qua `scripts/parse_studio_tcs.py`.
 - **Tham chiếu TC bằng ID hiển thị trên nguồn**: Studio → `temp_id` (`NEW-7`, `NEW-28`), không có thì `#<studio id>`; Sheet / file 04 người viết → ID ở cột đầu của nguồn. Mã `TC-<quan điểm>-<nn>` **chỉ** dùng cho TC mới đề xuất ở §7.

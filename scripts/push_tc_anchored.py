@@ -101,6 +101,17 @@ def _split_row(line: str) -> list:
     return [c.strip().replace("<br>", "\n") for c in line.strip().strip("|").split("|")]
 
 
+def _one_step_per_line(text: str) -> str:
+    """Mỗi bước 1 dòng: ô cũ viết liền '1. A 2. B' (không có <br>) → tách tại số thứ tự.
+    Regex chỉ khớp 'N. ' có khoảng trắng sau dấu chấm nên không cắt số tiền kiểu 10.780."""
+    return "\n".join(
+        part.strip()
+        for line in text.split("\n")
+        for part in re.split(r"\s+(?=\d+\.\s)", line)
+        if part.strip()
+    )
+
+
 def _match_idx(headers: list, *needles: str):
     """Trả về index cột đầu tiên mà header (lower) chứa 1 trong các needle."""
     low = [h.lower() for h in headers]
@@ -177,7 +188,7 @@ def parse_md_table(lines: list, start_idx: int = 0, stop_heading_prefix: str = N
             "tc_id": tc_id,
             "title": title,
             "precondition": cell("precondition"),
-            "steps": cell("steps"),
+            "steps": _one_step_per_line(cell("steps")),
             "expected": cell("expected"),
         })
     return tcs
