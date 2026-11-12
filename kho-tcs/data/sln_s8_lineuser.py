@@ -34,6 +34,7 @@ S8 = [
        "- U1: vào được màn đặt lịch ở cả 3 lối vào\n"
        "- U4 (bị block): KHÔNG hiển thị màn đặt lịch ở cả 3 lối vào\n"
        "- U5 (unfollow): chuyển sang màn kết bạn; kết bạn lại thì đặt được",
+       group="UI",
        note="Nguồn: Booking phía line user r11-r23 + #38520 r53. "
             "⚠ Nhánh U3 + link `line.me/R/app` là điểm KHÁC BIỆT dễ lọt — nêu rõ cho member."),
 
@@ -190,9 +191,8 @@ S8 = [
        "- 今日: LUÔN hiển thị tuần / tháng HIỆN TẠI (theo spec đã update)\n"
        "- Bấm 1 ngày ở lưới tháng: mở sang lưới tuần chứa ngày đó\n"
        "- Đổi tab: hiển thị đúng tuần/tháng có ca gần nhất",
-       note="Nguồn: Main case r276-r278, r285-r289. ⚠ r278 và r287 có 2 phiên bản kết quả "
-            "(「hiện tuần/tháng gần nhất có lịch」cũ và「luôn hiển thị tuần/tháng hiện tại」mới) → "
-            "lấy bản MỚI, xem MT-40."),
+       note="Leader chốt MT-40 (2026-10-12): nút 今日 luôn về tuần/tháng hiện tại. "
+            "Nguồn: Main case r276-r278, r285-r289 (bản cũ「tuần/tháng gần nhất có lịch」đã lỗi thời)."),
 
     tc("LINE user — chọn slot", "FUNC-DATE-001", "Boundary",
        "Setting 期間限定 (mùa vụ) ảnh hưởng tuần/tháng hiển thị",
@@ -217,6 +217,7 @@ S8 = [
        "2. Bấm next sang tuần 2 → đọc giờ bắt đầu hiển thị",
        "2 tuần có giờ bắt đầu khác nhau",
        "- Tuần 1: hiển thị từ 09:00\n- Tuần 2: hiển thị từ 09:30 (KHÔNG lấy nhầm 09:00 của tuần 1)",
+       group="UI",
        note="Nguồn: Booking phía line user r223-r224 (Bug KH #33003, 04/12/2025)."),
 
     tc("LINE user — chọn slot", "OUT-TRUTH-001", "Boundary",
@@ -229,6 +230,7 @@ S8 = [
        "- 指定なし: hiển thị từ 07:30 (giờ sớm nhất trong các staff)\n"
        "- S1: từ 09:00\n- S2: từ 07:30\n- Tuần 2: hiện message không có lịch làm việc\n"
        "- Khung sớm nhất đã đầy: VẪN hiển thị từ 07:30 (chỉ disable slot)",
+       group="UI",
        note="Nguồn: Booking phía line user r226-r230."),
 
     tc("LINE user — chọn slot", "OUT-TRUTH-001", "Abnormal",
@@ -241,6 +243,7 @@ S8 = [
        "- Slot hiển thị đúng theo ca làm việc, không thiếu / không thừa slot\n"
        "- Slot cuối cùng đặt được và giờ kết thúc không vượt giờ đóng ca\n"
        "- Calendar 個人 cho kết quả tương tự",
+       group="UI",
        note="Nguồn: Booking phía line user r565-r899 (Bug #31160, 31/07/2025)."),
 
     tc("LINE user — chọn slot", "OUT-TRUTH-001", "Abnormal",
@@ -252,6 +255,7 @@ S8 = [
        "Course 60 phút",
        "- Ngày/slot hiển thị đặt được thì PHẢI đặt được thật\n"
        "- Lưới tuần, lưới tháng và lưới admin nhất quán với nhau",
+       group="UI",
        note="Nguồn: Booking phía line user r937-r1152 (Bug KH #33013, 05/12/2025)."),
 
     tc("LINE user — chọn slot", "OUT-TRUTH-001", "Abnormal",
@@ -264,6 +268,7 @@ S8 = [
        "- Màn tháng hiển thị được bình thường khi có filter staff\n"
        "- User thỏa filter: hiện đúng trang báo lỗi, KHÔNG lọt vào màn đặt lịch\n"
        "- Calendar 個人: không có phần filter staff",
+       group="UI",
        note="Nguồn: Booking phía line user r504-r564 (Bug tự detect 9/2025: 「Không hiển thị màn hình "
             "tháng khi có filter của staff」+「set filter + setting không hiện top page thì user thỏa "
             "filter vẫn bị hiện màn booking」)."),
@@ -297,6 +302,7 @@ S8 = [
        "- B3: gửi tin nhắn đặt lịch, không tạo `action_lineuser`\n"
        "- B4, B5: KHÔNG gửi tin nhắn, CÓ tạo `action_lineuser` và chạy multi action\n"
        "- B6: gửi tin nhắn + tạo `action_lineuser` + chạy multi action",
+       group="Data",
        note="Nguồn: Booking phía line user r1175-r1180. RULE-06 + RULE-07."),
 
     tc("LINE user — nhập form & xác nhận", "MSG-004", "Normal",
@@ -307,6 +313,7 @@ S8 = [
        "Course + staff có action riêng",
        "- Mặc định: gửi action của course và staff\n"
        "- Trường hợp course + staff chỉ set message và chọn không sử dụng: gửi action CHUNG của booking",
+       group="UI",
        note="Nguồn: Booking phía line user r1172 + Quản lý calendar r1115-r1118."),
 
     tc("LINE user — nhập form & xác nhận", "MSG-004", "Normal",
@@ -318,6 +325,7 @@ S8 = [
        "- Lúc đặt (request): chỉ gửi action CHUNG「予約リクエスト受付時」, KHÔNG dùng action course/staff\n"
        "- Lúc bị từ chối: chỉ gửi action CHUNG「予約リクエスト否認時」\n"
        "- Action của course/staff CHỈ áp dụng khi đặt được duyệt ngay hoặc khi admin duyệt request",
+       group="UI",
        note="Nguồn: Booking phía line user r1181-r1191."),
 
     tc("LINE user — nhập form & xác nhận", "MSG-004", "Normal",
@@ -331,6 +339,7 @@ S8 = [
        "- Quy tắc giống nhau ở cả 4 mốc: chỉ gửi tin nhắn khi message được cài và CHỌN SỬ DỤNG; "
        "multi action luôn chạy khi có cài, kèm tạo bản ghi `action_lineuser`\n"
        "- Action của course/staff KHÔNG áp dụng cho luồng hủy",
+       group="Data",
        note="Nguồn: Booking phía line user r1194-r1217."),
 
     tc("LINE user — nhập form & xác nhận", "LIFF-ENTRY-001", "Abnormal",
@@ -359,6 +368,7 @@ S8 = [
        "- KHÔNG còn lỗi「order booking salon: Undefined index: start_time」\n"
        "- Booking thành công ở mọi nhánh; random staff hoạt động đúng\n"
        "- Action / remind / friend info / lịch sử / sync Google đều đúng",
+       group="UI",
        note="Nguồn: Booking phía line user r1414-r1436 (Bug tự detect #38629, 07/2026 — KHỐI MỚI NHẤT)."),
 
     # ══════════════ 48. LINE user — lịch sử & copy ══════════════
@@ -477,7 +487,8 @@ S8 = [
        "- U1 VẪN mở được màn detail booking từ URL hủy\n"
        "- Hủy được booking\n- Calendar 個人 cho kết quả tương tự",
        note="Nguồn: Booking phía line user r1358-r1374 (SpecChange #32646, 29/10/2025). "
-            "⚠ Xem MT-33 về mâu thuẫn với hành vi link lịch sử."),
+            "Leader chốt MT-33 (2026-10-12): filter 予約ページの非表示 chỉ chặn link booking, link lịch sử "
+            "và link hủy vẫn truy cập được."),
 
     # ══════════════ 50. Đồng thời & verify API ══════════════
     tc("Đồng thời & verify API", "CONC-001", "Abnormal",
@@ -496,29 +507,30 @@ S8 = [
        "- Cấu hình REQUEST: cả 2 đều đặt được ở trạng thái 予約リクエスト\n"
        "- Có/không 決済 và calendar 個人 đều cho kết quả nhất quán\n"
        "- DB không sinh booking vượt limit",
+       group="Data",
        note="Nguồn: Booking phía line user r1396-r1413 (Bug KH #38280, 29/06/2026) + #38520 r43."),
 
     tc("Đồng thời & verify API", "CONC-002", "Abnormal",
        "Verify lại dữ liệu ở bước xác nhận — admin đổi cấu hình giữa chừng",
        LU + "\n- U1 đã chọn slot và đang ở bước nhập form / nhập thẻ",
-       "1. Admin đổi 受付上限 của staff = đúng số booking hiện tại (khi ĐANG bật danh sách chờ) → "
-       "U1 bấm xác nhận\n"
-       "2. Như trên nhưng TẮT danh sách chờ → U1 xác nhận\n"
-       "3. Admin đổi 受付上限 của calendar = số booking hiện tại → U1 xác nhận\n"
-       "4. Admin thêm filter course mà U1 không thỏa → U1 xác nhận\n"
-       "5. Admin OFF course U1 đã chọn → xác nhận\n6. Admin XÓA course → xác nhận\n"
-       "7. Admin bỏ course khỏi staff đã chọn → xác nhận\n8. Admin OFF staff → xác nhận\n"
-       "9. Admin XÓA staff → xác nhận\n10. Admin đổi/xóa ca làm việc chứa slot đã chọn → xác nhận\n"
-       "11. Admin đổi thời gian nhận/dừng nhận → xác nhận\n"
-       "12. Admin đổi giới hạn số lần đặt của 1 người → xác nhận",
-       "12 kịch bản admin đổi cấu hình",
-       "- (1): thông báo đã hết chỗ, mời chọn chỗ khác\n- (2): báo lỗi yêu cầu đặt lại từ đầu\n"
-       "- (3): lỗi「この予約の受付制限中ですので、予約できません。」\n"
-       "- (4): báo lỗi đặt lại từ đầu (course không tồn tại)\n- (5), (6): lỗi「コースが存在していません。」\n"
-       "- (7): lỗi「スタッフ対応不可能なコースです。」\n- (8), (9): lỗi「このスタッフが存在していません。」\n"
-       "- (10): lỗi「このシフトが存在していません。」\n- (11): lỗi hết / chưa đến thời gian nhận booking\n"
-       "- (12): lỗi đã đủ số lần đặt của user",
-       note="Nguồn: Booking phía line user r1237-r1254."),
+       "1. Admin đổi 受付上限 của staff = đúng số booking hiện tại → U1 bấm xác nhận\n"
+       "2. Admin đổi 受付上限 của calendar = số booking hiện tại → U1 xác nhận\n"
+       "3. Admin thêm filter course mà U1 không thỏa → U1 xác nhận\n"
+       "4. Admin OFF course U1 đã chọn → xác nhận\n5. Admin XÓA course → xác nhận\n"
+       "6. Admin bỏ course khỏi staff đã chọn → xác nhận\n7. Admin OFF staff → xác nhận\n"
+       "8. Admin XÓA staff → xác nhận\n9. Admin đổi/xóa ca làm việc chứa slot đã chọn → xác nhận\n"
+       "10. Admin đổi thời gian nhận/dừng nhận → xác nhận\n"
+       "11. Admin đổi giới hạn số lần đặt của 1 người → xác nhận",
+       "11 kịch bản admin đổi cấu hình",
+       "- (1): báo lỗi yêu cầu đặt lại từ đầu\n"
+       "- (2): lỗi「この予約の受付制限中ですので、予約できません。」\n"
+       "- (3): báo lỗi đặt lại từ đầu (course không tồn tại)\n- (4), (5): lỗi「コースが存在していません。」\n"
+       "- (6): lỗi「スタッフ対応不可能なコースです。」\n- (7), (8): lỗi「このスタッフが存在していません。」\n"
+       "- (9): lỗi「このシフトが存在していません。」\n- (10): lỗi hết / chưa đến thời gian nhận booking\n"
+       "- (11): lỗi「1人あたりの予約受付上限に達しています」(hoặc text admin đã cài ở "
+       "text_limit_book_each_customer)",
+       group="UI",
+       note="Nguồn: Booking phía line user r1237-r1254 (bỏ nhánh「đang bật danh sách chờ」r1237). Leader chốt MT-30 + MT-07 (2026-10-12): salon KHÔNG có tính năng danh sách chờ → status 3 không tồn tại."),
 
     tc("Đồng thời & verify API", "CONC-002", "Normal",
        "Admin xóa friend info / xóa booking trong lúc user đang thao tác",
@@ -531,6 +543,7 @@ S8 = [
        "- B1, B2: booking VẪN thành công\n"
        "- B3: U1 vẫn xem được detail booking\n"
        "- B4: copy vẫn đặt lịch thành công; vào lại màn lịch sử thì booking đã xóa không còn",
+       group="UI",
        note="Nguồn: Booking phía line user r1255-r1257."),
 
     tc("Đồng thời & verify API", "CONC-002", "Abnormal",
@@ -540,6 +553,7 @@ S8 = [
        "3. U1 mở link đặt lịch",
        "U1 bị block sau khi nhận link",
        "- Màn đặt lịch đóng lại và hiển thị màn chat",
+       group="Data",
        note="Nguồn: Booking phía line user r1258."),
 
     tc("Đồng thời & verify API", "SEC-ISO-001", "Abnormal",
@@ -551,6 +565,7 @@ S8 = [
        "- B1: hiển thị màn list calendar của bot B\n"
        "- B2: tab 2 tự reload dữ liệu và hiển thị list calendar của bot đã đổi, "
        "không thao tác nhầm sang bot cũ",
+       group="UI",
        note="Nguồn: Quản lý calendar r2350-r2351."),
 
     tc("Đồng thời & verify API", "CONC-003", "Abnormal",
@@ -562,6 +577,7 @@ S8 = [
        "Nhiều booking trong tháng",
        "- Màn luôn hiển thị dữ liệu của view / tháng được chọn CUỐI CÙNG\n"
        "- Không trùng booking, không mất booking",
+       group="UI",
        note="Nguồn: #38520 r50."),
 
     tc("Đồng thời & verify API", "DATA-COUNT-001", "Normal",
@@ -681,6 +697,7 @@ S8 = [
        "- Tháng 07: ô ngày 11 có booking, ô ngày 12 không\n"
        "- Tháng 09: ô ngày 01 KHÔNG có booking của 31/08\n"
        "- Danh sách booking ngày 12/07 không chứa booking ảo",
+       group="UI",
        note="Nguồn: #38520 r26-r27."),
 
     tc("App mobile", "SYNC-APP-001", "Normal",
@@ -693,6 +710,7 @@ S8 = [
        "- Web và App hiển thị GIỐNG NHAU ở mọi ngày\n"
        "- Không có booking ảo ở cả 2 nơi\n"
        "- Booking cross-midnight thật hiển thị đủ ở cả 2 ngày trên cả Web và App",
+       group="UI",
        note="Nguồn: #38520 r28."),
 
     tc("App mobile", "SYNC-APP-001", "Normal",
@@ -706,6 +724,7 @@ S8 = [
        "- Ca lưu thành công trên app, Web hiển thị đúng 19:00-24:00\n"
        "- Sửa / xóa ở Web KHÔNG bị chặn nhầm\n"
        "- Quy tắc ghi đè và báo lỗi ca liên tiếp GIỐNG Web",
+       group="UI",
        note="Nguồn: #38520 r29 + Quản lý calendar r2025-r2048 (Add lịch lv trên app), "
             "r2074-r2088 (Edit lịch lv trên app)."),
 
@@ -720,6 +739,7 @@ S8 = [
        "- Bật random: gán được staff thỏa mãn\n- Tắt random: giữ 指定なし\n"
        "- Chọn staff cụ thể: giữ nguyên\n- Đặt liên tiếp: mọi booking đều thành công\n"
        "- Action / remind / friend info / lịch sử đều đúng ở cả 4 trường hợp",
+       group="UI",
        note="Nguồn: Booking phía line user r1432-r1435 + Quản lý calendar r2715-r2729."),
 
     tc("App mobile", "SYNC-APP-001", "Normal",
@@ -729,6 +749,7 @@ S8 = [
        "1. Mở detail booking trên app → xem tab lịch sử\n2. Đối chiếu thứ tự với Web",
        "Booking có nhiều dòng lịch sử",
        "- Lịch sử sort thời gian MỚI NHẤT lên đầu, giống Web",
+       group="UI",
        note="Nguồn: Quản lý calendar r3318-r3321 (Review #29803)."),
 
     # ══════════════ 53. Phân quyền & môi trường ══════════════
@@ -744,7 +765,7 @@ S8 = [
        "- Vào URL trực tiếp: bị chặn, chuyển về list bot + toast「この権限は許可されていません。」\n"
        "- Gọi API trực tiếp: CŨNG bị chặn (không chỉ ẩn UI)",
        note="Nguồn: #38520 r51. ⚠ Spec §9.2 mục 9 ghi「Phân quyền Staff chi tiết」là Gap → "
-            "TC này lấp Gap, xem MT-35."),
+            "TC này lấp Gap."),
 
     tc("Phân quyền & môi trường", "PERM-003", "Normal",
        "Staff CÓ quyền màn 予約管理 → thao tác như admin",
@@ -757,6 +778,7 @@ S8 = [
        "- Staff thấy đủ nút và thao tác được TOÀN BỘ (tạo/sửa/xóa) như Admin trên màn đó\n"
        "- KHÔNG bị giới hạn theo người tạo\n"
        "- Lịch sử ghi đúng tên staff đã thao tác",
+       group="UI",
        note="Nguồn: #38520 r52 + Quản lý calendar r1312-r1315."),
 
     tc("Phân quyền & môi trường", "PERM-004", "Normal",
@@ -773,7 +795,7 @@ S8 = [
        note="Nguồn: tab「Staff」(bảng liệt kê màn con để test acc staff) + các dòng「check acc staff」"
             "ở Quản lý calendar r166-r175, r1866, r3118, r3287 và Sync google r520-r521. "
             "⚠ Corpus ghi nhiều lần「trên dev acc staff thiếu quyền salon nên ko test được」→ "
-            "nhóm case này CHƯA từng được test, xem MT-35."),
+            "nhóm case này CHƯA từng được test — cần môi trường dev có account staff đủ quyền salon."),
 
     tc("Phân quyền & môi trường", "UI-002", "Normal",
        "Kiểm tra trình duyệt và độ phân giải",
@@ -817,7 +839,8 @@ S8 = [
        "- Truy được người thao tác khi cần điều tra",
        spec="Đã hỏi leader",
        note="Nguồn: #38520 r63. ⚠ Spec KHÔNG có bảng audit log cho ca làm việc "
-            "(chỉ có history cho booking và payment) → cần Leader xác nhận có log không, xem MT-42."),
+            "(chỉ có history cho booking và payment) → hỏi Dev ca làm việc có ghi log không và ở bảng nào "
+            "trước khi chạy TC."),
 
     # ══════════════ 54. Dữ liệu cũ & hồi quy ══════════════
     tc("Dữ liệu cũ & hồi quy", "DATA-MIG-001", "Normal",
@@ -852,6 +875,7 @@ S8 = [
        "Form đã điền trước release",
        "- HOẶC lưu thành công đúng dữ liệu, HOẶC báo lỗi rõ ràng yêu cầu reload\n"
        "- KHÔNG lưu sai dữ liệu, không lỗi JS trắng màn",
+       group="UI",
        env="PRODUCTION",
        note="Nguồn: #38520 r62. RULE-08: deploy/release test production."),
 
@@ -885,22 +909,23 @@ S8 = [
        "≥ 20 staff, ≥ 1000 booking",
        "- Thời gian phản hồi trong ngưỡng chấp nhận được, không treo\n"
        "- Dữ liệu hiển thị KHÔNG đổi so với trước khi cải thiện hiệu năng",
+       group="UI",
        env="PRODUCTION",
        note="Nguồn: tab「SpecImprove #33408」(01/2026, 424 TC lá) + Test limit booking_V4_2 r216 "
             "(SpecImprove #34506, 23/02/2026). RULE-08: performance test production."),
 
     tc("Dữ liệu cũ & hồi quy", "REG-SPEC-001", "Normal",
-       "Bug #29394: xóa ca làm việc KHÔNG được xóa booking",
-       "- Đăng nhập admin bot A\n- Ca của S1 ngày 11/07 có booking ở trạng thái cho phép xóa ca",
+       "Bug #29394 (đã bị thay bởi MT-03): xóa ca CHỈ chứa booking cancel/deny → booking bị xóa theo",
+       "- Đăng nhập admin bot A\n- Ca của S1 ngày 11/07 chỉ có booking キャンセル (status 4) và 否認済 (status 6)",
        "1. Xóa ca đó → xác nhận\n2. Kiểm tra các booking liên quan ở lưới quản lý\n"
        "3. Kiểm tra màn「削除済み予約」\n4. Kiểm tra `calendar_salon_line_booking.deleted_at`",
        "Ca có booking",
-       "- Theo Bug #29394 (03/2025 — đã BỎ logic cũ): xóa ca làm việc KHÔNG xóa booking liên quan\n"
-       "- Booking vẫn giữ nguyên trên lưới, KHÔNG chuyển sang màn booking đã xóa",
+       "- Ca bị xóa\n"
+       "- Booking status 4 và 6 bị xóa theo: `deleted_at` có giá trị, xuất hiện ở màn「削除済み予約」",
        spec="Đã hỏi leader",
-       note="Nguồn: Quản lý calendar r3023-r3028 (Bug #29394, 30/03/2025). "
-            "⚠ MÂU THUẪN TRỰC TIẾP với r711-r716 (khối cũ: xóa ca thì xóa cả booking) → MT-03, "
-            "cần Leader chốt trước khi chạy TC này."),
+       note="Leader chốt MT-03 (2026-10-12): xóa ca xóa toàn bộ booking trong ca (chỉ khi đã cancel/deny). "
+            "Nguồn: Quản lý calendar r3023-r3028 (Bug #29394, 30/03/2025 ghi ngược lại: KHÔNG xóa booking) "
+            "→ nếu code còn theo #29394 là DỰ KIẾN FAIL, cần raise bug. regression"),
 
     tc("Dữ liệu cũ & hồi quy", "REG-SPEC-001", "Normal",
        "Bug #29458 / SpecChange #29379: ghi đè ca làm việc trên web và app",
@@ -910,13 +935,13 @@ S8 = [
        "3. Trên app: lặp lại 2 bước trên\n4. Import CSV: lặp lại kịch bản thêm mới",
        "Ca cũ 13:00-17:00",
        "- Sửa trực tiếp ca có sẵn: KHÔNG báo lỗi (Bug #29458 đã fix)\n"
-       "- Thêm mới / import CSV: áp dụng rule ghi đè theo SpecChange #29379 — "
-       "ca cũ bị xử lý theo đúng rule đã chốt, không để lại ca rác\n"
+       "- Thêm mới 09:00-12:00 (không liền ca cũ, ca cũ không có booking approve/request): GHI ĐÈ — "
+       "ca 13:00-17:00 bị thay, ngày đó chỉ còn ca 09:00-12:00, không để lại ca rác\n"
+       "- Import CSV: cùng kết quả như thêm mới\n"
        "- Web và app cho kết quả nhất quán",
        spec="Đã hỏi leader",
-       note="Nguồn: Quản lý calendar r3029-r3116 (Bug #29458 04/04/2025, SpecChange #29379 27/03/2025). "
-            "⚠ SpecChange #29379 ghi「chỉ sửa case add mới / import csv」→ hành vi khác nhau giữa "
-            "add mới và edit trực tiếp, cần Leader chốt rõ, xem MT-04."),
+       note="Leader chốt MT-04 (2026-10-12). Nguồn: Quản lý calendar r3029-r3116 (Bug #29458 04/04/2025, "
+            "SpecChange #29379 27/03/2025). regression"),
 
     tc("Job nền & monitor", "INTG-LINE-001", "Abnormal",
        "LINE API lỗi khi job gửi remind / action đặt lịch",
@@ -930,6 +955,7 @@ S8 = [
        "- Booking VẪN được tạo (lỗi gửi tin không được làm hỏng việc đặt lịch)\n"
        "- Lỗi gửi tin hiển thị ở màn danh sách lỗi, không im lặng bỏ qua\n"
        "- Sau khi API hồi phục: hành vi retry (nếu có) đúng như thiết kế, không gửi trùng",
+       group="UI",
        env="PRODUCTION",
        spec="Đã hỏi leader",
        note="Spec §7.1.2 (RequestSentQueue → LINE Messaging API) và §7.3 chỉ liệt kê lỗi bot expired / "
@@ -1005,6 +1031,7 @@ S8 = [
        "Trình duyệt còn cache asset cũ",
        "- Asset được tải lại bản mới (tham số version đổi), không dính bản cũ\n"
        "- Các thao tác chạy đúng, KHÔNG lỗi JS/console\n- Màn LIFF phía LINE user cũng nhận asset mới",
+       group="UI",
        env="PRODUCTION",
        note="⚠ Corpus KHÔNG có TC version asset cho salon → TC bổ sung theo quan điểm DEPLOY-ASSET-001. "
             "RULE-08: deploy test production."),

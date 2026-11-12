@@ -63,7 +63,9 @@ S5 = [
        "- Tin nhắn KHÔNG được gửi cho friend\n"
        "- DB: bản ghi lịch gửi có trạng thái nháp (-1)\n"
        "- Mở lại màn đặt lịch: bản ghi chưa lưu vẫn còn để soạn tiếp",
-       note="Khớp spec BR-11 (feature-spec.md:473 — trạng thái -1 là nháp). Nguồn: Rightbar r269-r271"),
+       spec="Đã hỏi leader",
+       note="MT-06 (Leader chốt 2026-10-23): schedule_send_chat.status 0=chưa gửi · 1=đã gửi · 2=đã huỷ; "
+            "trạng thái nháp -1 là bản ghi trước khi lưu (BR-11). Nguồn: Rightbar r269-r271"),
 
     tc("Đặt lịch gửi — soạn & lưu", "SYNC-APP-001", "Abnormal",
        "Bản ghi lịch gửi đang ở trạng thái nháp — thao tác từ app mobile ghi đè thành chờ gửi",
@@ -136,6 +138,18 @@ S5 = [
        "- Sau khi lưu: quay về màn chat 1:1, dòng friend A hiện icon đồng hồ\n"
        "- DB: trạng thái = chờ gửi (0), thời điểm gửi khớp giá trị đã chọn",
        note="Nguồn: Rightbar r356-r358 + spec BR-11"),
+
+    tc("Đặt lịch gửi — soạn & lưu", "STATE-DEP-001", "Normal",
+       "Huỷ đặt lịch gửi trước giờ gửi — bản ghi chuyển trạng thái đã huỷ (2)",
+       SCH + "\n- Friend A đã có lịch gửi 2 tin, trạng thái chờ gửi (0), CHƯA tới giờ",
+       "1. Mở màn đặt lịch của friend A\n2. Huỷ đặt lịch (huỷ toàn bộ lịch gửi)\n"
+       "3. Kiểm tra DB schedule_send_chat.status\n"
+       "4. Chờ qua mốc giờ đã đặt, kiểm tra friend có nhận tin không",
+       "Lịch gửi 2 tin, huỷ trước giờ gửi",
+       "- DB: schedule_send_chat.status = 2 (đã huỷ)\n"
+       "- Tới mốc giờ cũ: friend KHÔNG nhận tin\n- Dòng friend A không còn icon đồng hồ",
+       spec="Đã hỏi leader",
+       note="MT-06 (Leader chốt 2026-10-23): status = 2 là đã huỷ — corpus trước đây chưa có TC cho nhánh này."),
 
     tc("Đặt lịch gửi — soạn & lưu", "FUNC-001", "Normal",
        "Huỷ đặt lịch — nút chỉ hiện khi đang sửa lịch đã lưu, huỷ thì xoá toàn bộ",
@@ -271,9 +285,10 @@ S5 = [
        "5 tin: text · button · media · vị trí · sticker · PDF",
        "- Tin ĐẦU TIÊN gửi ngay; các tin sau được ghi vào bảng hàng đợi\n"
        "- Thời gian gửi trong hàng đợi TĂNG DẦN theo từng tin\n"
-       "- Ghi lại khoảng cách thực tế giữa các tin làm evidence (đối chiếu MT-05: spec 2-4 giây, corpus 2-5 giây)",
+       "- Ghi lại khoảng cách thực tế giữa các tin làm evidence (phải nằm trong 2~5 giây — MT-05)",
        env="PRODUCTION", spec="Đã hỏi leader",
-       note="MT-05. Nguồn: Rightbar r382, r383 + spec feature-spec.md:104"),
+       note="MT-05 (Leader chốt 2026-10-23): khoảng giãn cách là 2~5 giây (spec feature-spec.md:104 ghi 2-4 giây cần sửa). "
+            "Nguồn: Rightbar r382, r383"),
 
     tc("Đặt lịch gửi — delay & job", "JOB-001", "Abnormal",
        "Sửa thời gian gửi khi lịch ĐANG gửi dở — các tin còn lại dời theo giờ mới",
@@ -319,11 +334,13 @@ S5 = [
        "Tin gửi bằng lịch — dấu hiệu 予約送信 ở chat 1:1",
        BOT + "\n- Friend A có lịch gửi đã tới giờ và đã gửi xong",
        "1. Mở hội thoại friend A sau khi lịch đã gửi\n2. Quan sát dấu hiệu của các tin do lịch gửi\n"
-       "3. Kiểm tra tin trên app LINE của friend",
+       "3. Kiểm tra tin trên app LINE của friend\n4. Kiểm tra DB: schedule_send_chat.status",
        "Lịch gửi 2 tin đã gửi xong",
-       "- Các tin hiển thị kèm nhãn「予約送信」ở chat 1:1\n- Friend nhận đủ tin trên app LINE",
+       "- Các tin hiển thị kèm nhãn「予約送信」ở chat 1:1\n- Friend nhận đủ tin trên app LINE\n"
+       "- DB: schedule_send_chat.status = 1 (đã gửi — MT-06)",
        env="PRODUCTION",
-       note="Nguồn: spec feature-spec.md:117 + Content: Hiển thị msg r866-r870 (Support #29869)"),
+       note="MT-06 (Leader chốt 2026-10-23): status = 1 sau khi gửi xong. "
+            "Nguồn: spec feature-spec.md:117 + Content: Hiển thị msg r866-r870 (Support #29869)"),
 
     # ═══════════════ Preview trước khi gửi ═══════════════
     tc("Preview trước khi gửi", "UI-003", "Normal",
@@ -662,14 +679,15 @@ S5 = [
        "3. Thử tải lên file sai định dạng → ghi nhận kết quả\n"
        "4. Với mục PDF: bấm mở file → quan sát tab\n"
        "5. Bấm nút 削除 → đọc thông báo xác nhận → bấm Hủy → kiểm tra; bấm lại và chọn OK → kiểm tra",
-       "Ảnh PNG và JPG hợp lệ; file PDF; thử thêm file sai định dạng",
+       "Ảnh PNG/JPG/JPEG ≤ 1 MB · ảnh > 1 MB · file PDF ≤ 10 MB · PDF > 10 MB · file sai định dạng",
        "- Chưa tải lên: hiện「登録なし」\n"
-       "- Tải lên PNG/JPG thành công; file sai định dạng bị chặn\n"
+       "- Mục kiểu ảnh: nhận jpg/jpeg/png ≤ 1 MB; ảnh > 1 MB hoặc định dạng khác bị chặn\n"
+       "- Mục kiểu PDF: CHỈ nhận pdf ≤ 10 MB; PDF > 10 MB hoặc định dạng khác bị chặn\n"
        "- Bấm mở file PDF: mở ở TAB MỚI\n"
        "- Bấm xoá: hiện「登録されているデータを削除してよろしいですか？」; Hủy thì giữ file, OK thì xoá thành công",
        spec="Đã hỏi leader",
-       note="MT-11: chỗ này nhận PNG và JPG, nhưng ảnh profile người gửi chỉ nhận PNG. "
-            "Nguồn: Rightbar r111-r117"),
+       note="MT-11 (Leader chốt 2026-10-23): friend info kiểu ảnh nhận jpg/jpeg/png ≤ 1 MB; friend info kiểu PDF CHỈ nhận pdf ≤ 10 MB "
+            "(khác ảnh profile người gửi — chỉ PNG ≤ 1 MB). Nguồn: Rightbar r111-r117"),
 
     tc("Rightbar — 友だち情報", "UI-INPUT-001", "Boundary",
        "Mục thông tin kiểu ĐIỂM — nhận giá trị âm và dương",
@@ -867,8 +885,8 @@ S5 = [
        "- Nội dung ≤ 1.000 ký tự: lưu được; vượt 1.000: bị chặn\n"
        "- Giá trị lưu trong DB khớp đúng giá trị hiển thị, KHÔNG bị cắt âm thầm",
        spec="Đã hỏi leader",
-       note="MT-16: spec BR-13 (feature-spec.md:475) chỉ nói giới hạn 10 lịch sử, KHÔNG có giới hạn độ dài field. "
-            "Nguồn: Rightbar r199-r207"),
+       note="MT-16 (Leader chốt 2026-10-23): title memo giới hạn 20 ký tự, nội dung memo giới hạn 1.000 ký tự. "
+            "Spec BR-13 (feature-spec.md:475) cần bổ sung ràng buộc độ dài. Nguồn: Rightbar r199-r207"),
 
     tc("Rightbar — メモ", "STATE-CLEAN-001", "Abnormal",
        "Nhập ghi chú rồi đóng bằng X — không lưu",

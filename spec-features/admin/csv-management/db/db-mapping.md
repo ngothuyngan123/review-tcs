@@ -29,7 +29,8 @@ Các bảng **chỉ đọc** trong phạm vi tính năng (job export đọc đ�
 | Bảng | Vai trò trong FA-014 | Chiều truy cập | Độ tin cậy |
 |------|---------------------|---------------|-----------|
 | `line_user` | Nguồn dữ liệu chính của mỗi dòng CSV: `line_id`, `name`, `view_name`, `phone_number`, `email`, `birthday`, `age`, `province` | Export: đọc. Import: **ghi** (UPDATE) | **Cao** |
-| `bot_line_user` | 「個別メモ」 (`memo`), 「友だち追加日」 (`followed_at`), `phone_number` theo bot | Export: đọc. Import: **ghi** (UPDATE) | **Cao** |
+| `bot_line_user` | 「友だち追加日」 (`followed_at`), `phone_number` theo bot. Cột `memo` **không** dùng cho export 「個別メモ」 (export đọc bảng `memos`); chỉ đường import Laravel `HandleImportCsv.php` ghi cột này | Export: đọc. Import: **ghi** (UPDATE) | **Cao** |
+| `memos` (+ `memo_histories`) | 「個別メモ」 — Export (job Spring `HandleExportCsvTask`, `memoFindAllByConversationId`): đọc **toàn bộ memo của bạn bè** theo hội thoại, mỗi memo 1 cột ở cuối dòng. Import (job Spring `HandleImportCsvTask`): INSERT memo 「CSV追加 (…)」 (`type = 1`) + 1 dòng `memo_histories` | Export: đọc. Import: **ghi** (INSERT) | **Cao** — cập nhật 2026-10-13 (review #42336) |
 | `conversation` | 「ステータスメッセージ」 (`status_last_message`), 「対応マーク」 (`id_status`), 「最終メッセージ受信日時」 (`last_time_message`); còn dùng để lấy tập bạn bè bị block | Export: đọc. Import: **ghi** (UPDATE có điều kiện) | **Cao** |
 | `last_time_receive_conversation` | Ghi đè giá trị 「最終メッセージ受信日時」 (`last_time_reveice`) — được ưu tiên hơn `conversation.last_time_message` | Export: đọc | **Cao** |
 | `status_chat` | Tên hiển thị của 「対応マーク」 (`name_status`) — job đổi `conversation.id_status` → tên | Export: đọc | **Cao** |
@@ -72,7 +73,7 @@ Các bảng **chỉ đọc** trong phạm vi tính năng (job export đọc đ�
 | `export_friend_info_setting_value` | `text` | Có | `NULL` | — | JSON mảng **hỗn hợp**: chuỗi `"d_1"`…`"d_6"` (trường hệ thống, hằng số cấu hình) **và** số nguyên = `friend_information_setting.id`. Xem mục 3.1.1 |
 | `show_system_name` | `int(11)` | Có | `0` | — | 「システム表示名」 — **đã vô hiệu hoá**, mọi tham chiếu bị comment. 208/208 bản ghi = `0` |
 | `show_message_status` | `int(11)` | Có | `0` | — | 「ステータスメッセージ」 → cột CSV lấy từ `conversation.status_last_message` |
-| `show_note` | `int(11)` | Có | `0` | — | 「個別メモ」 → `bot_line_user.memo` |
+| `show_note` | `int(11)` | Có | `0` | — | 「個別メモ」 → toàn bộ memo của bạn bè ở bảng `memos` (mỗi memo 1 cột cuối dòng) |
 | `show_date_of_add_friend` | `int(11)` | Có | `0` | — | 「友だち追加日」 → `bot_line_user.followed_at` |
 | `show_reciprocal_status` | `int(11)` | Có | `0` | — | 「対応マーク」 → `conversation.id_status` → `status_chat.name_status` |
 | `show_date_of_last_message_received` | `int(11)` | Có | `0` | — | 「最終メッセージ受信日時」 → `conversation.last_time_message`, bị ghi đè bởi `last_time_receive_conversation.last_time_reveice` |
@@ -275,7 +276,7 @@ Cột lưu JSON mảng **hỗn hợp kiểu** (chuỗi + số). Nguồn giải m
 | | `province` | `varchar(255)` | 「都道府県」 (`d_6`) |
 | | `status_message` | `text` | ⚠ **Không** dùng cho 「ステータスメッセージ」 của CSV (xem Unmapped U-04) |
 | `bot_line_user` | `line_user_id` / `bot_id` | `int(11)` | Cặp khoá logic |
-| | `memo` | `text` | 「個別メモ」 (`show_note`) |
+| | `memo` | `text` | ⚠ **Không** phải nguồn export 「個別メモ」 (`show_note` đọc bảng `memos`); chỉ đường import Laravel `HandleImportCsv.php` ghi cột này |
 | | `followed_at` | `timestamp` | 「友だち追加日」 (`show_date_of_add_friend`) |
 | | `phone_number` | `varchar(25)` | Bản sao số điện thoại theo bot — job import ghi song song với `line_user.phone_number` |
 | | `is_blocked` | `int(11)` | Dùng gián tiếp qua `Conversation::getConversationBlocked()` |
@@ -369,7 +370,7 @@ Nguồn render: `resources/views/csv_management/csv_management.blade.php:282-330
 | Khối read-only | 「絞り込み条件」 | `filters_v2` | `text_preview` (nối các bản ghi `and`/`or`) | Aggregated | **Cao** | Nạp qua EP-10 |
 | Checkbox 1 | 「ステータスメッセージ」 | `csv_management` | `show_message_status` | Enum 0/1 → cột CSV từ `conversation.status_last_message` | **Cao** | |
 | Checkbox 2 | 「最終メッセージ受信日時」 | `csv_management` | `show_date_of_last_message_received` | Enum 0/1 → `last_time_receive_conversation.last_time_reveice` (ưu tiên) / `conversation.last_time_message` | **Cao** | |
-| Checkbox 3 | 「個別メモ」 | `csv_management` | `show_note` | Enum 0/1 → `bot_line_user.memo` | **Cao** | |
+| Checkbox 3 | 「個別メモ」 | `csv_management` | `show_note` | Enum 0/1 → toàn bộ memo của bạn bè ở bảng `memos`, mỗi memo 1 cột cuối dòng | **Cao** | cập nhật 2026-10-13 (review #42336) |
 | Checkbox 4 | 「配信中ステップ」 | `csv_management` | `show_running_step` | Enum 0/1 → `scenario_lineuser.is_following = 1` + `scenario.name` | **Cao** | |
 | Checkbox 5 | 「友だち追加日」 | `csv_management` | `show_date_of_add_friend` | Enum 0/1 → `bot_line_user.followed_at` | **Cao** | |
 | Checkbox 6 | 「流入経路」 | `csv_management` | `show_qr_code` | Enum 0/1 → `detail_landing_click.landing_id` → `landing.name` | **Cao** | **Tên cột `show_qr_code` lệch nghĩa nhãn 「流入経路」** |

@@ -642,27 +642,29 @@ S2 = [
        "1. Mở /basic/point-settings\n2. Quan sát nút ở cột 8 của từng dòng",
        "6 hợp đồng như tiền đề",
        "Cả 6 dòng đều hiện nút「振込キャンセル」màu đỏ",
-       note="Nguồn: r1517-r1522 (Specchange 03/2026, 20/04/2026)."),
+       note="Nguồn: r1517-r1522 (Specchange 03/2026, 20/04/2026). " + "MT-01 (Leader chốt 2026-10-16): nút CHỈ hiện cho mua mới lần đầu (mua mới standard / pro, upgrade từ free)."),
 
     tc("Hủy chuyển khoản", "FUNC-007", "Normal",
-       "Hợp đồng UPDATE (đổi phương thức / extend / job bill / upgrade standard→pro) → hiện 契約詳細, không hiện 振込キャンセル",
-       "- Chuẩn bị 4 hợp đồng đang 入金待ち sinh từ: đổi phương thức card→transfer, extend hợp đồng, "
+       "Hợp đồng UPDATE (đổi phương thức / job bill / upgrade standard→pro) → hiện 契約詳細, không hiện 振込キャンセル",
+       "- Chuẩn bị 3 hợp đồng đang 入金待ち sinh từ: đổi phương thức card→transfer, "
        "job bill định kỳ, upgrade standard→pro",
-       "1. Mở /basic/point-settings, quan sát nút cột 8 của 4 dòng\n"
+       "1. Mở /basic/point-settings, quan sát nút cột 8 của 3 dòng\n"
        "2. Click「契約詳細」và quan sát các nút thay đổi hợp đồng bên trong",
-       "4 hợp đồng update như tiền đề",
-       "- Cả 4 dòng hiện status 入金待ち và nút「契約詳細」(KHÔNG có 振込キャンセル)\n"
+       "3 hợp đồng update như tiền đề",
+       "- Cả 3 dòng hiện status 入金待ち và nút「契約詳細」(KHÔNG có 振込キャンセル)\n"
        "- Trong màn chi tiết, các nút thay đổi hợp đồng bị disable",
-       note="Nguồn: r1523, r1524, r1527, r1528 (Specchange 03/2026). "
+       note="Nguồn: r1523, r1524, r1527, r1528 (Specchange 03/2026). MT-01 (Leader chốt 2026-10-16). Case gia hạn tách sang TC riêng ngay sau. "
             "⚠ Bug KH #36835 (28/05/2026) từng báo ngược lại — nút không hiện khi cần; xem MT-14."),
 
     tc("Hủy chuyển khoản", "FUNC-007", "Normal",
-       "Hợp đồng lại (từ đã hủy / cưỡng chế hủy) bằng transfer → VẪN hiện nút 振込キャンセル",
-       "- 1 hợp đồng 解約済み và 1 hợp đồng 強制解約, mỗi cái đã bấm 再契約 bằng 銀行振込",
-       "1. Mở /basic/point-settings\n2. Quan sát status và nút của 2 dòng",
-       "2 hợp đồng tái ký bằng transfer",
-       "Cả 2 dòng hiện status 入金待ち và có nút「振込キャンセル」",
-       note="Nguồn: r1525, r1526."),
+       "Hợp đồng lại từ 解約済み bằng transfer → hiện 契約詳細, KHÔNG hiện 振込キャンセル",
+       "- 1 hợp đồng 解約済み đã bấm 再契約 bằng 銀行振込, đang 入金待ち",
+       "1. Mở /basic/point-settings\n2. Quan sát status và nút cột 8 của dòng đó\n"
+       "3. Click「契約詳細」và quan sát các nút thay đổi hợp đồng bên trong",
+       "Hợp đồng tái ký từ 解約済み bằng transfer",
+       "- Dòng hiện status 入金待ち và nút「契約詳細」(KHÔNG có 振込キャンセル)\n"
+       "- Trong màn chi tiết, các nút thay đổi hợp đồng bị disable",
+       note="MT-01 (Leader chốt 2026-10-16): 再契約 là case update, không phải mua mới lần đầu → không có nút. Thay expected cũ của r1525 (VẪN hiện 振込キャンセル)."),
 
     tc("Hủy chuyển khoản", "FUNC-007", "Normal",
        "Hủy chuyển khoản của hợp đồng MUA MỚI → xóa hẳn bản ghi + charge UnivaPay chuyển Canceled",
@@ -677,16 +679,16 @@ S2 = [
             "liệt kê đủ 4 tổ hợp ở Dữ liệu test). RULE-08: bill tiền → PRODUCTION."),
 
     tc("Hủy chuyển khoản", "STATE-003", "Normal",
-       "Hủy chuyển khoản của UPGRADE khi hợp đồng cũ CÒN HẠN → quay về hợp đồng cũ nguyên trạng",
-       "- Bot free/standard upgrade lên plan cao hơn bằng transfer, đang 入金待ち\n"
+       "Hủy chuyển khoản của UPGRADE TỪ FREE → quay về hợp đồng cũ nguyên trạng",
+       "- Bot free upgrade lên standard / pro bằng transfer, đang 入金待ち\n"
        "- expired_date_contract của hợp đồng cũ > hiện tại",
        "1. Click「振込キャンセル」→ xác nhận\n2. Quan sát plan và status ở màn list\n"
        "3. Kiểm tra bot_contracts",
-       "Upgrade free→standard, free→pro, standard→pro; expired_date_contract > now",
+       "Upgrade free→standard, free→pro",
        "- Màn list hiện lại đúng plan TRƯỚC khi upgrade\n"
        "- DB: status=1, expired_date_contract giữ nguyên giá trị cũ\n"
        "- Riêng case upgrade từ free: payment_method = 1 và expired_date = NULL",
-       note="Nguồn: r67, r81-r86, r1533, r1534 + r35 (List main case) + Bug KH #34622 (26/02/2026)."),
+       note="Nguồn: r67, r81-r86, r1533, r1534 + r35 (List main case) + Bug KH #34622 (26/02/2026). MT-01 (Leader chốt 2026-10-16): bỏ case standard→pro (không còn nút 振込キャンセル)."),
 
     tc("Hủy chuyển khoản", "STATE-003", "Boundary",
        "Hủy chuyển khoản khi hợp đồng cũ QUÁ HẠN nhưng chưa quá 7 ngày → về trạng thái 延滞中",
@@ -696,7 +698,7 @@ S2 = [
        "expired_date < now < expired_date + 7 ngày",
        "- Màn list hiện status「延滞中」\n"
        "- DB: status=1, status_payment=2, status_payment_fail thuộc (0,5)",
-       note="Nguồn: r35 (List main case), r95-r102, r109."),
+       note="Nguồn: r35 (List main case), r95-r102, r109. ⚠ MT-01 (Leader chốt 2026-10-16): nút chỉ còn ở mua mới / upgrade từ free — cần Leader xác nhận TC này còn điểm vào không (hợp đồng cũ có hạn chỉ có ở case update)."),
 
     tc("Hủy chuyển khoản", "STATE-003", "Boundary",
        "Hủy chuyển khoản khi hợp đồng cũ đã QUÁ 7 NGÀY → chuyển thành đã hủy",
@@ -707,25 +709,29 @@ S2 = [
        "- Màn list hiện status đã hủy\n"
        "- DB: status=3, status_payment=2, cancel_by=1, user_cancel_id != NULL, date_cancel_contract được cập nhật",
        note="Nguồn: r35, r36, r37 (List main case). ⚠ Corpus tại r81-r86 lại ghi 'Expired_date + 7 > now → "
-            "Đã hủy' (ngược logic) — xem MT-15."),
+            "Đã hủy' (ngược logic) — xem MT-15. ⚠ MT-01 (Leader chốt 2026-10-16): nút chỉ còn ở mua mới / upgrade từ free — "
+            "cần Leader xác nhận TC này còn điểm vào không."),
 
     tc("Hủy chuyển khoản", "STATE-003", "Normal",
-       "Hủy chuyển khoản của EXTEND → khôi phục expired_date về giá trị trước khi gia hạn",
+       "Gia hạn 1 năm bằng transfer đang 入金待ち → hiện 契約詳細, KHÔNG hiện 振込キャンセル",
        "- Hợp đồng standard năm bill transfer, đã bấm gia hạn 1 năm, đang 入金待ち",
-       "1. Ghi lại expired_date_contract trước khi extend\n2. Click「振込キャンセル」→ xác nhận\n"
-       "3. Kiểm tra expired_date_contract và status",
-       "expired_date trước extend = 2026/10/31",
-       "- Hợp đồng trở về trạng thái trước khi gia hạn (status=1)\n"
-       "- expired_date_contract quay lại 2026/10/31, KHÔNG cộng thêm 1 năm",
-       note="Nguồn: r70, r85, r86, r36 (List main case). Đối chiếu BR-05 (feature-spec.md §5)."),
+       "1. Ghi lại expired_date_contract trước khi gia hạn\n2. Mở /basic/point-settings, quan sát nút cột 8 của dòng đó\n"
+       "3. Click「契約詳細」, kiểm tra ngày hết hạn và các nút thay đổi hợp đồng",
+       "expired_date trước gia hạn = 2026/10/31",
+       "- Dòng hiện status 入金待ち và nút「契約詳細」(KHÔNG có 振込キャンセル)\n"
+       "- expired_date_contract vẫn 2026/10/31 tới khi tiền về\n"
+       "- Trong màn chi tiết, các nút thay đổi hợp đồng bị disable",
+       note="MT-01 (Leader chốt 2026-10-16): gia hạn là case update → không có nút. Thay TC cũ 'Hủy chuyển khoản của EXTEND' (r70, r85, r86, r36) — không còn điểm vào từ UI."),
 
     tc("Hủy chuyển khoản", "STATE-003", "Normal",
-       "Hủy chuyển khoản của hợp đồng TÁI KÝ → trạng thái quay lại đúng loại hủy trước đó",
-       "- 1 hợp đồng từng 解約済み và 1 hợp đồng từng 強制解約, cả 2 đã 再契約 bằng transfer, đang 入金待ち",
-       "1. Click「振込キャンセル」ở từng dòng → xác nhận\n2. Quan sát status ở màn list",
-       "2 hợp đồng tái ký từ 解約済み và 強制解約",
-       "Trạng thái quay lại đúng loại hủy trước đó (解約済み / 強制解約), không thành hợp đồng active",
-       note="Nguồn: r89-r92, r103-r106."),
+       "Hợp đồng lại từ 強制解約 bằng transfer → hiện 契約詳細, KHÔNG hiện 振込キャンセル",
+       "- 1 hợp đồng 強制解約 đã bấm 再契約 bằng 銀行振込, đang 入金待ち",
+       "1. Mở /basic/point-settings\n2. Quan sát status và nút cột 8 của dòng đó\n"
+       "3. Click「契約詳細」và quan sát các nút thay đổi hợp đồng bên trong",
+       "Hợp đồng tái ký từ 強制解約 bằng transfer",
+       "- Dòng hiện status 入金待ち và nút「契約詳細」(KHÔNG có 振込キャンセル)\n"
+       "- Trong màn chi tiết, các nút thay đổi hợp đồng bị disable",
+       note="MT-01 (Leader chốt 2026-10-16): 再契約 là case update → không có nút. Thay TC cũ 'Hủy chuyển khoản của hợp đồng TÁI KÝ' (r89-r92, r103-r106, r1526) — không còn điểm vào từ UI."),
 
     tc("Hủy chuyển khoản", "UI-005", "Normal",
        "Đóng modal 振込み（お申し込み）のキャンセル bằng X/閉じる → không hủy gì",

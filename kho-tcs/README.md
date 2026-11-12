@@ -108,6 +108,8 @@ python kho-tcs/build.py md       # markdown trong kho-tcs/ (review + diff bằng
 python kho-tcs/build.py sheet    # đẩy lên Google Sheet
 ```
 
+> ⚠️ `build.py sheet` CLEAR rồi ghi lại TOÀN BỘ tab. Leader điền cột `QUYẾT ĐỊNH CỦA LEADER` thẳng trên Sheet → script tự DỪNG nếu Sheet có câu trả lời mà data local chưa có (liệt kê dòng). Khi đó chép câu trả lời vào `data/<feature>_conflicts.py` rồi chạy lại — KHÔNG bỏ qua. Sửa nhỏ (1 dòng / 1 ô) thì sửa đúng ô bằng API, không full push; full push phải hỏi user trước.
+
 > ⚠️ **Merged cell**: các file TCs cũ dùng cấu trúc cây `Main Function / Sub1..Sub5 / Expect Result`
 > với ô gộp. Đọc bằng `values.get` thuần sẽ **sai phân cấp** (ô gộp trả về rỗng).
 > Luôn dùng `scripts/fetch_grid.py` — script này lấy `sheets.merges` từ API và bung ô gộp ra từng dòng.
@@ -143,7 +145,7 @@ trích từ [templates/LME-SYSTEM-SPEC.md](../templates/LME-SYSTEM-SPEC.md)).
 | FA-001 | Chat 1:1 (1:1チャット) | `admin/chat-11/` | 430 | 0 / 20 | 🔴 CHỜ QUYẾT ĐỊNH |
 | FA-003 | Tự động trả lời (自動応答) | `admin/auto-reply/` | 285 | 0 / 25 | 🔴 CHỜ QUYẾT ĐỊNH |
 | FA-004 | Rich Menu (リッチメニュー) | `admin/rich-menu/` | 488 | 26 / 27 | 🔄 ĐÃ ÁP QUYẾT ĐỊNH (2026-08-22) |
-| FA-007 | Setting add friend (あいさつメッセージ) | `admin/setting-add-friend/` | 171 | 0 / 18 | 🔴 CHỜ QUYẾT ĐỊNH |
+| FA-007 | Setting add friend (あいさつメッセージ) | `admin/setting-add-friend/` | 172 | 18 / 18 | ✅ XONG (2026-10-23) |
 | FA-008 | Broadcast (メッセージ配信) | `admin/message-send-all/` | 345 | 0 / 22 | 🔴 CHỜ QUYẾT ĐỊNH |
 | FA-009 | Phát hành theo bước (ステップ配信) | `admin/scenario/` | 409 | 0 / 41 | 🔴 CHỜ QUYẾT ĐỊNH |
 | FA-010 | Mẫu tin nhắn (テンプレート) | `admin/message-template/` | 394 | 0 / 49 | 🔴 CHỜ QUYẾT ĐỊNH |
@@ -155,7 +157,7 @@ trích từ [templates/LME-SYSTEM-SPEC.md](../templates/LME-SYSTEM-SPEC.md)).
 | FA-020 | Đặt lịch salon (サロン・面談予約) | `admin/salon-booking/` | 498 | 0 / 42 | 🔴 CHỜ QUYẾT ĐỊNH |
 | FA-021 | Event booking (イベント予約) | `admin/event-booking/` | 375 | 0 / 35 | 🔴 CHỜ QUYẾT ĐỊNH |
 | FA-026 | Bill tiền item (商品販売) | `admin/bill-item/` | 381 | 0 / 40 | 🔴 CHỜ QUYẾT ĐỊNH |
-| FA-031 | Bill tiền tool (契約プラン・決済情報) | `admin/billing-plan/` | 398 | 0 / 46 | 🔴 CHỜ QUYẾT ĐỊNH |
+| FA-031 | Bill tiền tool (契約プラン・決済情報) | `admin/billing-plan/` | 398 | 1 / 46 | 🔄 ĐÃ ÁP QUYẾT ĐỊNH |
 | FA-033 | Backup (データコピー) | `admin/backup/` | 359 | 0 / 31 | 🔴 CHỜ QUYẾT ĐỊNH |
 | FA-039 | change bot (LINE公式アカウント入れ替え機能) | `admin/bot-edit/` ⚠️ lạc hậu (xem MT-12) | 224 | 0 / 16 | 🔴 CHỜ QUYẾT ĐỊNH |
 | FA-041 | Cài đặt chat (チャット設定) | `admin/chat-setting/` ⚠️ lạc hậu giao diện + thiếu 6 bảng tin nhắn theo năm (MT-01 · MT-02 · MT-26) | 262 | 2 / 26 | 🔄 ĐÃ ÁP QUYẾT ĐỊNH (2026-09-21) |
@@ -175,9 +177,11 @@ FA-032 · FA-034 · FA-035 · FA-036 · FA-037 · FA-038 · FA-040.
 >   ~4.100 TC lá) vì đã bị `Test limit booking_V4_2` (02/2026) thay thế — cần user xác nhận.
 > - Phủ **79/80 quan điểm** của `checklist-lme.md` (chỉ `FUNC-UNIQ-001` không áp dụng —
 >   salon không có ràng buộc unique nào: 2 staff/course trùng tên đều hợp lệ).
-> - 42 mâu thuẫn, trong đó **12 mức CAO**. Nặng nhất: MT-22 (spec chỉ mô tả 2/4 tuỳ chọn 受付上限),
+> - 41 mâu thuẫn, trong đó **11 mức CAO**. Nặng nhất: MT-22 (spec chỉ mô tả 2/4 tuỳ chọn 受付上限),
 >   MT-20 (tính năng スタッフ自動割り当て không có trong spec), MT-03 (xóa ca có xóa booking không),
->   MT-29 (remind khi course/staff OFF), MT-35 (phân quyền staff CHƯA từng test được).
+>   MT-29 (remind khi course/staff OFF).
+>   ⚠ Phân quyền staff CHƯA từng test được (account staff trên dev thiếu quyền) — vùng chưa test,
+>   KHÔNG phải mâu thuẫn (MT-35 đã gỡ 2026-10-12), theo dõi ở Ghi chú TC nhóm「Phân quyền & môi trường」.
 
 > **FA-041 — trạng thái (cập nhật 2026-09-22):**
 > - **262 TC** (248 khi gom + 14 TC bổ sung theo năm, xem MT-26) gộp từ **5 tab** của `01. TCsLine_Chat1:1 (Improve 10/2024)` + 1 tab của

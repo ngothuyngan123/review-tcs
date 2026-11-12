@@ -10,7 +10,7 @@ User muốn sync **toàn bộ TCs do AI viết** trong `04-tc-list.md` lên **sh
 
 **Folder review cần sync:** `$ARGUMENTS`
 
-Nếu `$ARGUMENTS` trống → liệt kê folder con trong `tasks/` (sắp xếp ngày mới nhất), hỏi user chọn 1 rồi tiếp tục. KHÔNG tự đoán.
+Nếu `$ARGUMENTS` trống → liệt kê folder con trong `tasks/` và `MCP/` (sắp xếp ngày mới nhất), hỏi user chọn 1 rồi tiếp tục. KHÔNG tự đoán.
 
 ### BƯỚC 1 — Pre-flight check
 Verify TRƯỚC khi chạy. Fail → DỪNG và hướng dẫn fix:

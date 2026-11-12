@@ -30,7 +30,7 @@ S5 = [
        "- Có đủ các tuỳ chọn: option 1 (đếm theo số staff, tách 1.1/1.2) · option 2 (không giới hạn) · "
        "option 3 (nhập số cụ thể) · tuỳ chọn「上限をその時間に受付可能なスタッフ数の合計にする」",
        note="Nguồn: Quản lý calendar r3119-r3128 (issue #29114) + Setting calendar r1729-r1778. "
-            "⚠ Spec §2.4.4 chỉ mô tả `limit` (0=unlimited, 1=limited) — KHÔNG có 4 tuỳ chọn này → MT-22."),
+            "Leader chốt MT-22 (2026-10-12): TC giữ theo corpus; spec §2.4.4 cần viết lại đủ 4 tuỳ chọn."),
 
     tc("受付上限 — 店舗・スタッフ", "UI-FIELD-001", "Normal",
        "Setting 受付上限 riêng cho từng staff — lưu vào calendar_salon_staff.setting_staff_limit",
@@ -156,15 +156,15 @@ S5 = [
        note="Nguồn: Quản lý calendar r224-r226, r238-r240, r253-r255, r261-r263 (cập nhật 12/02/2025)."),
 
     tc("受付上限 — 店舗・スタッフ", "DATA-COUNT-001", "Boundary",
-       "Bug #26908: block time Google được coi như block time thường (không báo lý do 'đã limit')",
+       "Bug #26908: khung bị block time Google hiển thị design riêng「スケジュール連携」, không báo 'đã limit'",
        SET + "\n- Option 3 với limit = 1; S1 đã liên kết Google có event chặn khung 10:00-11:00",
-       "1. Ở lưới QL ngày bấm khung 10:00-11:00 của S1\n2. Đọc lý do trong modal",
+       "1. Ở lưới QL ngày quan sát khung 10:00-11:00 của S1\n"
+       "2. Quan sát 1 khung không đặt được KHÁC (ví dụ ngoài ca) → bấm vào",
        "1 block time Google, chưa có booking LME nào",
-       "- Lý do KHÔNG phải「đã đạt limit」mà phải là lý do liên quan block time / không đặt được\n"
-       "- Nhất quán với cách xử lý block time ở tính năng Calendar",
+       "- B1: khung hiển thị design riêng có text「スケジュール連携」, KHÔNG hiện icon/lý do「đã đạt limit」\n"
+       "- B2: hiện icon không book được; bấm vào mở modal lý do không đặt được",
        spec="Đã hỏi leader",
-       note="Nguồn: Quản lý calendar r289 (Bug #26908, 14/10/2024). ⚠ Corpus không ghi text lý do "
-            "chính xác → cần verify text thực tế, xem MT-23."),
+       note="Leader chốt MT-23 (2026-10-12). Nguồn: Quản lý calendar r289 (Bug #26908, 14/10/2024)."),
 
     tc("受付上限 — 店舗・スタッフ", "DATA-COUNT-001", "Boundary",
        "V4_2 (02/2026): option limit 3 đếm CẢ booking ngoài giờ làm việc",
@@ -230,10 +230,11 @@ S5 = [
        "1. Không set nghỉ → LINE user xem slot\n2. Chỉ nghỉ trước 15' → xem\n"
        "3. Chỉ nghỉ sau 15' → xem\n4. Cả 2 → xem",
        "Event Google 09:30-10:30",
-       "- Kết quả GIỐNG HỆT ma trận của booking LME (xem TC trước)\n"
-       "- Riêng nhánh 'chỉ nghỉ trước': slot cuối cùng = giờ đóng cửa - course - nghỉ trước",
-       note="Nguồn: Booking phía line user r1303-r1310. "
-            "⚠ r1305 ghi slot cuối cùng có TRỪ thời gian nghỉ trước, khác với booking LME (r1297) → MT-24."),
+       "- Kết quả GIỐNG HỆT ma trận của booking LME, kể cả slot đầu/cuối ngày\n"
+       "- Nhánh 'chỉ nghỉ trước': slot cuối cùng = 16:00 (= giờ đóng cửa - course, KHÔNG trừ nghỉ trước)",
+       group="UI",
+       note="Leader chốt MT-24 (2026-10-12): slot đầu/cuối ngày không bị trừ thời gian nghỉ; event Google "
+            "xử lý y hệt booking LME. Nguồn: Booking phía line user r1303-r1310 (công thức ở r1305 SAI)."),
 
     # ══════════════ 27. 予約・キャンセル メッセージ ══════════════
     tc("予約・キャンセル メッセージ", "MSG-004", "Normal",
@@ -250,6 +251,7 @@ S5 = [
        "- 5 token sinh ra: [SALON_CALENDAR_date_time] · [SALON_CALENDAR_course] · "
        "[SALON_CALENDAR_reservation_currency] · [SALON_CALENDAR_url_cancel] · [SALON_CALENDAR_reservation_name]\n"
        "- LINE user nhận tin nhắn với dữ liệu thật đã thay thế đúng",
+       group="Data",
        note="Nguồn: Setting calendar r91-r101, r115-r121, r135-r141, r152-r158, r167. RULE-06."),
 
     tc("予約・キャンセル メッセージ", "MSG-004", "Boundary",
@@ -260,6 +262,7 @@ S5 = [
        "Chuỗi 5000 và 5001 ký tự · nội dung có token dài",
        "- B1: lưu thành công\n- B2: Invalid\n"
        "- B3: GUI vẫn lưu thành công nhưng khi gửi cho LINE user thì LỖI → lỗi hiện ở màn error msg",
+       group="UI",
        note="Nguồn: Setting calendar r103-r105, r124-r125, r144-r145, r161-r162."),
 
     tc("予約・キャンセル メッセージ", "MSG-004", "Normal",
@@ -271,6 +274,7 @@ S5 = [
        "1 mẫu tin nhắn",
        "- Ô nhập text bị disable\n- LINE user KHÔNG nhận tin nhắn text\n"
        "- Multi action (nếu có) VẪN chạy",
+       group="UI",
        note="Nguồn: Setting calendar r102, r122, r319."),
 
     tc("予約・キャンセル メッセージ", "DATA-REF-001", "Abnormal",
@@ -312,6 +316,7 @@ S5 = [
        "- 4 mẫu insert đúng nội dung mẫu tương ứng\n"
        "- LINE user nhận tin đúng ở từng bước của luồng hủy\n"
        "- Chọn không cho hủy: màn detail lịch sử của LINE user KHÔNG hiện nút hủy",
+       group="Data",
        note="Nguồn: Setting calendar r318, r337, r356, r374, r386."),
 
     # ══════════════ 28. 予約・キャンセル アクション ══════════════
@@ -428,11 +433,13 @@ S5 = [
        "1. Nhập số ngày = 0 → lưu\n2. Nhập 180 → lưu\n3. Bỏ trống → lưu\n4. Nhập 181 → lưu\n"
        "5. Nhập số âm / số thực / chữ",
        "0 · 180 · rỗng · 181",
-       "- B1: lưu thành công (khác với ô bắt đầu nhận: 0 là INVALID)\n- B2: thành công\n"
+       "- B1: lưu thành công (khác với ô bắt đầu nhận: 0 là INVALID); DB "
+       "`calendar_salon_setting_send_messages.deadline_before_booking_day` = 0 (bản ghi moment = 'booking')\n"
+       "- B2: thành công\n"
        "- B3: lỗi「0日から入力してください」\n- B4: lỗi「設定できるのは最大180日前からになります」\n"
        "- B5: không cho nhập",
-       note="Nguồn: Setting calendar r211-r215. ⚠ r211 ghi「Nhập 0 → save success => deadline_before_"
-            "booking_day = 1」— giá trị lưu KHÔNG khớp giá trị nhập, cần verify, xem MT-25."),
+       note="Leader chốt MT-25 (2026-10-12): nhập 0 thì DB = 0. Nguồn: Setting calendar r211-r215 "
+            "(r211 ghi DB = 1 → nếu lặp lại là DỰ KIẾN FAIL; lưu ý query đúng bản ghi moment = 'booking')."),
 
     tc("予約の開始・締切", "FUNC-DATE-001", "Abnormal",
        "Chặn cấu hình dừng nhận SỚM HƠN bắt đầu nhận",
@@ -481,11 +488,11 @@ S5 = [
        "1. Calendar CŨ chưa set text (`text_limit_book_each_customer` = NULL) → F1 đặt tiếp\n"
        "2. Nhập text hướng dẫn「受付制限に達している場合の案内テキスト」→ lưu → F1 đặt tiếp",
        "Calendar có/không có text tuỳ chỉnh",
-       "- Chưa set text: hiện lỗi mặc định (theo spec update 2026-03-26)\n"
+       "- Chưa set text: lỗi mặc định「1人あたりの予約受付上限に達しています」\n"
        "- Đã set text: hiện đúng text admin đã nhập",
-       note="Nguồn: Setting calendar r238-r242 (Spec update 2026-03-26, SpecImprove #35407). "
-            "⚠ Corpus ghi 2 chuỗi lỗi khác nhau ở 2 thời điểm:「この予約の受付制限中ですので、予約できません。」"
-            "và「1人あたりの予約受付上限に…」→ cần verify text hiện tại, xem MT-26."),
+       group="Data",
+       note="Leader chốt MT-26 (2026-10-12). Nguồn: Setting calendar r238-r242 (Spec update 2026-03-26, "
+            "SpecImprove #35407). Chuỗi「この予約の受付制限中ですので、予約できません。」(r238) là text cũ."),
 
     tc("1人あたりの予約上限", "DATA-COUNT-001", "Boundary",
        "Trạng thái booking nào được tính vào giới hạn của 1 người",
@@ -493,11 +500,11 @@ S5 = [
        "1. Booking cũ ở status 1 (user đặt, đã duyệt) → F1 đặt tiếp\n"
        "2. status 2 (admin book) → đặt tiếp\n3. status 0 (đợi duyệt) → đặt tiếp\n"
        "4. status 5 (đợi hủy) → đặt tiếp\n5. status 4, 7 (đã hủy) → đặt tiếp\n"
-       "6. status 3 (đợi thông báo) → đặt tiếp\n7. status 6 (bị từ chối) → đặt tiếp",
-       "Booking ở đủ 7 trạng thái",
+       "6. status 6 (bị từ chối) → đặt tiếp",
+       "Booking ở đủ 6 trạng thái",
        "- status 1, 2, 5: KHÔNG đặt được nữa (được tính vào giới hạn)\n"
-       "- status 0, 3, 4, 6, 7: VẪN đặt được (không tính vào giới hạn)",
-       note="Nguồn: Setting calendar r245-r251."),
+       "- status 0, 4, 6, 7: VẪN đặt được (không tính vào giới hạn)",
+       note="Nguồn: Setting calendar r245-r251. Leader chốt MT-30 + MT-07 (2026-10-12): salon KHÔNG có tính năng danh sách chờ → status 3 không tồn tại."),
 
     tc("1人あたりの予約上限", "DATA-COUNT-001", "Normal",
        "Chọn 制限なし → LINE user đặt thoải mái miễn còn slot",
@@ -558,15 +565,15 @@ S5 = [
        "Support #29272: item 日時 CÓ giờ + chọn 自動で友だち情報を生成 → xử lý ra sao",
        SET + "\n- Mở tab 質問項目",
        "1. Tạo item kiểu 日時 CÓ chọn hiển thị giờ\n"
-       "2. Chọn「自動で友だち情報を生成して回答を記録」→ lưu\n"
-       "3. Cho LINE user đặt lịch điền item này → kiểm tra friend info sinh ra",
+       "2. Thử chọn liên kết friend info (gồm cả「自動で友だち情報を生成して回答を記録」) → lưu\n"
+       "3. Cho LINE user đặt lịch điền item này → kiểm tra friend info",
        "Item 日時 có giờ",
-       "- Hệ thống xử lý nhất quán: hoặc chặn cấu hình này, hoặc sinh friend info kiểu phù hợp\n"
-       "- KHÔNG được lưu sai định dạng hoặc mất dữ liệu giờ",
+       "- B2: KHÔNG cho phép setting liên kết friend info với item 日時 có giờ\n"
+       "- B3: câu trả lời chỉ lưu ở booking, KHÔNG ghi / sinh friend info nào",
        spec="Đã hỏi leader",
-       note="Nguồn: Setting calendar r793 (Support #29272, 23/03/2025) + Quản lý calendar r1090. "
-            "⚠ Corpus ghi「Case này sẽ ko thể gán vào friend info nào trong hệ thống cả」nhưng "
-            "Support #29272 lại nói về nhánh tự sinh → cần Leader chốt, xem MT-27."),
+       note="Leader chốt MT-27 (2026-10-12): 日時 có giờ không cho phép liên kết friend info. "
+            "Nguồn: Setting calendar r793 (Support #29272) + Quản lý calendar r1090. "
+            "⚠ Cách chặn trên UI (ẩn / disable / báo lỗi khi lưu) chưa rõ — verify thực tế."),
 
     tc("予約時のお客様への質問項目", "UI-001", "Abnormal",
        "Bug #30053: tên friend info liên kết dài gây lỗi UI",
@@ -622,13 +629,12 @@ S5 = [
        "3. Tạo mới / sửa giờ / xóa 1 remind → kiểm tra lại thứ tự",
        "4 remind mỗi nhóm",
        "- Nhóm TRƯỚC: remind chỉ định ngày xếp TRÊN remind duration; trong nhóm chỉ định ngày, "
-       "ngày lớn hơn ở trên; trong nhóm duration, giờ lớn hơn ở trên\n"
+       "ngày lớn hơn ở trên, CÙNG NGÀY thì giờ NHỎ hơn ở trên; trong nhóm duration, giờ lớn hơn ở trên\n"
        "- Nhóm SAU: remind duration xếp TRÊN remind chỉ định ngày; ngày nhỏ hơn ở trên; "
        "giờ nhỏ hơn ở trên\n"
        "- Sau khi tạo/sửa/xóa: thứ tự tự sắp xếp lại đúng quy tắc",
        note="Nguồn: Setting calendar r987, r996-r1001, r1030-r1035 (SpecImprove #36037, 22/04/2026). "
-            "⚠ r998 ghi CẢ「giờ lớn hơn hiện ở trên」và「Giờ nhỏ hơn hiện ở trên」→ mâu thuẫn nội bộ, "
-            "xem MT-28."),
+            "Leader chốt MT-28 (2026-10-12): remind cùng ngày → giờ nhỏ hơn ở trên."),
 
     tc("リマインド — cài đặt", "OUT-PREVIEW-001", "Normal",
        "Popup preview remind: nội dung message, action và filter",
@@ -672,6 +678,7 @@ S5 = [
        "- Remind 1: `sent_date_time` = 08:00 ngày 19/4\n"
        "- Remind 2: `sent_date_time` = 09:00 ngày 20/4\n"
        "- LINE user nhận đúng tin ở đúng thời điểm",
+       group="Data",
        note="Nguồn: Setting calendar r1049, r1059. Spec BR-08. RULE-06 + RULE-07."),
 
     tc("リマインド — cài đặt", "MSG-002", "Boundary",
@@ -683,6 +690,7 @@ S5 = [
        "Booking 10:00-11:00",
        "- Remind nhóm SAU tính theo end_time → `sent_date_time` = 12:00 ngày 20/4\n"
        "- Remind nhóm TRƯỚC tính theo start_time (`is_after_day` = 0)",
+       group="Data",
        note="Nguồn: Setting calendar r1217-r1297 (comment 16, 18: change spec tính theo end_time)."),
 
     # ══════════════ 33. リマインド — job gửi ══════════════
@@ -692,12 +700,11 @@ S5 = [
        "1. Admin đặt lịch → kiểm tra `event_step_time`\n"
        "2. LINE user đặt lịch được duyệt ngay → kiểm tra\n"
        "3. LINE user đặt lịch chờ duyệt → kiểm tra ngay sau khi đặt\n"
-       "4. Admin duyệt booking đó → kiểm tra\n5. Admin từ chối booking → kiểm tra\n"
-       "6. LINE user đặt vào slot chờ thông báo (status 3) → kiểm tra",
-       "6 kịch bản đặt lịch",
+       "4. Admin duyệt booking đó → kiểm tra\n5. Admin từ chối booking → kiểm tra",
+       "5 kịch bản đặt lịch",
        "- B1, B2: insert bản ghi remind ngay\n- B3: CHƯA insert\n"
-       "- B4: insert sau khi duyệt\n- B5, B6: KHÔNG insert",
-       note="Nguồn: Setting calendar r1149-r1154."),
+       "- B4: insert sau khi duyệt\n- B5: KHÔNG insert",
+       note="Nguồn: Setting calendar r1149-r1154. Leader chốt MT-30 + MT-07 (2026-10-12): salon KHÔNG có tính năng danh sách chờ → status 3 không tồn tại."),
 
     tc("リマインド — job gửi", "JOB-001", "Normal",
        "Xóa bản ghi remind khi hủy booking",
@@ -720,6 +727,7 @@ S5 = [
        "- B1: F1 KHÔNG đặt được, không sinh remind\n"
        "- B2: remind đã có trong bảng nhưng đến giờ KHÔNG gửi\n"
        "- B3: vẫn insert bản ghi remind nhưng đến giờ không gửi",
+       group="Data",
        note="Nguồn: Setting calendar r1155-r1158."),
 
     tc("リマインド — job gửi", "MSG-001", "Boundary",
@@ -738,6 +746,7 @@ S5 = [
        "- R3 (cả 2): chỉ sinh khi CẢ course VÀ staff đều thuộc filter\n"
        "- Admin không chọn course/staff: KHÔNG thỏa filter → không sinh bản ghi\n"
        "- Kết quả nhất quán giữa admin book, user book và admin duyệt request",
+       group="Data",
        note="Nguồn: Setting calendar r1164-r1187."),
 
     tc("リマインド — job gửi", "JOB-001", "Normal",
@@ -765,7 +774,8 @@ S5 = [
        "- Remind CÓ filter: LUÔN gửi cho booking có course & staff thỏa filter, bất kể ON/OFF\n"
        "- Màn cài đặt filter và preview filter: VẪN hiện tên course/staff kể cả khi đang OFF",
        note="Nguồn: Setting calendar r1377-r1389 (khối mới sau Bug #30544, 02/07/2025). "
-            "⚠ MÂU THUẪN với r1355/r1361/r1373-1375 cùng tab (「course OFF thì không send」) → MT-29."),
+            "Leader chốt MT-29 (2026-10-12): course/staff OFF vẫn gửi remind bình thường — các dòng "
+            "r1355/r1361/r1373-1375 (「không send」) đã lỗi thời."),
 
     tc("リマインド — job gửi", "MSG-002", "Normal",
        "Remind của calendar loại 個人",
@@ -774,61 +784,8 @@ S5 = [
        "2. Cho F1 đặt lịch → chờ đến giờ remind → đọc tin nhắn",
        "Calendar 個人",
        "- Phần filter staff bị ẩn hoặc không áp dụng\n- F1 nhận được remind đúng nội dung và thời điểm",
+       group="UI",
        note="Nguồn: Setting calendar r1393-r1394."),
-
-    # ══════════════ 34. 空き枠通知受け取り設定 ══════════════
-    tc("空き枠通知受け取り設定", "FUNC-001", "Normal",
-       "Bật/tắt chức năng danh sách chờ và banner trạng thái",
-       SET + "\n- Mở tab「空き枠通知受け取り設定」",
-       "1. Quan sát trạng thái mặc định\n2. Chọn ON「受付中」→ lưu → quan sát banner\n"
-       "3. Cho LINE user chọn slot đã đầy → quan sát\n4. Chọn OFF「停止中」→ lưu → LINE user thử lại",
-       "Slot đã đầy",
-       "- Mặc định OFF, banner「現在、空き枠通知受け取り設定は 停止中 です」\n"
-       "- Bật ON: banner「…受付中 です」; LINE user đăng ký nhận thông báo được (status 3)\n"
-       "- Tắt OFF: LINE user không đăng ký được nữa",
-       note="Nguồn: Setting calendar r1412-r1413. EP-55/EP-56, `is_notify_full_slot`."),
-
-    tc("空き枠通知受け取り設定", "MSG-002", "Normal",
-       "Action gửi khi khách đăng ký chờ thông báo (通知受け取り申請時)",
-       SET + "\n- Đã bật chức năng danh sách chờ; slot đã đầy",
-       "1. Quan sát nội dung mặc định của mẫu tin nhắn\n2. Insert token LINE名 → lưu\n"
-       "3. Cho LINE user đăng ký chờ → đọc tin nhắn nhận được\n"
-       "4. Chọn「利用しない」→ cho LINE user đăng ký chờ → kiểm tra\n"
-       "5. Không set cả text lẫn action → cho đăng ký chờ → kiểm tra\n"
-       "6. Nhập 5001 ký tự → lưu",
-       "Mẫu tin nhắn 通知受け取り申請時",
-       "- Nội dung mặc định như design; token thay đúng\n"
-       "- Chọn 利用しない: KHÔNG gửi text nhưng VẪN gửi multi action (nếu có); "
-       "`calendar_management.use_message_notify_full_slot` đổi giá trị\n"
-       "- Không set gì: không gửi action nào\n- 5001 ký tự: Invalid",
-       note="Nguồn: Setting calendar r1414-r1432."),
-
-    tc("空き枠通知受け取り設定", "MSG-001", "Normal",
-       "Action gửi khi có slot trống (受付再開時) — gửi cho TẤT CẢ người đang chờ",
-       SET + "\n- Đã bật danh sách chờ; có 3 khách F1, F2, F3 đang ở trạng thái chờ thông báo (status 3) "
-             "cùng 1 slot",
-       "1. Cho 1 khách đã đặt slot đó HỦY (được duyệt ngay) → quan sát tin nhắn của F1, F2, F3\n"
-       "2. Khách nào nhận trước đặt trước → kiểm tra ai đặt được\n"
-       "3. Admin NÂNG số lượng slot lên → quan sát tin nhắn 3 khách\n"
-       "4. Trường hợp còn có khách đang 予約確定 / chờ duyệt cùng slot → quan sát ai nhận tin\n"
-       "5. Tắt chức năng danh sách chờ → tạo slot trống → quan sát",
-       "3 khách chờ thông báo",
-       "- B1, B3: CẢ 3 khách đều nhận tin nhắn thông báo có slot trống; ai đặt trước thì được\n"
-       "- B4: CHỈ khách đang chờ thông báo nhận tin, khách đã 予約確定/chờ duyệt không nhận\n"
-       "- B5: khách đang chờ KHÔNG nhận được thông báo nữa; các booking chờ vẫn giữ nguyên trạng thái",
-       note="Nguồn: Setting calendar r1433-r1437. ⚠ Spec KHÔNG mô tả rule『gửi cho tất cả, ai đặt trước "
-            "thì được』→ MT-30."),
-
-    tc("空き枠通知受け取り設定", "DATA-AUDIT-001", "Normal",
-       "Màn lịch sử thay đổi cài đặt danh sách chờ (変更履歴)",
-       SET + "\n- Đã đổi trạng thái ON/OFF vài lần bởi cả admin và staff",
-       "1. Mở màn「変更履歴」\n2. Đối chiếu cột ngày giờ, người thao tác, nội dung\n"
-       "3. Kiểm tra thứ tự sắp xếp\n4. Bấm X",
-       "≥ 3 lần đổi trạng thái",
-       "- Ngày giờ format「2024.09.25 (金) 10:31」\n- Cột người thao tác hiện tên staff/admin\n"
-       "- Nội dung: bật →「停止中→受付中 に変更」; tắt →「受付中→停止中 に変更」\n"
-       "- Sort thời gian mới nhất lên đầu\n- X: đóng popup",
-       note="Nguồn: Setting calendar r1452-r1458."),
 
     # ══════════════ 35. トップ・店舗情報・利用規約 ══════════════
     tc("トップ・店舗情報・利用規約", "MEDIA-IMG-001", "Abnormal",
@@ -841,12 +798,12 @@ S5 = [
        "Các file như mô tả",
        "- Ảnh mọi tỉ lệ, tên JP, có khoảng trắng, 4 định dạng hợp lệ: upload thành công\n"
        "- Ảnh > 10MB: lỗi「10MB以下のをアップしてください。」\n"
-       "- File sai định dạng ở トップ設定: lỗi「png, jpg, gif画像を選択してください。」\n"
-       "- File sai định dạng ở 店舗・ビジネス情報: lỗi「ファイルの形式が正しくありません。」\n"
+       "- File sai định dạng ở CẢ 2 tab: lỗi「png, jpg, gif画像を選択してください。」\n"
        "- Thay ảnh: ảnh mới hiển thị đúng",
        env="PRODUCTION",
-       note="Nguồn: Setting calendar r1470-r1476, r1515-r1520. ⚠ 2 màn dùng 2 message lỗi KHÁC NHAU "
-            "cho cùng 1 tình huống → MT-31. RULE-08: media test production."),
+       note="Leader chốt MT-31 (2026-10-12): message chung「png, jpg, gif画像を選択してください。」. "
+            "Nguồn: Setting calendar r1470-r1476, r1515-r1520 (r1519 ghi「ファイルの形式が正しくありません。」→ "
+            "nếu còn là DỰ KIẾN FAIL). RULE-08: media test production."),
 
     tc("トップ・店舗情報・利用規約", "FUNC-004", "Boundary",
        "Validate tên cửa hàng 店舗名 và đồng bộ với calendar_name",
@@ -859,8 +816,8 @@ S5 = [
        "- Lưu 30 ký tự: cập nhật CẢ `calendar_name` và `store_name`\n"
        "- Xóa trắng: lỗi「店舗名を入力してください。」\n"
        "- 31 ký tự: lỗi「店舗名は30文字以内で入力してください。」",
-       note="Nguồn: Setting calendar r1477, r1480-r1485. ⚠ r1477 ghi「Check setting tên cửa hàng "
-            "=> Change spec: 100 ký tự」nhưng r1484 lại báo lỗi ở 31 ký tự → MT-32."),
+       note="Leader chốt MT-32 (2026-10-12): 店舗名 max 30 ký tự. Nguồn: Setting calendar r1477, r1480-r1485 "
+            "(r1477「100 ký tự」đã lỗi thời)."),
 
     tc("トップ・店舗情報・利用規約", "LIFF-ENTRY-001", "Normal",
        "Ẩn/hiện trang TOP quyết định màn đầu tiên phía LINE user",
@@ -923,15 +880,13 @@ S5 = [
        "1. Hiển thị giá course: chọn 表示する / 表示しない → xem phía LINE user\n"
        "2. Bật 決済連携 → xem lại giá course phía LINE user\n"
        "3. Hiển thị số chỗ còn lại: chọn 表示する / 表示しない → xem phía LINE user\n"
-       "4. Slot đã hết chỗ: chọn 表示する / 表示しない → xem phía LINE user\n"
-       "5. Bật chức năng danh sách chờ → xem lại slot đã hết chỗ",
+       "4. Slot đã hết chỗ: chọn 表示する / 表示しない → xem phía LINE user",
        "3 tuỳ chọn",
        "- Giá course: 表示する → hiện giá; 表示しない → không hiện\n"
        "- Bật 決済: LUÔN hiện giá, KHÔNG theo cài đặt này nữa\n"
        "- Số chỗ còn lại: hiện「残り XXX」hoặc không hiện\n"
-       "- Slot hết chỗ 表示する: vẫn hiện kèm「残り 0」và bị disable; 表示しない: ẩn hẳn slot\n"
-       "- Bật danh sách chờ: slot đã đầy VẪN hiện và đặt được (đăng ký chờ), không theo cài đặt này",
-       note="Nguồn: Setting calendar r1396-r1403."),
+       "- Slot hết chỗ 表示する: vẫn hiện kèm「残り 0」và bị disable; 表示しない: ẩn hẳn slot",
+       note="Nguồn: Setting calendar r1396-r1403. Leader chốt MT-30 + MT-07 (2026-10-12): salon KHÔNG có tính năng danh sách chờ → status 3 không tồn tại."),
 
     tc("システムワード & 予約ページ表示設定", "UI-001", "Normal",
        "Cài đặt hiển thị theo tuần hay theo tháng ở màn chọn slot",
@@ -968,6 +923,7 @@ S5 = [
        "- F1 (booking): hiện trang báo lỗi kèm message đã cài ở mục「予約ページの案内テキスト」\n"
        "- F2: vào được trang đặt lịch bình thường\n"
        "- F2 (lịch sử): hiện trang lịch sử\n- Calendar 個人 cho kết quả tương tự",
+       group="UI",
        note="Nguồn: Setting calendar r267-r282, r293-r308 + Booking phía line user r1321-r1325."),
 
     tc("予約ページの非表示 (filter)", "PERM-001", "Normal",
@@ -976,10 +932,13 @@ S5 = [
        "1. F1 mở link lịch sử booking\n2. F1 mở link HỦY booking (URL gửi trong action)\n"
        "3. F1 thực hiện hủy booking",
        "F1 thỏa filter, đã có booking",
-       "- Theo update spec 06/11/2025: F1 VẪN hiển thị được màn hủy booking và hủy được\n"
-       "- Không bị chặn như luồng đặt lịch mới",
+       "- B1: F1 VẪN mở được màn lịch sử booking\n"
+       "- B2, B3: F1 VẪN hiển thị được màn hủy booking và hủy được\n"
+       "- Chỉ luồng mở link ĐẶT LỊCH mới bị chặn",
+       group="UI",
        note="Nguồn: Setting calendar r275-r278 (update spec 06/11/2025) + SpecChange #32646 "
-            "(Booking phía line user r1358-r1374). ⚠ MÂU THUẪN với r1324 cùng corpus "
+            "(Booking phía line user r1358-r1374). Leader chốt MT-33 (2026-10-12): filter chỉ chặn link booking; "
+            "r1324 (link lịch sử bị chặn) đã lỗi thời. Trước đây: MÂU THUẪN với r1324 cùng corpus "
             "(「user mở từ link lịch sử + thỏa filter → hiện trang báo lỗi」) → MT-33."),
 
     tc("予約ページの非表示 (filter)", "OUT-TRUTH-001", "Normal",
@@ -990,6 +949,7 @@ S5 = [
        "Text có xuống dòng",
        "- Không nhập: hiện text mặc định「詳細は運営元までお問い合わせください」\n"
        "- Có nhập: hiện đúng text đã nhập, giữ nguyên xuống dòng",
+       group="UI",
        note="Nguồn: Setting calendar r287-r288 + Booking phía line user r1326-r1327."),
 
     tc("予約ページの非表示 (filter)", "DATA-REF-001", "Abnormal",
@@ -1014,6 +974,7 @@ S5 = [
        "- Màn đầu hiện tên calendar + nút gửi mã (không hiện tên quản lý)\n"
        "- Bấm gửi mã: chuyển sang màn nhập mã, admin nhận được email chứa mã\n"
        "- Bấm gửi lại: reload màn, gửi được email mới\n- Nhập mã đúng: hiện popup xác nhận cuối",
+       group="UI",
        note="Nguồn: Setting calendar r1663-r1673. Spec BR-07, EP-43/EP-44."),
 
     tc("予約システムの削除", "NOTI-MAIL-001", "Abnormal",
@@ -1024,6 +985,7 @@ S5 = [
        "Mã rỗng · mã sai · mã cũ · mã mới có khoảng trắng",
        "- B1, B2, B3: báo lỗi, không xóa được\n"
        "- B4: tự trim khoảng trắng, hiện popup xác nhận cuối",
+       group="UI",
        note="Nguồn: Setting calendar r1668-r1672."),
 
     tc("予約システムの削除", "DATA-REF-001", "Normal",

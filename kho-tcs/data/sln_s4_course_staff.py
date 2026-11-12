@@ -43,8 +43,9 @@ S4 = [
        "- (1,0): hiện phí course ở màn chọn/detail course; KHÔNG hiện phí staff; VẪN hiện phí tổng ở màn khác\n"
        "- (0,1): ngược lại — không hiện phí course, có hiện phí staff, vẫn hiện phí tổng\n"
        "- (1,1): hiện phí course và phí tổng (course + staff) ở mọi màn",
-       note="Nguồn: Quản lý course&staff r5-r10. Spec Field #37 ghi「Bắt buộc hiện khi bật payment」"
-            "nhưng KHÔNG mô tả ma trận 4 tổ hợp → MT-18."),
+       group="UI",
+       note="Leader chốt MT-18 (2026-10-12): theo TC là đúng. Nguồn: Quản lý course&staff r5-r10. "
+            "Spec cần bổ sung ma trận 4 tổ hợp + field display_staff_cost."),
 
     tc("コース — list & menu", "DATA-001", "Normal",
        "Setting hiển thị 所要時間 của course phía LINE user",
@@ -64,6 +65,7 @@ S4 = [
        "-",
        "- B1: hiện popup trên nền màn hình báo đang chọn không dùng course\n"
        "- B2: chuyển sang màn setting cơ bản của course\n- B3: hiện màn list course bình thường",
+       group="UI",
        note="Nguồn: Quản lý course&staff r23-r25."),
 
     tc("コース — list & menu", "FUNC-001", "Normal",
@@ -134,8 +136,8 @@ S4 = [
        "- B1: Invalid\n- B2: lưu thành công\n- B3: TỰ CẮT còn 50 ký tự\n"
        "- B4: lưu thành công và tự lấy 10 ký tự đầu của コース名\n"
        "- B5: lưu thành công\n- B6: TỰ CẮT còn 10 ký tự",
-       note="Nguồn: Quản lý course&staff r238-r243. ⚠ Ở wizard tạo calendar, 51 ký tự lại BÁO LỖI "
-            "(Calendar list r196) → 2 lối vào 2 hành vi khác nhau, xem MT-05."),
+       note="Leader chốt MT-05 (2026-10-12): コース名 (hiển thị LINE user) max 50, システム管理名 max 10, "
+            "quá thì TỰ CẮT. Nguồn: Quản lý course&staff r238-r243."),
 
     tc("コース — tạo/sửa/xóa", "MEDIA-001", "Abnormal",
        "Upload ảnh course: giới hạn 10MB và định dạng",
@@ -146,9 +148,11 @@ S4 = [
        "Ảnh 1000x500 · ảnh 800x800 · ảnh 12MB · file .txt · .avif · 4 định dạng hợp lệ",
        "- B1, B2, B3, B6: thành công\n"
        "- B4: lỗi「ファイルサイズが制限（10MB）を超えています」\n"
-       "- B5: lỗi「ファイルの形式が正しくありません。」",
+       "- B5: lỗi「png, jpg, gif画像を選択してください。」",
        env="PRODUCTION",
-       note="Nguồn: Quản lý course&staff r244-r250. RULE-08: media BẮT BUỘC test production."),
+       note="Leader chốt MT-31 (2026-10-12): message sai định dạng ảnh thống nhất「png, jpg, gif画像を選択してください。」. "
+            "Nguồn: Quản lý course&staff r244-r250 (r249 ghi「ファイルの形式が正しくありません。」→ nếu còn là "
+            "DỰ KIẾN FAIL). RULE-08: media BẮT BUỘC test production."),
 
     tc("コース — tạo/sửa/xóa", "FUNC-004", "Boundary",
        "Validate 所要時間 và 料金 của course",
@@ -199,6 +203,7 @@ S4 = [
        "1. Double-click nút save\n2. Đếm số course trong list và DB",
        "Course「カットA」",
        "- Chỉ 1 course được tạo",
+       group="Data",
        note="Nguồn: Quản lý course&staff r274."),
 
     tc("コース — tạo/sửa/xóa", "DATA-REF-001", "Abnormal",
@@ -246,6 +251,7 @@ S4 = [
        "URL detail course bot A",
        "- Chưa đăng nhập: chuyển về màn đăng nhập\n"
        "- Bot khác: bị chặn, không xem/sửa được course của bot A",
+       group="UI",
        note="Nguồn: Quản lý course&staff r635-r640."),
 
     # ══════════════ 22. スタッフ — list & tạo/sửa/xóa ══════════════
@@ -270,6 +276,7 @@ S4 = [
        "S1 đã liên kết Google, có booking sync",
        "- Toàn bộ booking sync từ Google của S1 bị xóa\n"
        "- Bản ghi liên kết Google của S1 bị xóa\n- Màn cài đặt hiện S1 là chưa liên kết",
+       group="Data",
        note="Nguồn: Spec BR-10 + Sync google calendar r631-r633."),
 
     tc("スタッフ — list & tạo/sửa/xóa", "DATA-REF-001", "Normal",
@@ -280,23 +287,24 @@ S4 = [
        "S1 có đầy đủ cài đặt",
        "- Sinh staff mới với dữ liệu copy từ S1\n"
        "- Đối chiếu từng trường: tên, ảnh, phí, danh sách course, cài đặt action\n"
-       "- Lịch làm việc: xác nhận có được copy hay không",
+       "- Lịch làm việc: KHÔNG được copy — staff mới chưa có ca nào",
        spec="Đã hỏi leader",
-       note="Nguồn: Quản lý course&staff r456-r466. ⚠ Corpus KHÔNG nói rõ ca làm việc có được copy "
-            "hay không → cần Leader xác nhận, xem MT-19."),
+       note="Leader chốt MT-19 (2026-10-12): copy staff không copy ca làm việc. Nguồn: Quản lý course&staff r456-r466."),
 
     tc("スタッフ — list & tạo/sửa/xóa", "DATA-REF-001", "Abnormal",
-       "Xóa staff còn booking chưa cancel → chặn hoặc xử lý nhất quán",
-       CS + "\n- Staff S1 có ca ngày 11/07 và booking「予約確定」11/07 20:00-21:00",
-       "1. Bấm xóa S1\n2. Quan sát kết quả\n"
-       "3. Nếu cho xóa: kiểm tra mọi nơi tham chiếu (danh sách booking, detail, lịch sử, CSV, LIFF)",
-       "S1 có ca + booking 予約確定",
-       "- HOẶC chặn xóa với thông báo rõ ràng\n"
-       "- HOẶC cho xóa và hiển thị trạng thái「đã xóa」ở MỌI nơi tham chiếu\n"
-       "- Trong mọi trường hợp: không có màn nào lỗi/trắng, không mất booking",
+       "Xóa staff còn booking 予約確定 / リクエスト → chặn với message",
+       CS + "\n- Staff S1 có ca ngày 11/07 và booking「予約確定」11/07 20:00-21:00\n"
+            "- Staff S2 có booking「リクエスト」12/07 10:00-11:00\n"
+            "- Staff S3 chỉ có booking「キャンセル」",
+       "1. Bấm xóa S1\n2. Bấm xóa S2\n3. Bấm xóa S3\n4. Kiểm tra DB và màn danh sách staff",
+       "S1 có 予約確定 · S2 có リクエスト · S3 chỉ có キャンセル",
+       "- B1, B2: lỗi「「ステータス：予約確定、リクエスト」の予約が残っています。このスタッフを削除する場合、"
+       "このスタッフを予約しているすべての予約が「ステータス：キャンセル」になっている必要があります。」, "
+       "staff KHÔNG bị xóa\n"
+       "- B3: xóa thành công\n"
+       "- Không có màn nào lỗi/trắng",
        spec="Đã hỏi leader",
-       note="Nguồn: #38520 r46 + Quản lý course&staff r467. ⚠ Corpus để ngỏ 2 khả năng → cần Leader "
-            "chốt, xem MT-19."),
+       note="Leader chốt MT-19 (2026-10-12). Nguồn: #38520 r46 + Quản lý course&staff r467."),
 
     tc("スタッフ — list & tạo/sửa/xóa", "FUNC-004", "Normal",
        "Validate các trường ở tab 基本情報 của staff",
@@ -331,6 +339,7 @@ S4 = [
        "1. Đăng xuất → mở URL detail staff\n2. Đăng nhập bot B → mở URL detail staff của bot A",
        "URL detail staff bot A",
        "- Chưa đăng nhập: chuyển về màn đăng nhập\n- Bot khác: bị chặn",
+       group="UI",
        note="Nguồn: Quản lý course&staff r641-r647."),
 
     tc("スタッフ — list & tạo/sửa/xóa", "DATA-ID-001", "Abnormal",
@@ -396,7 +405,7 @@ S4 = [
        "- Option 3: lưu thành công, HIỆN phần sắp xếp thứ tự ưu tiên\n"
        "- Thứ tự mặc định của danh sách ưu tiên = thứ tự ở màn quản lý staff",
        note="Nguồn: Quản lý calendar r2506-r2509 (Feature #27976, 01/2025). "
-            "⚠ Spec KHÔNG có BR nào cho tính năng này → MT-20."),
+            "Leader chốt MT-20 (2026-10-12): TC giữ theo corpus; spec cần bổ sung mục スタッフ自動割り当て ở §2.4."),
 
     tc("スタッフ自動割り当て", "UI-FIELD-001", "Normal",
        "Đổi thứ tự ưu tiên KHÔNG làm đổi thứ tự staff ở các màn khác",
@@ -556,6 +565,7 @@ S4 = [
        "- status 1, 2, 5: XÓA event Google cũ và TẠO event ở Google của staff mới\n"
        "- status 4, 7: xóa event cũ, KHÔNG tạo event mới\n"
        "- status 6: KHÔNG sync\n- Cả 3 chiều đổi ở bước 6 đều xử lý như trên",
+       group="UI",
        note="Nguồn: Quản lý calendar r2742-r2751."),
 
     tc("スタッフ自動割り当て", "JOB-001", "Normal",
@@ -610,8 +620,10 @@ S4 = [
        "6. random option 2 + limit option 3 = 4 → đặt lịch",
        "3 staff, mỗi staff limit 1, các tổ hợp option",
        "- Mỗi tổ hợp: booking được gán staff theo đúng quy tắc random và đếm limit tương ứng\n"
-       "- Số booking tối đa trên 1 khung giờ khớp giá trị limit đã cấu hình\n"
-       "- Với limit option 3 = 4 mà chỉ có 3 staff mỗi staff limit 1: tối đa vẫn là 3 booking",
-       note="Nguồn: Quản lý calendar r2843-r2878 (SpecChange #32679, 03/11/2025). "
-            "⚠ Nhánh limit 3 = 4 > tổng limit staff — kết quả mong đợi cần Leader xác nhận, xem MT-21."),
+       "- B4 (limit calendar = 1): tối đa 1 booking/khung dù còn staff rảnh — booking thứ 2 bị chặn\n"
+       "- B5 (limit calendar = 3): tối đa 3 booking/khung\n"
+       "- B6 (limit calendar = 4, 3 staff mỗi staff limit 1): tối đa 3 booking — booking thứ 4 bị chặn vì "
+       "không còn staff thỏa limit",
+       note="Leader chốt MT-21 (2026-10-12): phải thỏa CẢ limit calendar và limit staff mới book được. "
+            "Nguồn: Quản lý calendar r2843-r2878 (SpecChange #32679, 03/11/2025)."),
 ]

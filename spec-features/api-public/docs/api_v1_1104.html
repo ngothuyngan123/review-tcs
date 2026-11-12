@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>Đặc tả chi tiết API Phase 1 liên kết ngoài của LME</title>
+<style>
+  :root{
+    --bg:#ffffff; --surface:#f8fafc; --ink:#1f2937; --muted:#64748b;
+    --line:#dbe3ef; --blue:#2563eb; --green:#16a34a; --amber:#b45309; --red:#b91c1c;
+    --shadow:0 1px 2px rgba(15,23,42,.04);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4,p,li,td,th,dt,dd,pre,code{overflow-wrap:anywhere}
+  a{color:var(--blue)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  header.hero{background:linear-gradient(135deg,#10243f 0%,#1d3c64 55%,#245b86 100%);color:#fff;padding:46px 0 40px}
+  .hero-inner{max-width:1180px;margin:0 auto;padding:0 24px}
+  .hero .kicker{display:inline-block;font-size:12px;letter-spacing:.12em;font-weight:800;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);padding:5px 13px;border-radius:999px;margin:0 0 16px}
+  .hero h1{font-size:30px;line-height:1.42;margin:0 0 8px;font-weight:800;color:#fff}
+  .hero .sub{font-size:14px;color:rgba(255,255,255,.84);margin:0 0 20px}
+  .hero .lead{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);border-left:4px solid #7fb2ff;border-radius:0 12px 12px 0;padding:18px 22px;max-width:940px}
+  .hero .lead p{margin:0;font-size:15px;line-height:1.9;color:rgba(255,255,255,.96)}
+  .hero .lead .hl{color:#b7d6ff;font-weight:800}
+  .hero .hmeta{margin-top:22px;display:flex;gap:9px;flex-wrap:wrap}
+  .hero .hmeta span{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);padding:5px 12px;border-radius:999px;font-size:12.5px;color:rgba(255,255,255,.92)}
+  .hero .hmeta span b{color:#fff;font-weight:700}
+  .hero .hmeta span.own{background:rgba(34,197,94,.24);border-color:rgba(134,239,172,.55);font-weight:700}
+
+  nav.toc{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .toc-inner{max-width:1180px;margin:0 auto;padding:9px 24px;display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .toc-inner a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:700;padding:7px 11px;border-radius:8px;white-space:nowrap}
+  .toc-inner a:hover{background:#eff6ff;color:var(--blue)}
+  @media print{nav.toc{display:none}}
+
+  main{padding:34px 0 70px}
+  section{margin-top:42px;scroll-margin-top:58px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}
+  .num{font-size:12.5px;font-weight:800;color:#fff;background:#162033;min-width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+  h2{font-size:22px;line-height:1.45;margin:0}
+  h3{font-size:18px;line-height:1.55;margin:0 0 8px}
+  h4{font-size:15px;line-height:1.6;margin:0 0 6px;color:#172033}
+  .section-lead{color:var(--muted);margin:6px 0 18px;max-width:940px;font-size:15px}
+
+  .conclusion{border:1px solid var(--line);border-left:4px solid var(--blue);background:#eff6ff;border-radius:0 12px 12px 0;padding:20px 22px;box-shadow:var(--shadow)}
+  .conclusion .k{font-size:12px;font-weight:800;color:var(--blue);margin:0 0 6px}
+  .conclusion .lead-line{font-size:18px;font-weight:800;line-height:1.7;margin:0 0 8px;color:#172033}
+  .conclusion p{margin:0;color:#334155;font-size:14.8px}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .box{border:1px solid var(--line);background:#fff;border-radius:10px;padding:18px 20px;box-shadow:var(--shadow)}
+  .box p{margin:0;color:#475569;font-size:14.5px}
+  .box p + p{margin-top:8px}
+  .box .tag{display:inline-block;font-size:12px;font-weight:800;color:#1d4ed8;background:#eff6ff;border:1px solid #cfe0ff;border-radius:999px;padding:2px 9px;margin-bottom:9px}
+  .box.ok{background:#f0fdf4;border-color:#bbf7d0}
+  .box.ok .tag{background:#dcfce7;border-color:#86efac;color:#15803d}
+  .box.warn{background:#fffaf0;border-color:#fde7bd}
+  .box.warn .tag{background:#fff2d8;border-color:#f6c979;color:#a16207}
+
+  .tbl-wrap{overflow-x:auto;border:2px solid #334155;border-radius:6px;background:#fff;box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;min-width:980px;font-size:14px;border:1px solid #334155}
+  th,td{padding:11px 13px;text-align:left;border:1px solid #334155;vertical-align:top;background:#fff}
+  thead th{background:#e5e7eb;color:#111827;font-size:12px;font-weight:800;letter-spacing:.02em}
+  tbody tr:hover td{background:#f8fafc}
+  td.k{font-weight:700;color:#172033;white-space:nowrap}
+  .num-col{font-variant-numeric:tabular-nums;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .method{font-weight:800;white-space:nowrap;color:#172033}
+  .path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;color:#0f172a;white-space:nowrap}
+  .pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:800;white-space:nowrap}
+  .p1{background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe}
+  .p2{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+  .pcheck{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0}
+  .pnote{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+  .val-list{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+  .val-list code,code.act{display:inline-block;background:#eff6ff;border:1px solid #cfe0ff;color:#1d4ed8;border-radius:6px;padding:1px 8px;font-size:12.5px;white-space:nowrap}
+  code.act{margin:1px 2px}
+  .prebox{background:#0f172a;color:#e5e7eb;border-radius:10px;padding:16px 18px;overflow-x:auto;font-size:12.5px;line-height:1.65}
+  .prebox code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .api-stack{display:grid;gap:18px}
+  .api-card{border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:var(--shadow);overflow:hidden}
+  .api-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#f8fafc;border-bottom:1px solid var(--line);padding:14px 16px;min-width:0}
+  .api-head h3{margin:0;font-size:16px}
+  .api-body{padding:16px}
+  .api-body p{margin:0 0 12px;color:#475569;font-size:14.5px}
+  .api-body h4{margin:18px 0 8px;font-size:14px;color:#172033}
+  .api-body h4:first-of-type{margin-top:0}
+  .mtd{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:900;color:#fff;min-width:58px}
+  .mtd.get{background:#2563eb}.mtd.post{background:#16a34a}.mtd.patch{background:#b45309}.mtd.put{background:#7c3aed}.mtd.delete{background:#b91c1c}
+  .api-path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:#0f172a;font-weight:800;white-space:normal;overflow-wrap:anywhere;min-width:0}
+  .api-card table{min-width:760px}
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .step{border:1px solid var(--line);background:#fff;border-radius:10px;padding:14px;text-align:center;min-height:118px}
+  .step b{display:block;color:var(--blue);font-size:12px;margin-bottom:6px}
+  .step span{display:block;font-size:14px;line-height:1.65;color:#334155;font-weight:700}
+  .note{font-size:13px;color:var(--muted);line-height:1.75;margin-top:12px}
+  .source-list{margin:0;padding-left:18px;color:#475569;font-size:13.5px}
+  .source-list li{margin-bottom:6px}
+  .ask-box{background:linear-gradient(135deg,#0d1f38,#22456b);color:#fff;border-radius:12px;padding:24px 26px}
+  .ask-box h3{color:#fff;margin:0 0 8px;font-size:19px}
+  .ask-box p{color:rgba(255,255,255,.88);margin:0 0 14px;font-size:14.5px}
+  .ask-box ol{margin:0;padding-left:22px}
+  .ask-box li{margin:0 0 10px;color:rgba(255,255,255,.95);font-size:15px}
+  footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+
+  @media(max-width:860px){
+    .grid2,.grid3,.flow{grid-template-columns:1fr}
+    .hero h1{font-size:24px}
+  }
+  @media(max-width:560px){
+    .hero h1{font-size:22px}
+    .wrap,.hero-inner{padding-left:18px;padding-right:18px}
+    main{padding-top:26px}
+    .toc-inner{padding-left:18px;padding-right:18px}
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <p class="kicker">Loại tài liệu: Đặc tả chi tiết API</p>
+    <h1>Đặc tả chi tiết API Phase 1 liên kết ngoài của LME</h1>
+    <p class="sub">Bản tiếng Việt để xác nhận phạm vi public API Phase 1 trước khi bước vào spec chi tiết.</p>
+    <div class="lead"><p>Tài liệu này đóng gói từng API theo format: <span class="hl">mục đích, endpoint, Input parameter, Output parameter, Sample Input và Sample Output</span>.</p></div>
+    <div class="hmeta">
+      <span>Bản: <b>1.2.0</b></span>
+      <span>Cập nhật: <b>28/09/2026</b></span>
+      <span>Người tạo: <b>WSSJ</b></span>
+      <span>Người nhận: <b>Công ty Missiona</b></span>
+      <span>Đối tượng: <b>Phát triển API LME</b></span>
+      <span class="own">Nội dung cần xác nhận: hướng API detail spec</span>
+    </div>
+  </div>
+</header>
+<nav class="toc" aria-label="Mục lục"><div class="toc-inner">
+  <a href="#s1">1. Mục đích</a><a href="#s2">2. Quy định chung</a><a href="#s3">3. Use case</a><a href="#s4">4. API index</a><a href="#s5">5. Chi tiết API Phase 1</a><a href="#s6">6. Lịch sử cập nhật</a>
+</div></nav>
+<main><div class="wrap">
+<section id="s1"><div class="sec-head"><span class="num">1</span><h2>Mục đích</h2></div>
+  <div class="conclusion"><p class="k">Kết luận</p><p class="lead-line">Phase 1 cần định nghĩa trước các API để hệ thống bên ngoài đưa kết quả phán đoán quay lại LME.</p><p>Phạm vi gồm lấy danh sách/chi tiết friend, add/remove tag, cập nhật friend info, start/stop scenario, gửi message, lấy template và lấy conversation.</p></div>
+  <div class="grid2" style="margin-top:18px"><div class="box ok"><span class="tag">Tài liệu này quyết gì</span><p>Xác định endpoint public API và parameter chính của từng API.</p><p>Tên API được sắp xếp lại cho bên ngoài, không giả định public nguyên tên hàm MCP nội bộ.</p></div><div class="box warn"><span class="tag">Nguồn tham chiếu</span><p>Tham chiếu MCP hệ thống LME để phản ánh ID, giới hạn và action type đang có.</p><p>URL, authentication signature và retry spec sẽ xác định ở spec chi tiết. Rate limit đã chốt ở mục 2.</p></div></div>
+</section>
+<section id="s2"><div class="sec-head"><span class="num">2</span><h2>Quy định chung</h2></div><p class="section-lead">Các API dùng chung authentication, paging, idempotency và error format.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Hạng mục</th><th>Đề xuất</th><th>Ghi chú</th></tr></thead><tbody>
+<tr><td>Base URL</td><td>Staging: <code>https://api-stg.lmes.jp</code><br>Production: <code>https://api.lmes.jp</code></td><td>Mọi endpoint đều nằm dưới prefix <code>/v1</code> (ví dụ <code>https://api.lmes.jp/v1/friends</code>).</td></tr>
+<tr><td>Authentication</td><td><code>X-LME-API-KEY</code></td><td>API key gốc <code>lme_live_sk_&lt;32hex&gt;</code> (#40041), cấp theo bot. Server tra <code>api_keys.key_lookup_hash</code> = HMAC-SHA256(key, API_KEY_PEPPER); từ key suy ra bot + quyền <code>scope</code> full/read; kiểm tra is_deleted, status, expires_at (null = vĩnh viễn).</td></tr>
+<tr><td>Request format</td><td><code>Content-Type: application/json</code></td><td>API lấy danh sách dùng query. API cập nhật dùng JSON body.</td></tr>
+<tr><td>Ngày giờ</td><td><code>YYYY-MM-DD</code>, <code>YYYY-MM-DDTHH:mm:ss+09:00</code></td><td>Event, reservation và payment dùng giờ Nhật làm chuẩn.</td></tr>
+<tr><td>Paging</td><td><code>page</code>, <code>limit</code></td><td><code>limit</code> mặc định 100 record, tối đa 500 record.</td></tr>
+<tr><td>Rate limit</td><td>Đọc (GET): <strong>300 request/phút</strong><br>Ghi (POST/PUT/DELETE): <strong>60 request/phút</strong></td><td>Quota tính <b>theo bot</b>, cửa sổ cố định theo phút (fixed window, reset mỗi đầu phút). Mọi response <code>/v1</code> kèm header <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code>. Vượt ngưỡng → 429 <code>rate_limited</code> + header <code>Retry-After</code> (giây). Chỉ đếm request đã xác thực API key.</td></tr>
+<tr><td>Idempotency</td><td><code>Idempotency-Key</code></td><td>Dùng cho <code>/do_action</code>, <code>/messages/push</code>, <code>/messages/template</code> để tránh chạy trùng. Giá trị do người dùng tự đặt, độ dài tối đa 100 ký tự (vượt → 400 <code>invalid_request</code>).</td></tr>
+<tr><td>Key đối chiếu</td><td><code>lmessage_friend_id</code>, <code>line_friend_id</code></td><td>Dùng L Message Friend ID hoặc LINE Friend ID.</td></tr>
+</tbody></table></div><h3 style="margin-top:18px">Response chung</h3><pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_001",
+  "data": {},
+  "pagination": {"page": 1, "limit": 100, "total_items": 1240, "total_pages": 13, "has_next": true}
+}</code></pre><h3 style="margin-top:18px">Error chung</h3>
+<div class="tbl-wrap"><table><thead><tr><th>HTTP</th><th>Code</th><th>Ý nghĩa</th><th>Ví dụ</th></tr></thead><tbody>
+<tr><td>400</td><td><code>invalid_request</code></td><td>Request không đúng format</td><td>JSON sai, thiếu field bắt buộc</td></tr>
+<tr><td>401</td><td><code>unauthorized</code></td><td>Authentication thất bại</td><td>Thiếu/sai API key, key đã hết hạn, key đã xoá</td></tr>
+<tr><td>403</td><td><code>forbidden</code></td><td>Không có quyền truy cập target</td><td>Key bị disable, key <code>read</code> gọi API ghi, bot đã xoá</td></tr>
+<tr><td>404</td><td><code>not_found</code></td><td>Target không tồn tại</td><td>Không tìm thấy friend, tag, scenario, template, friend info field/option, trạng thái xử lý — hoặc resource thuộc bot khác</td></tr>
+<tr><td>409</td><td><code>conflict</code></td><td>Trùng hoặc conflict khi cập nhật</td><td>Gửi lại cùng event ID</td></tr>
+<tr><td>422</td><td><code>validation_error</code></td><td>Input không thỏa validation</td><td>Operation không hợp lệ với field type</td></tr>
+<tr><td>429</td><td><code>rate_limited</code></td><td>Vượt giới hạn gọi API</td><td>Vượt 300 req/phút (đọc) hoặc 60 req/phút (ghi) của bot — đợi theo header <code>Retry-After</code> rồi gọi lại</td></tr>
+</tbody></table></div></section>
+<section id="s3"><div class="sec-head"><span class="num">3</span><h2>Đối ứng use case</h2></div><p class="section-lead">Ba case chính dùng API theo hướng thao tác trên friend chỉ định.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Case</th><th>Luồng giao tiếp</th><th>API chính</th><th>Key đối chiếu</th></tr></thead><tbody>
+<tr><td><strong>AI Bot tự động trả lời</strong></td><td>Automation tool dùng AI để phán đoán message của friend rồi gọi API của LME.</td><td>Gửi message, lấy chi tiết friend, add/remove tag, start/stop scenario, cập nhật friend info.</td><td>L Message Friend ID, LINE Friend ID.</td></tr>
+<tr><td><strong>CRM/SFA</strong></td><td>CRM lấy danh sách friend hiện có và gọi API để cập nhật tag/friend info/scenario/trạng thái chat cho friend chỉ định.</td><td>Lấy danh sách friend, lấy chi tiết friend, lấy tag/scenario/field list, conversation, cập nhật trạng thái chat.</td><td>L Message Friend ID, LINE Friend ID.</td></tr>
+<tr><td><strong>EC</strong></td><td>EC site ghi nhận event như product view, add cart, checkout, purchase, shipping, stock rồi gọi API của LME để cập nhật friend cần tiếp cận.</td><td>Add/remove tag, cập nhật friend info, start/stop scenario, gửi message.</td><td>L Message Friend ID, LINE Friend ID.</td></tr>
+</tbody></table></div></section>
+<section id="s4"><div class="sec-head"><span class="num">4</span><h2>API index</h2></div><p class="section-lead">Bảng index ngắn cho Phase 1. Chi tiết parameter và sample nằm trong từng API block ở mục 5.</p><div class="tbl-wrap"><table><thead><tr><th>Method</th><th>Path</th><th>Mục đích</th><th>Input chính</th></tr></thead><tbody><tr><td colspan="4"><span class="pill p1">Phase 1</span> API core</td></tr>
+<tr><td class="method">GET</td><td class="path">/friends</td><td>Lấy danh sách friend</td><td><code>page</code>, <code>limit</code>, <code>line_names</code>, <code>tag_ids</code>, <code>emails</code>&hellip;</td></tr>
+<tr><td class="method">GET</td><td class="path">/friends/detail</td><td>Lấy chi tiết friend</td><td><code>lmessage_friend_id</code></td></tr>
+<tr><td class="method">GET</td><td class="path">/tags</td><td>Lấy danh sách tag</td><td><code>page</code>, <code>limit</code></td></tr>
+<tr><td class="method">GET</td><td class="path">/friend-info-fields</td><td>Lấy danh sách friend info field</td><td><code>page</code>, <code>limit</code></td></tr>
+<tr><td class="method">GET</td><td class="path">/scenarios</td><td>Lấy danh sách scenario</td><td><code>page</code>, <code>limit</code></td></tr>
+<tr><td class="method">POST</td><td class="path">/messages/push</td><td>Gửi text/media message</td><td><code>friend_id</code>, <code>messages[]</code>, <code>messages[].type</code></td></tr>
+<tr><td class="method">POST</td><td class="path">/messages/template</td><td>Gửi template message</td><td><code>friend_id</code>, <code>templates[]</code></td></tr>
+<tr><td class="method">GET</td><td class="path">/templates</td><td>Lấy danh sách template</td><td><code>page</code>, <code>limit</code></td></tr>
+<tr><td class="method">GET</td><td class="path">/conversations</td><td>Lấy danh sách conversation</td><td><code>page</code>, <code>limit</code>, <code>confirm_status</code>, <code>handling_status_ids</code>, <code>tag_ids</code>…</td></tr>
+<tr><td class="method">GET</td><td class="path">/conversations/detail</td><td>Lấy 100 message gần nhất của một friend</td><td><code>lmessage_friend_id</code></td></tr>
+<tr><td class="method">GET</td><td class="path">/handling-statuses</td><td>Lấy danh sách trạng thái xử lý</td><td>Không có</td></tr>
+<tr><td class="method">POST</td><td class="path">/do_action</td><td>Thực hiện hàng loạt action trên friend</td><td><code>lmessage_friend_ids[]</code>, <code>actions[]</code>, <code>actions[].type</code></td></tr>
+</tbody></table></div></section>
+<section id="s5"><div class="sec-head"><span class="num">5</span><h2>Chi tiết API Phase 1</h2></div><p class="section-lead">Phase 1 gồm API core theo friend.</p><div class="api-stack"><div class="api-card" id="api-list-friends">
+  <div class="api-head"><span class="mtd get">GET</span><span class="api-path">/friends</span><h3>Lấy danh sách friend</h3></div>
+  <div class="api-body">
+    <p>Dùng khi CRM đồng bộ lần đầu hoặc cập nhật danh sách friend trong LME theo paging và filter cơ bản.</p>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>page</code></td><td>query</td><td>Không</td><td>integer</td><td>Số trang cần lấy. Mặc định là 1.</td></tr>
+<tr><td><code>limit</code></td><td>query</td><td>Không</td><td>integer</td><td>Số record lấy. Mặc định 100, tối đa 500.</td></tr>
+<tr><td><code>line_names</code></td><td>query</td><td>Không</td><td>string | CSV</td><td>Tìm gần đúng theo tên LINE hoặc tên quản lý trong LME (không phân biệt hoa thường). Nhiều giá trị → OR.</td></tr>
+<tr><td><code>tag_ids</code></td><td>query</td><td>Không</td><td>integer | CSV</td><td>Tag ID cần lọc (lấy từ <code>/tags</code>). Nhiều giá trị → OR (friend có ít nhất 1 tag).</td></tr>
+<tr><td><code>emails</code></td><td>query</td><td>Không</td><td>string | CSV</td><td>Email cần lọc, khớp chính xác. Nhiều giá trị → OR.</td></tr>
+<tr><td><code>added_date_from</code></td><td>query</td><td>Không</td><td>date</td><td>Ngày thêm bạn từ ngày, format <code>YYYY-MM-DD</code>.</td></tr>
+<tr><td><code>added_date_to</code></td><td>query</td><td>Không</td><td>date</td><td>Ngày thêm bạn đến ngày, format <code>YYYY-MM-DD</code>.</td></tr></tbody></table></div>
+    <p class="note">Các filter khác nhau kết hợp theo điều kiện AND; nhiều giá trị trong cùng một filter (phân tách bằng dấu phẩy hoặc lặp param) kết hợp theo OR.</p>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>success</code></td><td>boolean</td><td>true nếu request được xử lý thành công.</td></tr>
+<tr><td><code>request_id</code></td><td>string</td><td>ID để trace log khi cần điều tra lỗi.</td></tr>
+<tr><td><code>data.total_items</code></td><td>integer</td><td>Tổng số friend thỏa điều kiện filter.</td></tr>
+<tr><td><code>data.total_pages</code></td><td>integer</td><td>Tổng số page theo <code>limit</code> hiện tại.</td></tr>
+<tr><td><code>data.friend_detail[]</code></td><td>array&lt;object&gt;</td><td>Danh sách friend detail của page hiện tại.</td></tr>
+<tr><td><code>data.friend_detail[].added_time</code></td><td>date</td><td>Ngày friend được add vào LME.</td></tr>
+<tr><td><code>data.friend_detail[].friendtype</code></td><td>string</td><td>Loại friend: <code>old</code> hoặc <code>new</code>.</td></tr>
+<tr><td><code>data.friend_detail[].line_friend_id</code></td><td>string</td><td>LINE Friend ID.</td></tr>
+<tr><td><code>data.friend_detail[].lmessage_friend_id</code></td><td>integer</td><td>Friend ID nội bộ của LME.</td></tr>
+<tr><td><code>data.friend_detail[].line_name</code></td><td>string</td><td>Tên hiển thị trên LINE.</td></tr>
+<tr><td><code>data.friend_detail[].system_name</code></td><td>string|null</td><td>Tên quản lý trong LME nếu có.</td></tr>
+<tr><td><code>data.friend_detail[].email</code></td><td>string|null</td><td>Email đã lưu trong friend info nếu có.</td></tr>
+<tr><td><code>data.friend_detail[].phone</code></td><td>string|null</td><td>Số điện thoại đã lưu trong friend info nếu có.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>GET /v1/friends?page=1&amp;limit=100&amp;line_names=Tanaka,Sato&amp;tag_ids=101,102&amp;added_date_from=2026-07-01&amp;added_date_to=2026-07-30</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0001",
+  "data": {
+    "total_items": 250,
+    "total_pages": 3,
+    "friend_detail": [
+      {
+        "added_time": "2026-07-30",
+        "friendtype": "new",
+        "line_friend_id": "Uxxxxxxxx",
+        "lmessage_friend_id": 12345,
+        "line_name": "Tanaka",
+        "system_name": "Tanaka CRM",
+        "email": "customer@example.com",
+        "phone": "09000000000"
+      }
+    ]
+  }
+}</code></pre>
+  </div>
+</div>
+
+<div class="api-card" id="api-friend-detail">
+  <div class="api-head"><span class="mtd get">GET</span><span class="api-path">/friends/detail</span><h3>Lấy chi tiết friend</h3></div>
+  <div class="api-body">
+    <p>Lấy chi tiết một friend. API này chỉ nhận <code>lmessage_friend_id</code>, không nhận LINE Friend ID/email/phone làm input.</p>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>lmessage_friend_id</code></td><td>query</td><td>Có</td><td>integer</td><td>L Message Friend ID. Chỉ lấy 1 friend trong 1 request.</td></tr></tbody></table></div>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>success</code></td><td>boolean</td><td>true nếu request được xử lý thành công.</td></tr>
+<tr><td><code>request_id</code></td><td>string</td><td>ID để trace log khi cần điều tra lỗi.</td></tr>
+<tr><td><code>data.friend</code></td><td>object</td><td>Friend detail.</td></tr>
+<tr><td><code>data.friend.lmessage_friend_id</code></td><td>integer</td><td>Friend ID nội bộ của LME.</td></tr>
+<tr><td><code>data.friend.line_friend_id</code></td><td>string</td><td>LINE Friend ID.</td></tr>
+<tr><td><code>data.friend.line_name</code></td><td>string|null</td><td>Tên hiển thị trên LINE.</td></tr>
+<tr><td><code>data.friend.system_name</code></td><td>string|null</td><td>Tên quản lý trong LME nếu có.</td></tr>
+<tr><td><code>data.friend.email</code></td><td>string|null</td><td>Email dùng để CRM map customer.</td></tr>
+<tr><td><code>data.friend.phone</code></td><td>string|null</td><td>Số điện thoại dùng để CRM map customer.</td></tr>
+<tr><td><code>data.friend.tags[]</code></td><td>array&lt;object&gt;</td><td>Tag đang gắn với friend.</td></tr>
+<tr><td><code>data.friend.tags[].id</code></td><td>integer</td><td>Tag ID.</td></tr>
+<tr><td><code>data.friend.tags[].name</code></td><td>string</td><td>Tên tag.</td></tr>
+<tr><td><code>data.friend.friend_info[]</code></td><td>array&lt;object&gt;</td><td>Friend info gồm built-in field và custom field.</td></tr>
+<tr><td><code>data.friend.friend_info[].id</code></td><td>integer</td><td>Friend info field ID.</td></tr>
+<tr><td><code>data.friend.friend_info[].type</code></td><td>string</td><td>TEXT, POINT, DATE, SELECT, IMAGE hoặc FILE.</td></tr>
+<tr><td><code>data.friend.friend_info[].name</code></td><td>string</td><td>Tên field.</td></tr>
+<tr><td><code>data.friend.friend_info[].value</code></td><td>string|number|null</td><td>Giá trị hiện tại. POINT trả <b>number</b> (không parse được → null); DATE dạng <code>YYYY-MM-DD</code>; còn lại string.</td></tr>
+<tr><td><code>data.friend.scenarios[]</code></td><td>array&lt;object&gt;</td><td>Scenario friend đang follow hoặc đã stop.</td></tr>
+<tr><td><code>data.friend.scenarios[].id</code></td><td>integer</td><td>Scenario ID.</td></tr>
+<tr><td><code>data.friend.scenarios[].name</code></td><td>string</td><td>Tên scenario.</td></tr>
+<tr><td><code>data.friend.scenarios[].status</code></td><td>string</td><td><code>following</code>, <code>completed</code> hoặc <code>stopped</code>.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>GET /v1/friends/detail?lmessage_friend_id=12345</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0003",
+  "data": {
+    "friend": {
+      "lmessage_friend_id": 12345,
+      "line_friend_id": "Uxxxxxxxx",
+      "line_name": "Tanaka",
+      "system_name": "Tanaka CRM",
+      "email": "customer@example.com",
+      "phone": "09000000000",
+      "tags": [
+        {
+          "id": 101,
+          "name": "cart_abandonment"
+        }
+      ],
+      "friend_info": [
+        {
+          "id": -3,
+          "type": "TEXT",
+          "name": "email",
+          "value": "customer@example.com"
+        },
+        {
+          "id": 5001,
+          "type": "POINT",
+          "name": "point",
+          "value": 20
+        }
+      ],
+      "scenarios": [
+        {
+          "id": 88,
+          "name": "cart_abandonment_reminder",
+          "status": "following"
+        }
+      ]
+    }
+  }
+}</code></pre>
+  </div>
+</div>
+
+<div class="api-card" id="api-list-tags">
+  <div class="api-head"><span class="mtd get">GET</span><span class="api-path">/tags</span><h3>Lấy danh sách tag</h3></div>
+  <div class="api-body">
+    <p>Lấy danh sách tag hiện có để xác định tag ID trước khi add/remove tag cho friend qua <code>/do_action</code>.</p>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>page</code></td><td>query</td><td>Không</td><td>integer</td><td>Số trang cần lấy. Mặc định là 1.</td></tr>
+<tr><td><code>limit</code></td><td>query</td><td>Không</td><td>integer</td><td>Số record lấy. Mặc định 100, tối đa 500.</td></tr></tbody></table></div>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>data.tags[]</code></td><td>array&lt;object&gt;</td><td>Danh sách tag của page hiện tại.</td></tr>
+<tr><td><code>data.tags[].id</code></td><td>integer</td><td>Tag ID.</td></tr>
+<tr><td><code>data.tags[].name</code></td><td>string</td><td>Tên tag.</td></tr>
+<tr><td><code>data.tags[].friend_count</code></td><td>integer</td><td>Số friend đang được gắn tag này.</td></tr>
+<tr><td><code>pagination</code></td><td>object</td><td>Thông tin phân trang: page, limit, total_items, total_pages, has_next.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>GET /v1/tags?page=1&amp;limit=100</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0005",
+  "data": {
+    "tags": [
+      {
+        "id": 101,
+        "name": "cart_abandonment",
+        "friend_count": 25
+      }
+    ]
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 100,
+    "total_items": 36,
+    "total_pages": 1,
+    "has_next": false
+  }
+}</code></pre>
+  </div>
+</div>
+<div class="api-card" id="api-list-friend-info-fields">
+  <div class="api-head"><span class="mtd get">GET</span><span class="api-path">/friend-info-fields</span><h3>Lấy danh sách friend info field</h3></div>
+  <div class="api-body">
+    <p>Dùng để resolve field ID của friend info cần cập nhật qua <code>/do_action</code>.</p>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>page</code></td><td>query</td><td>Không</td><td>integer</td><td>Số trang cần lấy. Mặc định là 1.</td></tr>
+<tr><td><code>limit</code></td><td>query</td><td>Không</td><td>integer</td><td>Số record lấy. Mặc định 100, tối đa 500.</td></tr></tbody></table></div>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>data.fields[]</code></td><td>array&lt;object&gt;</td><td>Danh sách field.</td></tr>
+<tr><td><code>data.fields[].field_id</code></td><td>integer</td><td>Field ID. Built-in field dùng ID âm, custom field dùng ID dương.</td></tr>
+<tr><td><code>data.fields[].title</code></td><td>string</td><td>Tên field hiển thị hoặc tên nội bộ.</td></tr>
+<tr><td><code>data.fields[].field_type</code></td><td>string</td><td>TEXT, POINT, DATE, SELECT, IMAGE hoặc FILE.</td></tr>
+<tr><td><code>data.fields[].options[]</code></td><td>array&lt;object&gt;|null</td><td>Danh sách option nếu field_type là SELECT. Riêng built-in <code>field_id=-6</code> (都道府県名) trả 47 option tỉnh cố định (xem bảng dưới).</td></tr>
+<tr><td><code>pagination</code></td><td>object</td><td>Thông tin phân trang: page, limit, total_items, total_pages, has_next.</td></tr></tbody></table></div>
+    <h4>Built-in field (ID âm)</h4>
+    <p>Các trường hệ thống có sẵn cho mọi bot (không phải custom field do user tạo). Danh sách cố định — luôn xuất hiện đầu trang <code>page=1</code>, <code>group_id=0</code>. Custom field luôn dùng ID dương.</p>
+    <div class="tbl-wrap"><table><thead><tr><th>field_id</th><th>Tên (JP)</th><th>field_type</th></tr></thead><tbody>
+<tr><td class="num-col">-1</td><td>システム表示名 (tên hệ thống/quản lý)</td><td>TEXT</td></tr>
+<tr><td class="num-col">-2</td><td>携帯電話 (SĐT)</td><td>TEXT</td></tr>
+<tr><td class="num-col">-3</td><td>メールアドレス (email)</td><td>TEXT</td></tr>
+<tr><td class="num-col">-4</td><td>生年月日 (ngày sinh)</td><td>DATE</td></tr>
+<tr><td class="num-col">-6</td><td>都道府県名 (tỉnh/thành)</td><td>SELECT</td></tr>
+<tr><td class="num-col">-7</td><td>郵便番号 (mã bưu điện)</td><td>TEXT</td></tr>
+<tr><td class="num-col">-8</td><td>市区町村名 (quận/huyện/thành phố)</td><td>TEXT</td></tr>
+<tr><td class="num-col">-9</td><td>町名/番地 (địa chỉ/số nhà)</td><td>TEXT</td></tr>
+<tr><td class="num-col">-10</td><td>建物名・部屋番号 (tòa nhà/số phòng)</td><td>TEXT</td></tr>
+</tbody></table></div>
+    <h4>Chi tiết field -6 (都道府県名)</h4>
+    <p class="note">Built-in field <code>field_id=-6</code> (都道府県名) là SELECT đặc biệt: option là 47 tỉnh cố định khớp màn hình web, <code>option_id</code> = STT 1-based theo bảng dưới. Khi set qua <code>/do_action</code> gửi <code>option_id</code>, server tự resolve ra tên tỉnh string để lưu. Khi đọc ra (<code>/friends/detail</code> → <code>friend_info[].value</code>) field SELECT (kể cả -6) luôn trả value string trực tiếp (label), không trả option_id.</p>
+    <div class="tbl-wrap"><table><thead><tr><th>option_id</th><th>Tỉnh</th><th>option_id</th><th>Tỉnh</th><th>option_id</th><th>Tỉnh</th><th>option_id</th><th>Tỉnh</th></tr></thead><tbody>
+<tr><td>1</td><td>北海道</td><td>13</td><td>東京都</td><td>25</td><td>滋賀県</td><td>37</td><td>香川県</td></tr>
+<tr><td>2</td><td>青森県</td><td>14</td><td>神奈川県</td><td>26</td><td>京都府</td><td>38</td><td>愛媛県</td></tr>
+<tr><td>3</td><td>岩手県</td><td>15</td><td>新潟県</td><td>27</td><td>大阪府</td><td>39</td><td>高知県</td></tr>
+<tr><td>4</td><td>宮城県</td><td>16</td><td>富山県</td><td>28</td><td>兵庫県</td><td>40</td><td>福岡県</td></tr>
+<tr><td>5</td><td>秋田県</td><td>17</td><td>石川県</td><td>29</td><td>奈良県</td><td>41</td><td>佐賀県</td></tr>
+<tr><td>6</td><td>山形県</td><td>18</td><td>福井県</td><td>30</td><td>和歌山県</td><td>42</td><td>長崎県</td></tr>
+<tr><td>7</td><td>福島県</td><td>19</td><td>山梨県</td><td>31</td><td>鳥取県</td><td>43</td><td>熊本県</td></tr>
+<tr><td>8</td><td>茨城県</td><td>20</td><td>長野県</td><td>32</td><td>島根県</td><td>44</td><td>大分県</td></tr>
+<tr><td>9</td><td>栃木県</td><td>21</td><td>岐阜県</td><td>33</td><td>岡山県</td><td>45</td><td>宮崎県</td></tr>
+<tr><td>10</td><td>群馬県</td><td>22</td><td>静岡県</td><td>34</td><td>広島県</td><td>46</td><td>鹿児島県</td></tr>
+<tr><td>11</td><td>埼玉県</td><td>23</td><td>愛知県</td><td>35</td><td>山口県</td><td>47</td><td>沖縄県</td></tr>
+<tr><td>12</td><td>千葉県</td><td>24</td><td>三重県</td><td>36</td><td>徳島県</td><td></td><td></td></tr>
+</tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>GET /v1/friend-info-fields?page=1&amp;limit=100</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0009",
+  "data": {
+    "fields": [
+      {
+        "field_id": -1,
+        "title": "システム表示名",
+        "field_type": "TEXT",
+        "options": null
+      },
+      {
+        "field_id": -2,
+        "title": "携帯電話",
+        "field_type": "TEXT",
+        "options": null
+      },
+      {
+        "field_id": -3,
+        "title": "メールアドレス",
+        "field_type": "TEXT",
+        "options": null
+      },
+      {
+        "field_id": -4,
+        "title": "生年月日",
+        "field_type": "DATE",
+        "options": null
+      },
+      {
+        "field_id": -6,
+        "title": "都道府県名",
+        "field_type": "SELECT",
+        "options": [
+          { "option_id": 1, "label": "北海道" },
+          { "option_id": 2, "label": "青森県" },
+          { "option_id": 47, "label": "沖縄県" }
+        ]
+      },
+      {
+        "field_id": -7,
+        "title": "郵便番号",
+        "field_type": "TEXT",
+        "options": null
+      },
+      {
+        "field_id": -8,
+        "title": "市区町村名",
+        "field_type": "TEXT",
+        "options": null
+      },
+      {
+        "field_id": -9,
+        "title": "町名/番地",
+        "field_type": "TEXT",
+        "options": null
+      },
+      {
+        "field_id": -10,
+        "title": "建物名・部屋番号",
+        "field_type": "TEXT",
+        "options": null
+      },
+      {
+        "field_id": 5001,
+        "title": "purchase_count",
+        "field_type": "POINT",
+        "options": null
+      },
+      {
+        "field_id": 5002,
+        "title": "member_rank",
+        "field_type": "SELECT",
+        "options": [
+          {
+            "option_id": 1,
+            "label": "gold"
+          },
+          {
+            "option_id": 2,
+            "label": "silver"
+          }
+        ]
+      }
+    ]
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 100,
+    "total_items": 48,
+    "total_pages": 1,
+    "has_next": false
+  }
+}</code></pre>
+    <p class="note">Sample trên rút gọn <code>options</code> của field <code>-6</code> (都道府県名) — thực tế trả đủ 47 tỉnh.</p>
+  </div>
+</div>
+<div class="api-card" id="api-list-scenarios">
+  <div class="api-head"><span class="mtd get">GET</span><span class="api-path">/scenarios</span><h3>Lấy danh sách scenario</h3></div>
+  <div class="api-body">
+    <p>Dùng để lấy danh sách scenario và xác định scenario_id trước khi start/stop scenario cho friend qua <code>/do_action</code>.</p>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>page</code></td><td>query</td><td>Không</td><td>integer</td><td>Số trang cần lấy. Mặc định là 1.</td></tr>
+<tr><td><code>limit</code></td><td>query</td><td>Không</td><td>integer</td><td>Số record lấy. Mặc định 100, tối đa 500.</td></tr></tbody></table></div>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>success</code></td><td>boolean</td><td>true nếu request được xử lý thành công.</td></tr>
+<tr><td><code>request_id</code></td><td>string</td><td>ID để trace log khi cần điều tra lỗi.</td></tr>
+<tr><td><code>data.scenarios[]</code></td><td>array&lt;object&gt;</td><td>Danh sách scenario.</td></tr>
+<tr><td><code>data.scenarios[].scenario_id</code></td><td>integer</td><td>Scenario ID dùng khi start/stop.</td></tr>
+<tr><td><code>data.scenarios[].name</code></td><td>string</td><td>Tên scenario.</td></tr>
+<tr><td><code>data.scenarios[].followers_count</code></td><td>integer</td><td>Số friend đang tham gia.</td></tr>
+<tr><td><code>data.scenarios[].completed_count</code></td><td>integer</td><td>Số hoàn thành.</td></tr>
+<tr><td><code>data.scenarios[].dropped_count</code></td><td>integer</td><td>Số rời bỏ.</td></tr>
+<tr><td><code>pagination</code></td><td>object</td><td>Thông tin phân trang: page, limit, total_items, total_pages, has_next.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>GET /v1/scenarios?page=1&amp;limit=100</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0013",
+  "data": {
+    "scenarios": [
+      {
+        "scenario_id": 88,
+        "name": "cart_abandonment_reminder",
+        "followers_count": 120,
+        "completed_count": 80,
+        "dropped_count": 5
+      }
+    ]
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 100,
+    "total_items": 1,
+    "total_pages": 1,
+    "has_next": false
+  }
+}</code></pre>
+  </div>
+</div>
+<div class="api-card" id="api-send-push">
+  <div class="api-head"><span class="mtd post">POST</span><span class="api-path">/messages/push</span><h3>Gửi message (text / media)</h3></div>
+  <div class="api-body">
+    <p>Gửi message cho LINE friend chỉ định. API này thay thế <code>/messages/text</code> và <code>/messages/media</code>: mảng <code>messages[]</code> chứa cả text và media (chỉ hỗ trợ <code>image</code>, <code>video</code>, <code>audio</code>), gửi theo thứ tự khai báo.</p>
+    <h4>Giới hạn</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Hạng mục</th><th>Giới hạn</th></tr></thead><tbody>
+<tr><td>Message objects trong một request</td><td>Tối đa <strong>5</strong></td></tr>
+<tr><td>Text</td><td>Tối đa <strong>5.000 ký tự</strong>/object</td></tr>
+<tr><td>URL media</td><td>Tối đa <strong>2.000 ký tự</strong>, HTTPS TLS 1.2+</td></tr>
+<tr><td>Ảnh gốc</td><td>JPEG/PNG, tối đa <strong>10 MB</strong></td></tr>
+<tr><td>Ảnh preview</td><td>JPEG/PNG, tối đa <strong>1 MB</strong></td></tr>
+<tr><td>Video</td><td>MP4, tối đa <strong>200 MB</strong></td></tr>
+<tr><td>Audio</td><td>MP3/M4A, tối đa <strong>200 MB</strong></td></tr>
+</tbody></table></div>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>friend_id</code></td><td>body</td><td>Có</td><td>integer|string</td><td>Friend ID nhận message.</td></tr>
+<tr><td><code>id_type</code></td><td>body</td><td>Không</td><td>string</td><td>lmessage_friend_id hoặc line_friend_id. Mặc định là lmessage_friend_id.</td></tr>
+<tr><td><code>messages[]</code></td><td>body</td><td>Có</td><td>array&lt;object&gt;</td><td>Mảng message, trộn lẫn được text và media, gửi theo thứ tự khai báo. Tối đa 5 object.</td></tr>
+<tr><td><code>messages[].type</code></td><td>body</td><td>Có</td><td>string</td><td><code class="act">text</code> <code class="act">image</code> <code class="act">video</code> <code class="act">audio</code></td></tr>
+<tr><td><code>messages[].text</code></td><td>body</td><td>Có điều kiện</td><td>string</td><td>Nội dung text khi <code>type=text</code>. Tối đa 5.000 ký tự.</td></tr>
+<tr><td><code>messages[].url</code></td><td>body</td><td>Có điều kiện</td><td>string</td><td>URL media khi <code>type=image/video/audio</code>. HTTPS public, TLS 1.2+, tối đa 2.000 ký tự.</td></tr>
+<tr><td><code>messages[].preview_url</code></td><td>body</td><td>Không</td><td>string</td><td>URL ảnh preview cho <code>image</code>/<code>video</code> (JPEG/PNG, tối đa 1 MB). Bỏ trống thì LME dùng URL gốc làm preview.</td></tr>
+<tr><td><code>messages[].duration</code></td><td>body</td><td>Có điều kiện</td><td>integer</td><td>Độ dài file audio tính bằng millisecond. Bắt buộc khi <code>type=audio</code>.</td></tr>
+<tr><td><code>mark_confirmed</code></td><td>body</td><td>Không</td><td>boolean</td><td>Có đánh dấu chat là đã xác nhận sau khi gửi hay không.</td></tr>
+<tr><td><code>Idempotency-Key</code></td><td>header</td><td>Khuyến nghị</td><td>string</td><td>Key chống xử lý trùng khi external system retry cùng một request.</td></tr></tbody></table></div>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>success</code></td><td>boolean</td><td>true nếu request được xử lý thành công.</td></tr>
+<tr><td><code>request_id</code></td><td>string</td><td>ID để trace log khi cần điều tra lỗi.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>POST /v1/messages/push
+Idempotency-Key: push-12345-20260730
+
+{
+  "friend_id": 12345,
+  "id_type": "lmessage_friend_id",
+  "messages": [
+    {"type": "text", "text": "Cảm ơn bạn đã liên hệ. Tôi gửi tài liệu hướng dẫn cho bạn."},
+    {"type": "image", "url": "https://example.com/images/guide.jpg", "preview_url": "https://example.com/images/guide_preview.jpg"},
+    {"type": "video", "url": "https://example.com/videos/intro.mp4", "preview_url": "https://example.com/videos/intro_preview.jpg"},
+    {"type": "audio", "url": "https://example.com/audio/guide.mp3", "duration": 60000}
+  ],
+  "mark_confirmed": true
+}</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0018"
+}</code></pre>
+  </div>
+</div>
+<div class="api-card" id="api-send-template">
+  <div class="api-head"><span class="mtd post">POST</span><span class="api-path">/messages/template</span><h3>Gửi template message</h3></div>
+  <div class="api-body">
+    <p>Gửi template hiện có cho friend chỉ định. Cho phép gửi tối đa 5 template trong 1 request theo mảng <code>templates[]</code>.</p>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>friend_id</code></td><td>body</td><td>Có</td><td>integer|string</td><td>Friend ID nhận message.</td></tr>
+<tr><td><code>id_type</code></td><td>body</td><td>Không</td><td>string</td><td>lmessage_friend_id hoặc line_friend_id. Mặc định là lmessage_friend_id.</td></tr>
+<tr><td><code>templates[]</code></td><td>body</td><td>Có</td><td>array&lt;object&gt;</td><td>Mảng template cần gửi, gửi theo thứ tự khai báo. Tối đa 5 item.</td></tr>
+<tr><td><code>templates[].template_id</code></td><td>body</td><td>Có</td><td>integer</td><td>Template ID cần gửi. Lấy từ API <code>/templates</code>.</td></tr>
+<tr><td><code>mark_confirmed</code></td><td>body</td><td>Không</td><td>boolean</td><td>Có đánh dấu chat là đã xác nhận sau khi gửi hay không.</td></tr>
+<tr><td><code>Idempotency-Key</code></td><td>header</td><td>Khuyến nghị</td><td>string</td><td>Key chống xử lý trùng khi external system retry cùng một request.</td></tr></tbody></table></div>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>success</code></td><td>boolean</td><td>true nếu request được xử lý thành công.</td></tr>
+<tr><td><code>request_id</code></td><td>string</td><td>ID để trace log khi cần điều tra lỗi.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>POST /v1/messages/template
+Idempotency-Key: template-12345-7001-20260730
+
+{
+  "friend_id": 12345,
+  "id_type": "lmessage_friend_id",
+  "templates": [
+    {"template_id": 7001},
+    {"template_id": 7002}
+  ]
+}</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0019"
+}</code></pre>
+  </div>
+</div>
+<div class="api-card" id="api-list-templates">
+  <div class="api-head"><span class="mtd get">GET</span><span class="api-path">/templates</span><h3>Lấy danh sách template</h3></div>
+  <div class="api-body">
+    <p>Dùng để resolve template ID trước khi gửi template.</p>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>page</code></td><td>query</td><td>Không</td><td>integer</td><td>Số trang cần lấy. Mặc định là 1.</td></tr>
+<tr><td><code>limit</code></td><td>query</td><td>Không</td><td>integer</td><td>Số record lấy. Mặc định 100, tối đa 500.</td></tr></tbody></table></div>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>success</code></td><td>boolean</td><td>true nếu request được xử lý thành công.</td></tr>
+<tr><td><code>request_id</code></td><td>string</td><td>ID để trace log khi cần điều tra lỗi.</td></tr>
+<tr><td><code>data.templates[]</code></td><td>array&lt;object&gt;</td><td>Danh sách template.</td></tr>
+<tr><td><code>data.templates[].template_id</code></td><td>integer</td><td>Template ID dùng để gửi.</td></tr>
+<tr><td><code>data.templates[].name</code></td><td>string</td><td>Tên template.</td></tr>
+<tr><td><code>pagination</code></td><td>object</td><td>Thông tin phân trang: page, limit, total_items, total_pages, has_next.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>GET /v1/templates?page=1&amp;limit=100</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0021",
+  "data": {
+    "templates": [
+      {
+        "template_id": 7001,
+        "name": "shipping_complete_notice"
+      },
+      {
+        "template_id": 7002,
+        "name": "review_request"
+      }
+    ]
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 100,
+    "total_items": 24,
+    "total_pages": 1,
+    "has_next": false
+  }
+}</code></pre>
+  </div>
+</div>
+<div class="api-card" id="api-conversations">
+  <div class="api-head"><span class="mtd get">GET</span><span class="api-path">/conversations</span><h3>Lấy danh sách conversation</h3></div>
+  <div class="api-body">
+    <p>Lấy danh sách conversation (chat 1:1) của bot, sắp xếp: conversation <strong>favorite lên đầu</strong>, sau đó theo tin nhắn mới nhất. Hỗ trợ filter theo <strong>trạng thái đã đọc/chưa đọc</strong> (確認/未確認), <strong>trạng thái xử lý</strong> (対応状態), <strong>tên friend</strong>, <strong>tag</strong> và <strong>trạng thái hiển thị</strong> — dùng khi CRM cần tìm các hội thoại đang chờ trả lời hoặc theo điều kiện cụ thể.</p>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>page</code></td><td>query</td><td>Không</td><td>integer</td><td>Số trang cần lấy. Mặc định là 1.</td></tr>
+<tr><td><code>limit</code></td><td>query</td><td>Không</td><td>integer</td><td>Số record lấy. Mặc định 100, tối đa 500.</td></tr>
+<tr><td><code>confirm_status</code></td><td>query</td><td>Không</td><td>integer</td><td>Filter theo trạng thái đã đọc: <code>0</code> = đã đọc (確認済み), <code>1</code> = chưa đọc (未確認 — đang chờ trả lời).</td></tr>
+<tr><td><code>handling_status_ids</code></td><td>query</td><td>Không</td><td>integer | CSV</td><td>Filter theo trạng thái xử lý — 1 hoặc <strong>nhiều</strong> status ID phân tách bằng dấu phẩy (ví dụ <code>12,13</code>), match theo điều kiện OR. Status ID lấy từ API <code>/handling-statuses</code>.</td></tr>
+<tr><td><code>handling_status_names</code></td><td>query</td><td>Không</td><td>string | CSV</td><td>Filter theo tên trạng thái xử lý, khớp chính xác (không phân biệt hoa thường). Gộp OR với <code>handling_status_ids</code>.</td></tr>
+<tr><td><code>line_names</code></td><td>query</td><td>Không</td><td>string | CSV</td><td>Tìm gần đúng theo tên LINE hoặc tên quản lý trong LME (không phân biệt hoa thường). Nhiều giá trị → OR.</td></tr>
+<tr><td><code>tag_ids</code></td><td>query</td><td>Không</td><td>integer | CSV</td><td>Filter theo tag ID của friend. Lấy từ API <code>/tags</code>. Gộp với <code>tag_names</code>.</td></tr>
+<tr><td><code>tag_names</code></td><td>query</td><td>Không</td><td>string | CSV</td><td>Filter theo tên tag, khớp chính xác (không phân biệt hoa thường).</td></tr>
+<tr><td><code>tag_mode</code></td><td>query</td><td>Không</td><td>string</td><td>Cách kết hợp nhiều tag: <code>or</code> (mặc định — friend có ít nhất 1 tag) hoặc <code>and</code> (friend có đủ tất cả tag).</td></tr>
+<tr><td><code>display_status</code></td><td>query</td><td>Không</td><td>string</td><td>Trạng thái hiển thị trong chat 1:1: <code>display</code> (mặc định — chỉ hội thoại đang hiển thị), <code>hidden</code> (chỉ hội thoại đã ẩn), <code>all</code> (cả hai).</td></tr></tbody></table></div>
+    <p class="note">Các filter khác nhau kết hợp theo điều kiện AND; nhiều giá trị trong cùng một filter kết hợp theo OR (riêng tag theo <code>tag_mode</code>). Filter theo tên tách giá trị bằng dấu phẩy — tên có chứa dấu phẩy thì dùng filter theo ID.</p>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>success</code></td><td>boolean</td><td>true nếu request được xử lý thành công.</td></tr>
+<tr><td><code>request_id</code></td><td>string</td><td>ID để trace log khi cần điều tra lỗi.</td></tr>
+<tr><td><code>data.conversations[]</code></td><td>array&lt;object&gt;</td><td>Danh sách conversation theo trang, sắp xếp favorite lên đầu, sau đó theo tin nhắn mới nhất.</td></tr>
+<tr><td><code>data.conversations[].lmessage_friend_id</code></td><td>integer</td><td>L Message Friend ID — dùng cho <code>/conversations/detail</code>, <code>/friends/detail</code>, <code>/do_action</code>.</td></tr>
+<tr><td><code>data.conversations[].line_friend_id</code></td><td>string</td><td>LINE user ID của friend.</td></tr>
+<tr><td><code>data.conversations[].line_name</code></td><td>string</td><td>Tên hiển thị trên LINE.</td></tr>
+<tr><td><code>data.conversations[].system_name</code></td><td>string|null</td><td>Tên quản lý trong LME nếu có.</td></tr>
+<tr><td><code>data.conversations[].last_message</code></td><td>string</td><td>Nội dung tin nhắn cuối (rút gọn).</td></tr>
+<tr><td><code>data.conversations[].last_message_date</code></td><td>datetime</td><td>Thời điểm tin nhắn cuối.</td></tr>
+<tr><td><code>data.conversations[].confirm_status</code></td><td>string</td><td>Trạng thái đã đọc: <code>read</code> (đã đọc — 確認済み) hoặc <code>unread</code> (chưa đọc — 未確認).</td></tr>
+<tr><td><code>data.conversations[].handling_status</code></td><td>object|null</td><td>Trạng thái xử lý hiện tại <code>{id, name}</code>; <code>null</code> nếu chưa gắn.</td></tr>
+<tr><td><code>pagination</code></td><td>object</td><td><code>{page, limit, total_items, total_pages, has_next}</code>.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>GET /v1/conversations?page=1&amp;limit=100&amp;confirm_status=1&amp;handling_status_ids=12,13&amp;tag_names=vip,cart_abandonment&amp;tag_mode=or</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260916_0025",
+  "data": {
+    "conversations": [
+      {
+        "lmessage_friend_id": 12345,
+        "line_friend_id": "U1234abcd...",
+        "line_name": "Tanaka",
+        "system_name": "Tanaka CRM",
+        "last_message": "こんにちは",
+        "last_message_date": "2026-09-16T10:00:00+09:00",
+        "confirm_status": "unread",
+        "handling_status": { "id": 12, "name": "deal_in_progress" }
+      }
+    ]
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 100,
+    "total_items": 36,
+    "total_pages": 1,
+    "has_next": false
+  }
+}</code></pre>
+  </div>
+</div>
+<div class="api-card" id="api-conversations-detail">
+  <div class="api-head"><span class="mtd get">GET</span><span class="api-path">/conversations/detail</span><h3>Lấy message gần nhất của friend</h3></div>
+  <div class="api-body">
+    <p>Lấy 100 message gần nhất của một friend để CRM hoặc automation tool xem ngữ cảnh hội thoại.</p>
+    <h4>Giới hạn</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Hạng mục</th><th>Giới hạn</th></tr></thead><tbody>
+<tr><td>Số message</td><td>Tối đa <strong>100</strong> message gần nhất</td></tr>
+<tr><td>Phạm vi lịch sử chat</td><td>Theo contract type của bot: bot <strong>free</strong> lấy được <strong>180 ngày</strong> gần nhất, bot <strong>trả phí</strong> lấy được <strong>365 ngày</strong> (12 tháng) gần nhất. Message cũ hơn mốc này không trả về.</td></tr>
+</tbody></table></div>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>lmessage_friend_id</code></td><td>query</td><td>Có</td><td>integer</td><td>L Message Friend ID cần lấy conversation.</td></tr></tbody></table></div>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>success</code></td><td>boolean</td><td>true nếu request được xử lý thành công.</td></tr>
+<tr><td><code>request_id</code></td><td>string</td><td>ID để trace log khi cần điều tra lỗi.</td></tr>
+<tr><td><code>data.lmessage_friend_id</code></td><td>integer</td><td>L Message Friend ID đã lấy conversation.</td></tr>
+<tr><td><code>data.messages[]</code></td><td>array&lt;object&gt;</td><td>Mảng tối đa 100 message gần nhất, trong phạm vi lịch sử chat cho phép (xem Giới hạn).</td></tr>
+<tr><td><code>data.messages[].delivery_date</code></td><td>datetime</td><td>Thời điểm gửi/nhận message.</td></tr>
+<tr><td><code>data.messages[].sender</code></td><td>string</td><td><code>friend</code> hoặc <code>LINE_OA</code>.</td></tr>
+<tr><td><code>data.messages[].message_type</code></td><td>string</td><td>Loại message: text, image, video, file, sticker, template...</td></tr>
+<tr><td><code>data.messages[].data</code></td><td>string|array|object|null</td><td>Nội dung message đã chuẩn hoá theo message_type: <code>text</code> + media (<code>image/video/audio/file</code>) → <b>string</b> (text hoặc URL); <code>template/scenario/event/broadcast/action</code> → <b>array</b> <code>[{type,content}]</code>; <code>pdf</code>/booking/scenario-event → <b>object</b>. Field nội bộ (image_server, thumbnail_path, from…) đã loại.</td></tr>
+<tr><td><code>data.handling_status</code></td><td>object|null</td><td>Trạng thái xử lý hiện tại của conversation.</td></tr>
+<tr><td><code>data.display_status</code></td><td>string</td><td><code>display</code> hoặc <code>hidden</code>.</td></tr>
+<tr><td><code>data.block_status</code></td><td>string</td><td><code>blocked</code>, <code>block</code> hoặc <code>normal</code>.</td></tr>
+<tr><td><code>data.favorite</code></td><td>string</td><td><code>yes</code> hoặc <code>no</code>.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>GET /v1/conversations/detail?lmessage_friend_id=12345</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0022",
+  "data": {
+    "lmessage_friend_id": 12345,
+    "messages": [
+      {
+        "delivery_date": "2026-07-30T13:00:00+09:00",
+        "sender": "friend",
+        "message_type": "text",
+        "data": "Tôi muốn tư vấn"
+      },
+      {
+        "delivery_date": "2026-07-30T13:00:05+09:00",
+        "sender": "LINE_OA",
+        "message_type": "template",
+        "data": [
+          { "type": "text", "content": "Cảm ơn bạn đã liên hệ." },
+          { "type": "image", "content": "https://.../guide.jpg" }
+        ]
+      },
+      {
+        "delivery_date": "2026-07-30T13:00:08+09:00",
+        "sender": "LINE_OA",
+        "message_type": "pdf",
+        "data": { "file_name": "doc.pdf", "file_size": 67209, "url": "https://.../doc.pdf", "file_name_original": "document.pdf" }
+      }
+    ],
+    "handling_status": {
+      "id": 12,
+      "name": "deal_in_progress"
+    },
+    "display_status": "display",
+    "block_status": "normal",
+    "favorite": "yes"
+  }
+}</code></pre>
+  </div>
+</div>
+<div class="api-card" id="api-handling-statuses">
+  <div class="api-head"><span class="mtd get">GET</span><span class="api-path">/handling-statuses</span><h3>Lấy danh sách trạng thái xử lý</h3></div>
+  <div class="api-body">
+    <p>Lấy status ID phía LME để đồng bộ trạng thái xử lý chat với CRM. Status ID này dùng cho action <code>handling_status</code> của <code>/do_action</code>.</p>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td>Không có</td><td>-</td><td>-</td><td>-</td><td>API này không nhận parameter.</td></tr></tbody></table></div>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>success</code></td><td>boolean</td><td>true nếu request được xử lý thành công.</td></tr>
+<tr><td><code>request_id</code></td><td>string</td><td>ID để trace log khi cần điều tra lỗi.</td></tr>
+<tr><td><code>data[]</code></td><td>array&lt;object&gt;</td><td>Danh sách trạng thái xử lý.</td></tr>
+<tr><td><code>data[].id</code></td><td>integer</td><td>Status ID dùng để đồng bộ.</td></tr>
+<tr><td><code>data[].name</code></td><td>string</td><td>Tên trạng thái xử lý.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>GET /v1/handling-statuses</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0023",
+  "data": [
+    {
+      "id": 12,
+      "name": "deal_in_progress"
+    },
+    {
+      "id": 13,
+      "name": "follow_up"
+    }
+  ]
+}</code></pre>
+  </div>
+</div>
+<div class="api-card" id="api-do-action">
+  <div class="api-head"><span class="mtd post">POST</span><span class="api-path">/do_action</span><h3>Thực hiện hàng loạt action trên friend</h3></div>
+  <div class="api-body">
+    <p>Thực hiện một hoặc nhiều action trên nhiều friend trong 1 request. API này thay thế các API đơn lẻ: <code>/update-tag</code>, <code>/friend-info-field-update</code>, <code>/operate-scenarios</code>, <code>/change-handling-statuses</code>, <code>/change-block-statuses</code>, <code>/change-favorite-statuses</code>.</p>
+    <h4>Cách hoạt động</h4>
+    <ul class="source-list">
+      <li>Gửi 1 mảng friend (<code>lmessage_friend_ids[]</code>) và 1 mảng action (<code>actions[]</code>).</li>
+      <li>Mỗi action được áp dụng cho <strong>tất cả</strong> friend trong mảng, chạy tuần tự theo thứ tự khai báo.</li>
+      <li>Mỗi action gồm: <code>type</code> (loại action) + <code>action</code> (thao tác) + param riêng theo từng loại — xem bảng phân loại bên dưới. Cấu trúc đối chiếu theo hệ thống action hiện có của LME.</li>
+    </ul>
+    <h4>Bảng phân loại action</h4>
+    <div class="tbl-wrap"><table><thead><tr><th><code>type</code></th><th>Mục đích</th><th><code>action</code> hợp lệ</th><th>Param riêng</th></tr></thead><tbody>
+<tr><td><code>tag</code></td><td>Add/remove tag cho friend</td><td><div class="val-list"><code>add</code><code>remove</code></div></td><td><div class="val-list"><code>tag_ids[]</code></div></td></tr>
+<tr><td><code>friend_info</code></td><td>Cập nhật friend info field</td><td><div class="val-list"><code>set</code><code>clear</code><code>today</code><code>point_replace</code><code>point_plus</code><code>point_minus</code><code>point_clear</code></div></td><td><div class="val-list"><code>field_id</code><code>value</code><code>option_id</code></div></td></tr>
+<tr><td><code>scenario</code></td><td>Start/stop/tiếp tục scenario</td><td><div class="val-list"><code>start</code><code>stop</code><code>resume</code></div></td><td><div class="val-list"><code>scenario_id</code><code>start_from</code></div></td></tr>
+<tr><td><code>handling_status</code></td><td>Đổi trạng thái xử lý chat</td><td><div class="val-list"><code>attach</code><code>detach</code></div></td><td><div class="val-list"><code>handling_status_id</code></div></td></tr>
+<tr><td><code>block</code></td><td>Đổi trạng thái block / hiển thị trong chat 1:1</td><td><div class="val-list"><code>block</code><code>unblock</code><code>show</code><code>hide</code></div></td><td>Không có</td></tr>
+<tr><td><code>favorite</code></td><td>Bật/tắt favorite</td><td><div class="val-list"><code>add</code><code>remove</code></div></td><td>Không có</td></tr>
+<tr><td><code>confirm_status</code></td><td>Đổi trạng thái đã đọc/chưa đọc (確認/未確認) của conversation — khác trạng thái xử lý (<code>handling_status</code>)</td><td><div class="val-list"><code>confirm</code><code>unconfirm</code></div></td><td>Không có</td></tr>
+</tbody></table></div>
+    <h4>Input parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Vị trí</th><th>Bắt buộc</th><th>Type</th><th>Áp dụng</th><th>Mô tả</th></tr></thead><tbody>
+<tr><td><code>lmessage_friend_ids[]</code></td><td>body</td><td>Có</td><td>array&lt;integer&gt;</td><td>Chung</td><td>Danh sách L Message Friend ID cần thao tác. Đề xuất tối đa 100 friend trong 1 request.</td></tr>
+<tr><td><code>actions[]</code></td><td>body</td><td>Có</td><td>array&lt;object&gt;</td><td>Chung</td><td>Danh sách action, thực hiện tuần tự theo thứ tự khai báo. Đề xuất tối đa 10 action trong 1 request.</td></tr>
+<tr><td><code>actions[].type</code></td><td>body</td><td>Có</td><td>string</td><td>Chung</td><td>Loại action:<div class="val-list" style="margin-top:6px"><code>tag</code><code>friend_info</code><code>scenario</code><code>handling_status</code><code>block</code><code>favorite</code><code>confirm_status</code></div></td></tr>
+<tr><td><code>actions[].action</code></td><td>body</td><td>Có</td><td>string</td><td>Chung</td><td>Thao tác cần thực hiện. Giá trị hợp lệ theo từng <code>type</code> — xem Bảng phân loại action ở trên.</td></tr>
+<tr><td><code>actions[].tag_ids[]</code></td><td>body</td><td>Có điều kiện</td><td>array&lt;integer&gt;</td><td>tag</td><td>Danh sách tag ID cần <code class="act">add</code> <code class="act">remove</code>. Lấy từ API <code>/tags</code>.</td></tr>
+<tr><td><code>actions[].field_id</code></td><td>body</td><td>Có điều kiện</td><td>integer</td><td>friend_info</td><td>Friend info field ID. Built-in field dùng ID âm, custom field dùng ID dương. Lấy từ API <code>/friend-info-fields</code>.</td></tr>
+<tr><td><code>actions[].value</code></td><td>body</td><td>Có điều kiện</td><td>string</td><td>friend_info</td><td>Giá trị cập nhật khi <code class="act">set</code> <code class="act">point_replace</code> <code class="act">point_plus</code> <code class="act">point_minus</code>. TEXT dùng text, DATE dùng <code>YYYY-MM-DD</code>, POINT dùng số, IMAGE và FILE dùng string (URL/đường dẫn file). Không cần khi <code class="act">clear</code> <code class="act">today</code> <code class="act">point_clear</code>.</td></tr>
+<tr><td><code>actions[].option_id</code></td><td>body</td><td>Có điều kiện</td><td>integer</td><td>friend_info</td><td>Option ID khi <code class="act">set</code> field SELECT. Lấy từ <code>options[]</code> của API <code>/friend-info-fields</code>. Riêng built-in <code>field_id=-6</code> (都道府県名): option_id = STT tỉnh 1..47 theo bảng cố định (xem API <code>/friend-info-fields</code>) — server resolve STT thành tên tỉnh string rồi lưu; ngoài 1..47 trả 404.</td></tr>
+<tr><td><code>actions[].scenario_id</code></td><td>body</td><td>Có điều kiện</td><td>integer</td><td>scenario</td><td>Scenario ID cần thao tác khi <code class="act">start</code> <code class="act">resume</code>. Không cần khi <code class="act">stop</code>. Lấy từ API <code>/scenarios</code>.</td></tr>
+<tr><td><code>actions[].start_from</code></td><td>body</td><td>Có điều kiện</td><td>integer</td><td>scenario</td><td>Số ngày bắt đầu trong scenario, chỉ dùng khi <code class="act">resume</code>. Ví dụ: 3 là tiếp tục từ ngày thứ 3. <code class="act">start</code> luôn chạy từ đầu scenario.</td></tr>
+<tr><td><code>actions[].handling_status_id</code></td><td>body</td><td>Có điều kiện</td><td>integer</td><td>handling_status</td><td>Status ID cần gắn khi <code class="act">attach</code>. Không cần khi <code class="act">detach</code>. Lấy từ API <code>/handling-statuses</code>.</td></tr>
+<tr><td><code>Idempotency-Key</code></td><td>header</td><td>Khuyến nghị</td><td>string</td><td>Chung</td><td>Key chống xử lý trùng khi external system retry cùng một request.</td></tr>
+</tbody></table></div>
+    <h4>Output parameter</h4>
+    <div class="tbl-wrap"><table><thead><tr><th>Output field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>success</code></td><td>boolean</td><td>true nếu request được xử lý thành công.</td></tr>
+<tr><td><code>request_id</code></td><td>string</td><td>ID để trace log khi cần điều tra lỗi.</td></tr></tbody></table></div>
+    <h4>Sample Input</h4>
+    <pre class="prebox"><code>POST /v1/do_action
+Idempotency-Key: do-action-20260730-001
+
+{
+  "lmessage_friend_ids": [12345, 12346],
+  "actions": [
+    {
+      "type": "tag",
+      "action": "add",
+      "tag_ids": [101]
+    },
+    {
+      "type": "friend_info",
+      "action": "point_plus",
+      "field_id": 5001,
+      "value": "10"
+    },
+    {
+      "type": "scenario",
+      "action": "start",
+      "scenario_id": 88
+    },
+    {
+      "type": "handling_status",
+      "action": "attach",
+      "handling_status_id": 12
+    },
+    {
+      "type": "block",
+      "action": "hide"
+    },
+    {
+      "type": "favorite",
+      "action": "add"
+    },
+    {
+      "type": "confirm_status",
+      "action": "confirm"
+    }
+  ]
+}</code></pre>
+    <h4>Sample Output</h4>
+    <pre class="prebox"><code>{
+  "success": true,
+  "request_id": "req_20260730_0024"
+}</code></pre>
+  </div>
+</div>
+</div></section>
+<section id="s6"><div class="sec-head"><span class="num">6</span><h2>Lịch sử cập nhật</h2></div>
+  <p class="section-lead">Bản mới nhất luôn ở trên cùng. Khi trao đổi về tài liệu này, vui lòng nêu rõ số bản để tránh nhầm giữa các lần cập nhật.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th style="width:10%">Bản</th><th style="width:20%">Ngày</th><th>Nội dung thay đổi</th></tr></thead>
+    <tbody>
+      <tr><td class="k num-col">1.2.0</td><td class="num-col">28/09/2026</td><td>① Bổ sung bảng đầy đủ <b>built-in friend info field (ID âm)</b> ở <code>GET /friend-info-fields</code>: -1..-4, -6..-10 (<code>field_id</code>, tên, <code>field_type</code>); Sample Output liệt kê đủ các field mặc định.<br>② Built-in field <code>-6</code> (都道府県名 / tỉnh thành) là SELECT với 47 option cố định: <code>GET /friend-info-fields</code> nay trả <code>options[]</code> đủ 47 tỉnh với <code>option_id</code> = STT 1-based (1=北海道 … 13=東京都 … 47=沖縄県). <code>POST /do_action</code> action <code>friend_info.set</code> field <code>-6</code> nhận <code>option_id</code> (server resolve STT → tên tỉnh string rồi lưu; ngoài 1..47 → 404; gửi <code>value</code> thay <code>option_id</code> → 422). Khi đọc ra (<code>/friends/detail</code>) value là tên tỉnh string.</td></tr>
+      <tr><td class="k num-col">1.1.0</td><td class="num-col">21/09/2026</td><td>① Resource thuộc bot khác trả 404 <code>not_found</code> (trước đây 403/422).<br>② Đổi "compliant status" → "handling status": path <code>/handling-statuses</code>, field <code>data.handling_status</code> của <code>GET /conversations/detail</code>.<br>③ Đổi path: <code>GET /conversations</code> (message gần nhất của friend) → <code>GET /conversations/detail</code>. API mới <code>GET /conversations</code> — lấy danh sách conversation, filter theo trạng thái đã đọc (<code>confirm_status</code>) và trạng thái xử lý (<code>handling_status_ids</code>).<br>④ <code>POST /do_action</code>: thêm action type <code>confirm_status</code> (<code>confirm</code> / <code>unconfirm</code>) để đổi trạng thái đã đọc/chưa đọc của conversation.<br>⑤ Bỏ tiền tố <code>filters.</code> ở query param của <code>GET /conversations</code> và <code>GET /friends</code>. <code>GET /conversations</code> dùng tên param giống MCP (<code>handling_status_ids</code>, <code>line_names</code>, <code>tag_ids</code>, <code>tag_names</code>…); <code>GET /friends</code>: bỏ <code>filters.type</code> (các filter kết hợp AND); thêm <code>line_names</code> (tìm theo tên LINE hoặc tên quản lý, giống <code>GET /conversations</code>); <code>tag_id</code> → <code>tag_ids</code>, <code>email</code> → <code>emails</code> (nhận nhiều giá trị).<br>⑥ Tên friend thống nhất với <code>GET /friends</code>: <code>GET /conversations</code> tách <code>line_name</code> (tên LINE) và <code>system_name</code> (tên quản lý) — trước đây gộp dạng <code>tên quản lý (tên LINE)</code>; <code>GET /friends/detail</code> thêm <code>system_name</code>.</td></tr>
+      <tr><td class="k num-col">1.0.0</td><td class="num-col">10/09/2026</td><td>Bản đầu tiên.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+<footer><p>Tài liệu này là bản tiếng Việt để xác nhận hướng API detail spec. Authentication signature, retry spec và data type cuối cùng sẽ xác định ở spec chi tiết. Base URL và rate limit đã chốt ở mục 2 (300 đọc / 60 ghi mỗi phút, theo bot).</p></footer>
+</div></main>
+</body>
+</html>

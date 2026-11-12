@@ -4,9 +4,9 @@
 
 > File này là **output của member**, **input của Leader**.
 >
-> **Format bảng TC = 14 cột, giống hệt bảng §7 "TCs đề xuất bổ sung" của `05-review-report.md`** (Leader chốt 2026-10-07). TC member / `/write-tc` viết và TC `/review-tc` đề xuất dùng chung 1 format. Không tự đổi tên cột / thêm cột.
+> **Format bảng TC = 15 cột, giống hệt bảng §7 "TCs đề xuất bổ sung" của `05-review-report.md`** (Leader chốt 2026-10-07; thêm cột `Surface` 2026-10-14). TC member / `/write-tc` viết và TC `/review-tc` đề xuất dùng chung 1 format. Không tự đổi tên cột / thêm cột.
 >
-> File 04 cũ giữ nguyên format lúc tạo, không convert: **16 cột canonical** (2026-07-16 → 2026-10-06, kể cả snapshot Studio do `scripts/parse_studio_tcs.py` sinh) · **10 cột** (trước 2026-07-16).
+> File 04 cũ giữ nguyên format lúc tạo, không convert: **14 cột** (2026-10-07 → 2026-10-13, chưa có `Surface`) · **16 cột canonical** (2026-07-16 → 2026-10-06, kể cả snapshot Studio do `scripts/parse_studio_tcs.py` sinh) · **10 cột** (trước 2026-07-16).
 >
 > **Config sync TC human** (dòng `<!-- sync-tcs: ... -->` ở đầu file): target Google Sheet của `/sync-ai-tc` (push TC AI viết trong file này) và của `/sync-review-tc` **khi đích là Sheet**. Ghi 5 cột `ID, Tên case, Tiền điều kiện, Các bước thực hiện, Kết quả mong đợi` vào sheet TC human, bắt đầu tại cột `anchor` ("Main Function"), append xuống dưới data hiện có.
 >
@@ -28,13 +28,13 @@
 
 ## TC List
 
-> **14 cột.** Mỗi quan điểm ưu tiên **Cao** phải tách đủ **3 test case: Normal + Abnormal + Boundary** (RULE-01).
+> **15 cột.** Mỗi quan điểm ưu tiên **Cao** phải tách đủ **3 test case: Normal + Abnormal + Boundary** (RULE-01).
 
-| ID | Nhóm | Mã quan điểm | Màn hình/chức năng | Loại case | Chạy | Phạm vi ENV | Tên case | Tiền điều kiện | Các bước thực hiện | Dữ liệu nhập | Kết quả mong đợi | Kết quả thực thi | Ghi chú |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| TC-XXX000-01 | UI | | `<Tên VN/EN> <Tên JP>: <nội dung>` | Normal | auto | dev, local, prd, staging | | | | | | | `BUG` · Đánh giá spec: Spec ghi rõ · Evidence: `<loại>` |
-| TC-XXX000-02 | API | | | Abnormal | auto | dev, local, staging | | | | | | | `F1` · không chạy prd vì `<case ảnh hưởng server>` · Đánh giá spec: Spec ghi rõ · Evidence: `<loại>` |
-| TC-XXX000-03 | UI | | | Boundary | auto | dev, local, prd, staging | | | | | | | `T1` · regression · dẫn từ `<ID kho>` · Đánh giá spec: Spec không ghi (đã hỏi `<ai>`) · Evidence: `<loại>` |
+| ID | Nhóm | Mã quan điểm | Màn hình/chức năng | Loại case | Chạy | Phạm vi ENV | Surface | Tên case | Tiền điều kiện | Các bước thực hiện | Dữ liệu nhập | Kết quả mong đợi | Kết quả thực thi | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TC-XXX000-01 | UI | | `<Tên VN/EN> <Tên JP>: <nội dung>` | Normal | auto | dev, local, prd, staging | line-friend, web | | | | | | | `BUG` · Đánh giá spec: Spec ghi rõ · Evidence: `<loại>` |
+| TC-XXX000-02 | API | | | Abnormal | auto | dev, local, staging | api | | | | | | | `F1` · không chạy prd vì `<case ảnh hưởng server>` · Đánh giá spec: Spec ghi rõ · Evidence: `<loại>` |
+| TC-XXX000-03 | UI | | | Boundary | auto | dev, local, prd, staging | web | | | | | | | `T1` · regression · dẫn từ `<ID kho>` · Đánh giá spec: Spec không ghi (đã hỏi `<ai>`) · Evidence: `<loại>` |
 
 ### Chú thích cột
 
@@ -49,6 +49,7 @@
 | **Loại case** | **Chỉ** `Normal` / `Abnormal` / `Boundary`. TC regression xếp `Normal` / `Abnormal` + ghi `regression` ở Ghi chú. |
 | **Chạy** | `auto` / `manual` (Studio `exec_mode`), **mặc định `auto`**. `manual` chỉ khi scope chỉ `prd` · thiết bị thật · mail thật · mắt người phán đoán → ghi `manual vì <lý do>`. |
 | **Phạm vi ENV** | Env code Studio, 3 tổ hợp: `dev, local, prd, staging` (**mặc định**) · `prd` (tài khoản khách hàng thật) · `dev, local, staging` (abnormal ảnh hưởng server). **RULE-08** → phải chứa `prd`. |
+| **Surface** | Mặt tiếp xúc, **bắt buộc**, chỉ 7 giá trị: `web` (UI admin trên browser thật) · `mcp` (gọi qua MCP server/client) · `api` (API nội bộ, session HTTP) · `public-api` (Public API `/v1`) · `job` (job / batch chạy nền) · `line-friend` (bạn bè thao tác từ app LINE / LIFF) · `mobile-app` (app mobile LME). Nhiều mặt ngăn `, `, **giá trị đầu = mặt chính** (nơi phán quyết pass/fail). Chi tiết + bảng quy đổi khi push Studio: §7 template report. |
 | **Tên case** | Mục đích cụ thể + **keyword** để Leader suy impact (function / DB table / màn hình). Không prefix `[<nhóm>]`. |
 | **Tiền điều kiện** | Account, data seed, feature flag, timezone — **đầy đủ**. Mỗi ý 1 dòng `- `, ngăn `<br>`. **TC phải tự đầy đủ**: chép đủ dữ liệu TC dùng (từng bạn ở trạng thái nào…); **cấm** `Như TC-…` / `như NEW-…` / `xem bảng …` — lên test tool từng TC đứng riêng. Bạn bè test viết tắt `F01`, `F02` … (khai báo `システム表示名 <PREFIX>_F01 …`). |
 | **Các bước thực hiện** | Mỗi bước 1 dòng, đánh số `1.` `2.`, ngăn `<br>`. |
@@ -85,7 +86,7 @@ Mặc định chạy **cả 4 env** `dev, local, prd, staging`. Domain tham chi�
 
 ### Base quan điểm test LME (2 tầng)
 
-**Tầng 1 — quan điểm**: [framework/checklist-lme.md](../framework/checklist-lme.md) (80 quan điểm + 13 RULE).
+**Tầng 1 — quan điểm**: [framework/checklist-lme.md](../framework/checklist-lme.md) (81 quan điểm + 13 RULE).
 **Tầng 2 — catalog**: [framework/catalog-lme.md](../framework/catalog-lme.md).
 
 Điền bảng quan điểm đã duyệt cho task này (◯ = áp dụng / × = không, **× bắt buộc ghi lý do** — RULE-03):

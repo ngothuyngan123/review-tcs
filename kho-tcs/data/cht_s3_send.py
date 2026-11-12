@@ -7,12 +7,12 @@ NOPREV = BOT + "\n- Cài đặt chat: TẮT 送信プレビュー (gửi thẳng
 PREV = BOT + "\n- Cài đặt chat: BẬT 送信プレビュー (hiện preview trước khi gửi)"
 INFOSET = ("- Friend A đã có giá trị cho: システム表示名, SĐT, email, sinh nhật, tỉnh (5 info địa chỉ id -6..-10)\n"
            "- Friend A có friend info tự tạo đủ 6 kiểu: lựa chọn / ký tự / ngày / ảnh / PDF / điểm")
-LASTMSG = ("Theo SpecImprove #35389 (4/2026): KHÔNG update tin nhắn cuối của bạn bè\n"
-           "- conversation.last_time_message KHÔNG đổi\n"
-           "- conversation.last_message KHÔNG đổi\n"
-           "- Dòng bạn bè ở danh sách KHÔNG nhảy vị trí")
-MT01 = ("MT-01: spec feature-spec.md:57 + db-mapping.md:879 vẫn ghi UPDATE conversation(last_message, last_time_message) "
-        "khi admin gửi tin — TC theo SpecImprove #35389 (4/2026) nói NGƯỢC LẠI. Dự kiến FAIL nếu code chưa fix → raise bug.")
+LASTMSG = ("Quyết định Leader MT-01 (2026-10-23): LME gửi tin → CÓ cập nhật tin nhắn cuối của bạn bè\n"
+           "- conversation.last_time_message cập nhật sang thời điểm admin vừa gửi\n"
+           "- conversation.last_message = nội dung tin admin vừa gửi\n"
+           "- Dòng bạn bè nhảy lên đầu danh sách (sắp theo last_time_message DESC — BR-02)")
+MT01 = ("MT-01 (Leader chốt 2026-10-23): hành vi hiện tại là CÓ cập nhật tin nhắn cuối khi admin gửi tin "
+        "— khớp spec feature-spec.md:57 + db-mapping.md:879. SpecImprove #35389 (chỉ friend gửi mới update) KHÔNG áp dụng.")
 
 S3 = [
     # ═══════════════ Gửi text & phím tắt ═══════════════
@@ -30,7 +30,7 @@ S3 = [
             "Nguồn: Content: Send message r11-r13, r36, r42, r43"),
 
     tc("Gửi text & phím tắt", "DATA-001", "Normal",
-       "Gửi text từ LME — KHÔNG cập nhật tin nhắn cuối của bạn bè",
+       "Gửi text từ LME — CÓ cập nhật tin nhắn cuối của bạn bè",
        NOPREV + "\n- Ghi lại nội dung + thời gian tin nhắn cuối của friend A ở danh sách và trong DB",
        "1. Ghi lại conversation.last_message và last_time_message của A\n"
        "2. Gửi 1 tin text từ chat 1:1\n"
@@ -53,22 +53,22 @@ S3 = [
        note="Gộp 9 điểm vì cùng kết quả. Cặp đối lập với TC trên. Nguồn: Content: Send message r303-r311"),
 
     tc("Gửi text & phím tắt", "DATA-001", "Normal",
-       "Mọi đường gửi tin từ LME (web) đều KHÔNG cập nhật tin nhắn cuối",
+       "Mọi đường gửi tin từ LME (web) đều CÓ cập nhật tin nhắn cuối",
        BOT + "\n- Đã chuẩn bị: template, broadcast, scenario, remind, tag có action, form, salon/lesson/event booking",
        "1. Với mỗi đường gửi ở cột Dữ liệu test: thực hiện gửi cho friend A\n"
        "2. Sau mỗi lần: kiểm tra friend A nhận được tin trên app LINE\n"
-       "3. Kiểm tra conversation.last_message và last_time_message của A không đổi",
+       "3. Kiểm tra conversation.last_message và last_time_message của A được cập nhật",
        "Đặt lịch gửi ở chat 1:1 · send test ở Template / Broadcast / Scenario (1 step và toàn bộ) / Remind · "
        "trả lời ở màn talk list · remind gửi ngay · action text độc lập của salon, lesson, kết bạn (mới/cũ/unblock), "
        "QR landing, form (submit và chẩn đoán) · form gửi bản sao câu trả lời · action gắn tag và action limit tag · "
        "kết bạn lại của old friend",
        "- TẤT CẢ: friend A nhận được tin trên app LINE\n"
-       "- TẤT CẢ: last_message và last_time_message của A KHÔNG thay đổi",
+       "- TẤT CẢ: last_message và last_time_message của A ĐƯỢC cập nhật, dòng A nhảy lên đầu danh sách",
        spec="Đã hỏi leader",
        note=MT01 + " Gộp ~20 đường gửi vì cùng kết quả. Nguồn: Content: Send message r312-r334",),
 
     tc("Gửi text & phím tắt", "SYNC-APP-001", "Normal",
-       "Gửi tin từ APP MOBILE và từ JOB — cũng KHÔNG cập nhật tin nhắn cuối",
+       "Gửi tin từ APP MOBILE và từ JOB — cũng CÓ cập nhật tin nhắn cuối",
        "- App mobile LME đăng nhập account admin bot A\n- Có scenario/broadcast/action schedule đã cấu hình cho friend A",
        "1. Ở app mobile: gửi text, media, sticker, template, đặt lịch gửi, action gắn tag, thao tác salon/lesson\n"
        "2. Qua job: gửi action text và action template ở màn friend list (gửi thường và qua action schedule)\n"
@@ -76,7 +76,7 @@ S3 = [
        "4. Sau mỗi lần: kiểm tra friend nhận tin và kiểm tra last_message/last_time_message",
        "App: text · media · sticker · template · đặt lịch · action tag · salon · lesson\n"
        "Job: friend list action text/template/nhiều action, action schedule, Broadcast, Scenario, Event remind",
-       "- TẤT CẢ: friend nhận được tin\n- TẤT CẢ: last_message và last_time_message KHÔNG đổi",
+       "- TẤT CẢ: friend nhận được tin\n- TẤT CẢ: last_message và last_time_message ĐƯỢC cập nhật",
        env="PRODUCTION", spec="Đã hỏi leader",
        note=MT01 + " Job → RULE-08 bắt buộc PRODUCTION. Nguồn: Content: Send message r335-r350"),
 
@@ -220,7 +220,7 @@ S3 = [
        "A và B có giá trị info khác nhau",
        "- A nhận đúng giá trị của A; B nhận đúng giá trị của B\n"
        "- Không lẫn giá trị giữa 2 người ở cả chat 1:1 và app LINE\n"
-       "- last_message của cả A và B đều KHÔNG bị cập nhật",
+       "- last_message của cả A và B đều ĐƯỢC cập nhật (CÓ cập nhật — MT-01)",
        spec="Đã hỏi leader",
        note=MT01 + " Nguồn: Content: Send message r82, r154, r621"),
 
@@ -280,8 +280,9 @@ S3 = [
        "- App LINE hiển thị URL RÚT GỌN (domain của tool)\n"
        "- Bấm URL rút gọn mở đúng trang đích ban đầu",
        spec="Đã hỏi leader",
-       note="MT-13: spec BR-15 (feature-spec.md:477) chỉ nói URL được chuyển thành short URL, KHÔNG nói chat 1:1 "
-            "vẫn hiện link gốc. Nguồn: Content: Send message r203, r545, r546, r1101-r1112"),
+       note="MT-13 (Leader chốt 2026-10-23): chat 1:1 + màn xem trước LUÔN hiển thị URL gốc, chỉ phía người dùng "
+            "LINE mới nhận URL rút gọn (spec BR-15 feature-spec.md:477 cần bổ sung tầng hiển thị). "
+            "Nguồn: Content: Send message r203, r545, r546, r1101-r1112"),
 
     tc("Shorten URL", "MSG-003", "Normal",
        "TẮT 短縮URLの利用 — cả chat 1:1 và app LINE đều giữ URL gốc",
@@ -313,7 +314,8 @@ S3 = [
        "- Với MỌI tổ hợp: chat 1:1 và màn preview hiển thị URL GỐC\n"
        "- App LINE hiển thị theo cấu hình rút gọn của TEMPLATE, không phụ thuộc cài đặt shorten của chat 1:1",
        spec="Đã hỏi leader",
-       note="MT-13. Gộp 10 tổ hợp vì cùng kết quả. Nguồn: Content: Send message r1101-r1110"),
+       note="MT-13 (Leader chốt 2026-10-23): chat 1:1 + preview luôn hiện URL gốc. Gộp 10 tổ hợp vì cùng kết quả. "
+            "Nguồn: Content: Send message r1101-r1110"),
 
     # ═══════════════ Gửi media ═══════════════
     tc("Gửi media", "UI-001", "Normal",
@@ -342,11 +344,12 @@ S3 = [
        "Upload media vượt dung lượng cho phép — bị chặn",
        BOT,
        "1. Với mỗi file ở cột Dữ liệu test: thử upload\n2. Ghi nhận thông báo và kết quả",
-       "Ảnh > 10 MB · video > 200 MB · audio > 25 MB",
-       "- Cả 3 loại đều bị chặn, hiện thông báo lỗi rõ ràng\n"
+       "Ảnh > 10 MB · video > 200 MB · audio > 25 MB · PDF > 10 MB",
+       "- Cả 4 loại đều bị chặn, hiện thông báo lỗi rõ ràng\n"
        "- File không được đưa vào danh sách gửi, không gửi được cho friend",
        spec="Đã hỏi leader",
-       note="MT-10: spec chat-11 KHÔNG ghi giới hạn dung lượng nào. Nguồn: Content: Send message r409-r411"),
+       note="MT-10 (Leader chốt 2026-10-23): giới hạn ảnh ≤ 10 MB · video ≤ 200 MB · audio ≤ 25 MB · PDF ≤ 10 MB; "
+            "vượt ngưỡng bị chặn. Nguồn: Content: Send message r409-r411"),
 
     tc("Gửi media", "MEDIA-001", "Abnormal",
        "Upload media sai định dạng — bị chặn",
@@ -355,7 +358,8 @@ S3 = [
        "Ảnh: TIFF, GIF · Video: AVI, WMV, MKV · Audio: WMA, WAV, MKV, MP3",
        "- Tất cả bị chặn hoặc không hiện trong hộp thoại chọn file\n- Không đưa vào danh sách gửi",
        spec="Đã hỏi leader",
-       note="MT-10: spec không liệt kê định dạng được phép. Nguồn: Content: Send message r413-r415"),
+       note="MT-10 (Leader chốt 2026-10-23): chỉ cho phép ảnh jpg/jpeg/png · video mp4 · audio m4a · PDF; "
+            "các định dạng khác KHÔNG cho upload. Nguồn: Content: Send message r413-r415"),
 
     tc("Gửi media", "MEDIA-001", "Boundary",
        "Giới hạn 5 file media mỗi lần gửi",
@@ -366,7 +370,7 @@ S3 = [
        "- Chọn được đúng 5 file\n"
        "- File thứ 6: hiện thông báo「同時にアップロードできるのは最大5つだけです。」\n"
        "- Sau khi xoá bớt 1 file: upload thêm được 1 file mới",
-       note="Nguồn: Content: Send message r412, r428"),
+       note="MT-10 (Leader chốt 2026-10-23): tối đa 5 file media mỗi lần upload. Nguồn: Content: Send message r412, r428"),
 
     tc("Gửi media", "MEDIA-001", "Abnormal",
        "Bấm gửi khi chưa chọn file và chưa nhập nội dung — báo lỗi",
@@ -492,6 +496,17 @@ S3 = [
        env="PRODUCTION", spec="Spec không ghi",
        note="Nguồn: Content: Send message r1207 — TC gốc ghi 「riêng send từ job sẽ hiển thị link」"),
 
+    tc("Gửi PDF", "MEDIA-001", "Boundary",
+       "Upload PDF vượt 10 MB — bị chặn",
+       BOT,
+       "1. Thử upload file PDF 10 MB (biên) → quan sát\n"
+       "2. Thử upload file PDF > 10 MB → ghi nhận thông báo và kết quả",
+       "PDF đúng 10 MB · PDF > 10 MB (ví dụ 11 MB)",
+       "- PDF ≤ 10 MB: upload thành công\n"
+       "- PDF > 10 MB: bị chặn, hiện thông báo lỗi, không đưa vào danh sách gửi",
+       spec="Đã hỏi leader",
+       note="MT-10 (Leader chốt 2026-10-23): PDF giới hạn ≤ 10 MB."),
+
     tc("Gửi PDF", "MEDIA-001", "Abnormal",
        "Bấm gửi PDF khi file chưa tải xong — không gửi tin lỗi",
        BOT + "\n- Bật throttling mạng chậm",
@@ -576,7 +591,7 @@ S3 = [
        note="Nguồn: Content: Send message r373, r388"),
 
     tc("Gửi sticker", "DATA-001", "Normal",
-       "Gửi sticker — tin nhắn cuối của bạn bè KHÔNG bị cập nhật",
+       "Gửi sticker — tin nhắn cuối của bạn bè CÓ cập nhật",
        BOT,
        "1. Ghi lại last_message + last_time_message của friend A\n2. Gửi 1 sticker\n"
        "3. Quan sát dòng A ở danh sách và kiểm tra DB",
@@ -794,12 +809,12 @@ S3 = [
        "1. Gửi T cho friend A từ chat 1:1\n2. Quan sát thứ tự và khoảng cách thời gian các tin ở chat 1:1\n"
        "3. Quan sát phía app LINE của friend A\n4. Kiểm tra hiển thị người gửi của từng tin",
        "Group template 4 con, bật gửi giãn cách",
-       "- Tin đầu tiên gửi ngay; các tin sau được job gửi cách nhau vài giây\n"
-       "- Ghi lại khoảng cách thực tế giữa các tin làm evidence (đối chiếu MT-05)\n"
+       "- Tin đầu tiên gửi ngay; các tin sau được job gửi cách nhau 2~5 giây\n"
+       "- Ghi lại khoảng cách thực tế giữa các tin làm evidence (phải nằm trong 2~5 giây)\n"
        "- Các tin phía sau hiển thị như tin gửi template thường, CÓ thông tin người gửi",
        env="PRODUCTION", spec="Đã hỏi leader",
-       note="MT-05: spec ghi giãn cách 2-4 giây (feature-spec.md:104), corpus ghi 2-5 giây. Job → RULE-08. "
-            "Nguồn: Content: Send message r1093-r1094"),
+       note="MT-05 (Leader chốt 2026-10-23): khoảng giãn cách là 2~5 giây (TC đúng, spec feature-spec.md:104 ghi "
+            "2-4 giây cần sửa). Job → RULE-08. Nguồn: Content: Send message r1093-r1094"),
 
     tc("Gửi template — nội dung & action", "MSG-002", "Normal",
        "Template delay gửi qua nút bấm / callback — các tin sau KHÔNG có thông tin người gửi",
@@ -854,7 +869,7 @@ S3 = [
             "gửi-từ-chat-1:1 → action chạy đúng. Nguồn: Content: Send message r812-r975"),
 
     tc("Gửi template — nội dung & action", "DATA-001", "Normal",
-       "Gửi template và các loại tin khác — tin nhắn cuối KHÔNG bị cập nhật",
+       "Gửi template và các loại tin khác — tin nhắn cuối CÓ cập nhật",
        BOT,
        "1. Với mỗi loại ở cột Dữ liệu test: gửi cho friend A\n"
        "2. Sau mỗi lần: quan sát dòng A ở danh sách và kiểm tra DB last_message/last_time_message",

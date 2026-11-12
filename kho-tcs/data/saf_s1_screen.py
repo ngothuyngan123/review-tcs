@@ -202,34 +202,36 @@ S1 = [
             "Bước 4 (giữ nội dung nháp) do AI bổ sung theo FUNC-DRAFT-001."),
 
     tc("Khối thông tin đầu trang", "UI-001", "Normal",
-       "Click marker 新規友だち — hiện khối định nghĩa 新規友だちとは？",
+       "Click chữ 新規友だち trong info box — hiện tooltip 「…新規友だち のみ稼働します。」",
        NEW,
        "1. Mở trang 新規友だち用\n"
-       "2. Click vào marker「新規友だち」ở khối thông tin đầu trang\n"
-       "3. Đọc nội dung hiện ra",
+       "2. Thử click marker/tiêu đề「新規友だち用」ở đầu trang → quan sát\n"
+       "3. Click vào chữ「新規友だち」trong info box → đọc nội dung hiện ra",
        "Trang add_new",
-       "- Hiện khối nội dung tiêu đề「新規友だちとは？」\n"
-       "- Nội dung nêu: là friend lần đầu thêm LINE OA; friend đã có từ trước khi dùng エルメ và "
-       "friend từng block rồi bỏ block ĐỀU KHÔNG phải 新規友だち",
-       note="Nguồn: r353 (khối improve mới, dưới header r348). ⚠️ MÂU THUẪN MT-05 với r28-r29 cùng "
-            "tab ghi『Marker 新規友だち — Click: Không click được』. Hai khối cùng 1 tab, không có "
-            "ngày riêng → quy tắc『ưu tiên TC mới nhất』là căn cứ YẾU; chọn khối r348+ vì mô tả chi "
-            "tiết hơn và khớp đợt improve 流入経路. CHỜ LEADER CHỐT.",
-       spec="Spec không ghi"),
+       "- Marker/tiêu đề「新規友だち用」ở đầu trang KHÔNG click được\n"
+       "- Click chữ「新規友だち」trong info box → hiện tooltip:"
+       "「このページで設定したメッセージ・アクションは 新規友だち のみ稼働します。」\n"
+       "- KHÔNG hiện popup định nghĩa「新規友だちとは？」",
+       note="✅ Leader chốt MT-05 (2026-10-23): marker ở đầu trang không click được; click chữ "
+            "新規友だち / 既存友だち chỉ hiện tooltip「…のみ稼働します。」, KHÔNG có popup 〜とは？. "
+            "Khối r353 (mô tả popup 新規友だちとは？) bị loại. Việc sửa spec: bổ sung tooltip vào "
+            "ui-spec.md §SCR-SAF-01/02.",
+       spec="Đã hỏi leader"),
 
     tc("Khối thông tin đầu trang", "UI-001", "Normal",
-       "Click marker 既存友だち — hiện khối định nghĩa 既存友だちとは？",
+       "Click chữ 既存友だち trong info box — hiện tooltip 「…既存友だち のみ稼働します。」",
        OLD,
        "1. Mở trang 既存友だち用\n"
-       "2. Click vào marker「既存友だち」\n"
-       "3. Đọc nội dung hiện ra",
+       "2. Thử click marker/tiêu đề「既存友だち用」ở đầu trang → quan sát\n"
+       "3. Click vào chữ「既存友だち」trong info box → đọc nội dung hiện ra",
        "Trang add_old",
-       "- Hiện khối nội dung tiêu đề「既存友だちとは？」\n"
-       "- Nội dung nêu: friend có từ trước khi dùng エルメ, được hiện lên エルメ khi friend nhắn tin "
-       "tới; nếu bắt đầu dùng エルメ cùng lúc mở LINE OA thì KHÔNG có 既存友だち",
-       note="Nguồn: r357 (tiêu đề dòng gốc ghi『click vào 新規友だち』nhưng nội dung expected là "
-            "既存友だちとは？— đọc theo nội dung). Liên quan MT-05.",
-       spec="Spec không ghi"),
+       "- Marker/tiêu đề「既存友だち用」ở đầu trang KHÔNG click được\n"
+       "- Click chữ「既存友だち」trong info box → hiện tooltip:"
+       "「このページで設定したメッセージ・アクションは 既存友だち のみ稼働します。」\n"
+       "- KHÔNG hiện popup định nghĩa「既存友だちとは？」",
+       note="✅ Leader chốt MT-05 (2026-10-23): xem TC trên. Khối r357 (mô tả popup 既存友だちとは？) "
+            "bị loại; thay bằng tooltip「…既存友だち のみ稼働します。」.",
+       spec="Đã hỏi leader"),
 
     tc("Khối thông tin đầu trang", "UI-001", "Normal",
        "Hover và click ảnh minh họa trong info box — không có tác dụng gì",
@@ -256,19 +258,22 @@ S1 = [
        note="Nguồn: r9, r21, r22 + ui-spec.md:50-56. Đối chứng live MCP dev 2026-08-26."),
 
     tc("友だち追加URL & QR", "UI-001", "Normal",
-       "Khối 友だち追加URL cũng hiển thị trên trang 既存友だち用 và ブロック解除時用",
+       "Khối 友だち追加URL trên trang 既存友だち用 và ブロック解除時用 — nằm ở TAB テスト方法",
        OLD,
-       "1. Mở trang 既存友だち用 → tìm khối「友だち追加URL」\n"
-       "2. Mở trang ブロック解除時用 → tìm khối「友だち追加URL」\n"
+       "1. Mở trang 既存友だち用 → click tab「テスト方法」→ tìm khối「友だち追加URL」\n"
+       "2. Mở trang ブロック解除時用 → click tab「テスト方法」→ tìm khối「友だち追加URL」\n"
        "3. Ở mỗi trang kiểm tra: URL, nút copy, ảnh QR, nút tải, link giải thích\n"
-       "4. So URL/QR với trang 新規友だち用",
+       "4. So URL/QR với trang 新規友だち用\n"
+       "5. Quay lại tab「メッセージ・アクション設定」của 2 trang này → xác nhận KHÔNG có khối URL/QR",
        "Trang add_old và unblock, cùng 1 bot",
-       "- CẢ HAI trang đều có đủ khối 友だち追加URL với các thành phần như trang 新規友だち用\n"
+       "- CẢ HAI trang đều có khối 友だち追加URL (đủ URL, nút copy, QR, nút tải, link giải thích), "
+       "nhưng hiển thị ở TAB「テスト方法」— KHÔNG ở tab「メッセージ・アクション設定」\n"
        "- URL và QR trùng khớp với trang 新規友だち用 (cùng bot → cùng URL kết bạn)",
-       note="Nguồn: r355-r374 (trang old) và r375-r393 (trang unblock). ⚠️ MÂU THUẪN MT-03: "
-            "ui-spec.md:104 và :342 ghi trang 既存友だち用『KHÔNG hiển thị khu vực URL/QR』. "
-            "Đối chứng live MCP dev 2026-08-26: API lấy cấu hình với type=add_old VẪN trả "
-            "urlAddFriend + qrCode. CHỜ LEADER CHỐT."),
+       note="✅ Leader chốt MT-03 (2026-10-23): trang 既存友だち用 và ブロック解除時用 CÓ khối "
+            "友だち追加URL nhưng đặt ở tab テスト方法. Nguồn r355-r374 / r375-r393. Đối chứng live MCP "
+            "dev 2026-08-26 khớp (API type=add_old trả urlAddFriend + qrCode). Việc sửa spec: "
+            "ui-spec.md:104/:342 + feature-spec.md §2.2 (đang ghi『không hiển thị URL/QR』) + đóng "
+            "Open Question #3 ở §9."),
 
     tc("友だち追加URL & QR", "UI-001", "Normal",
        "Ô URL không sửa được — click 1 lần và double click đều không vào chế độ nhập",

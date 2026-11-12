@@ -61,6 +61,7 @@ FEATURES = [
     {
         "code": "FA-001", "vi": "Chat 1:1", "jp": "1:1チャット",
         "prefix": "CHT",
+        "applied": "2026-10-23",   # đã áp 19/20 quyết định Leader (MT-18 còn chờ)
         "sections": "SECTIONS_CHT",
         "parts": ["cht_s1_list_filter.S1", "cht_s2_quick_profile.S2", "cht_s3_send.S3",
                   "cht_s4_display.S4", "cht_s5_schedule_right.S5", "cht_s6_group_env.S6"],
@@ -389,6 +390,7 @@ FEATURES = [
                   "blp_s6_job_billing.S6", "blp_s7_maxfriend_campaign.S7",
                   "blp_s8_env_perm.S8"],
         "conflicts": "blp_conflicts",
+        "applied": "2026-10-16",   # đã áp quyết định MT-01 (nút 振込キャンセル chỉ cho mua mới lần đầu)
         "spec": "spec-features/admin/billing-plan/",
         "sources": [
             "TCsLine_Bill tiền_Improve2025 → tab「Quản lý hợp đồng」(12/2025 → 07/2026, 1731 dòng, "
@@ -776,6 +778,7 @@ FEATURES = [
     {
         "code": "FA-020", "vi": "Đặt lịch salon", "jp": "サロン・面談予約",
         "prefix": "SLN",
+        "applied": "2026-10-12",   # đã áp quyết định MT-01 → MT-40 (MT-41 còn chờ); rà lại nhóm API
         "sections": "SECTIONS_SLN",
         "parts": ["sln_s1_list_create.S1", "sln_s2_booking_mgmt.S2", "sln_s3_shift.S3",
                   "sln_s4_course_staff.S4", "sln_s5_setting.S5", "sln_s6_google.S6",
@@ -850,6 +853,7 @@ FEATURES = [
     {
         "code": "FA-007", "vi": "Setting add friend", "jp": "あいさつメッセージ",
         "prefix": "SAF",
+        "applied": "2026-10-23",   # đã áp 18/18 quyết định Leader (MT-01 → MT-18)
         "sections": "SECTIONS_SAF",
         "parts": ["saf_s1_screen.S1", "saf_s2_message.S2", "saf_s3_action.S3",
                   "saf_s4_testtab.S4", "saf_s5_runtime.S5", "saf_s6_landing.S6",
@@ -1596,6 +1600,60 @@ def apply_format(feats):
     print(f"\nSheet: https://docs.google.com/spreadsheets/d/{ssid}/edit")
 
 
+DECISION_PREFIX = "QUYẾT ĐỊNH CỦA LEADER"
+
+
+def check_sheet_decisions(svc, ssid, feats, only_codes=None):
+    """Chặn ghi đè câu trả lời Leader gõ thẳng trên Sheet.
+
+    Leader điền cột QUYẾT ĐỊNH CỦA LEADER trực tiếp ở tab _Mâu thuẫn cần quyết, còn to_sheet()
+    clear rồi ghi lại tab từ data local → câu trả lời chưa có ở local sẽ mất (sự cố 2026-10-12,
+    mất 10 câu FA-020/FA-026). Ô nào trên Sheet có nội dung mà local trống / khác / không còn
+    dòng đó → DỪNG, liệt kê, không ghi gì cả.
+    """
+    try:
+        values = svc.spreadsheets().values().get(
+            spreadsheetId=ssid, range=f"'{TAB_CONFLICTS}'").execute().get("values", [])
+    except Exception:
+        return  # tab chưa tồn tại → chưa có gì để mất
+    if not values:
+        return
+    head = values[0]
+    qi = next((i for i, h in enumerate(head) if h.startswith(DECISION_PREFIX)), None)
+    if qi is None or "ID" not in head:
+        raise SystemExit(f"Tab {TAB_CONFLICTS!r} không có cột ID / {DECISION_PREFIX} — dừng để tránh ghi đè.")
+    ii = head.index("ID")
+
+    local = {}
+    for f in feats:
+        ccols, conf = load_conflicts(f)
+        di = next(i for i, c in enumerate(ccols) if c.startswith(DECISION_PREFIX))
+        for c in conf:
+            local[(f["code"], c[0])] = str(c[di])
+
+    lost = []
+    for n, r in enumerate(values[1:], start=2):
+        sheet_val = r[qi].strip() if len(r) > qi else ""
+        if not sheet_val or not r:
+            continue
+        key = (r[0].split(" ")[0], r[ii] if len(r) > ii else "")
+        if only_codes is not None and key[0] not in only_codes:
+            continue  # push 1 tính năng: dòng của tính năng khác không bị đụng tới
+        loc = local.get(key)
+        if loc is None:
+            lost.append((n, key, "local KHÔNG còn dòng này", sheet_val))
+        elif loc.strip() != sheet_val:
+            lost.append((n, key, "local trống" if not loc.strip() else "local khác Sheet", sheet_val))
+    if lost:
+        lines = [f"  dòng {n:>4} · {k[0]} {k[1]} · {why}\n         Sheet: {v[:150]!r}"
+                 for n, k, why, v in lost]
+        raise SystemExit(
+            f"DỪNG — {len(lost)} câu trả lời ở cột {DECISION_PREFIX} trên Sheet chưa có trong data local, "
+            "push sẽ ghi đè mất:\n" + "\n".join(lines) +
+            "\n\nChép các câu trả lời này vào kho-tcs/data/<feature>_conflicts.py (cột quyết định) rồi chạy lại.\n"
+            "Muốn bỏ một câu trả lời thì xóa ô đó trên Sheet trước.")
+
+
 def to_sheet(feats):
     svc, drive = gs_service()
 
@@ -1615,6 +1673,9 @@ def to_sheet(feats):
             "Tạo 1 Google Sheet rỗng bằng tài khoản của bạn, share quyền Editor cho\n"
             f"  {SA_EMAIL}\n"
             "rồi lưu spreadsheetId vào kho-tcs/.sheet-id")
+
+    # Chạy TRƯỚC mọi thao tác ghi (đổi tên / xoá tab / clear) — xem docstring.
+    check_sheet_decisions(svc, ssid, feats)
 
     meta = svc.spreadsheets().get(spreadsheetId=ssid).execute()
     existing = {sh["properties"]["title"]: sh["properties"]["sheetId"] for sh in meta["sheets"]}
@@ -1697,6 +1758,73 @@ def to_sheet(feats):
     return url
 
 
+def to_sheet_one(code):
+    """Đẩy DUY NHẤT 1 tính năng lên Sheet — các tab tính năng khác giữ nguyên.
+
+    Ghi: (1) tab của tính năng (clear + ghi lại + định dạng chuẩn);
+    (2) tab _Mâu thuẫn cần quyết: chỉ thay các dòng của tính năng này, dòng của tính năng
+        khác đọc lại từ Sheet (dạng FORMULA) và ghi giữ nguyên;
+    (3) _README: chỉ cập nhật dòng tiến độ của tính năng này.
+    KHÔNG đụng: tab tính năng khác, _Nguồn & phạm vi, phần TỔNG HỢP của _README.
+    """
+    feats = [f for f in FEATURES if f["code"] == code]
+    if not feats:
+        raise SystemExit(f"Không có tính năng {code} trong FEATURES")
+    f = feats[0]
+    svc, _ = gs_service()
+    ssid = STATE.read_text().strip()
+    check_sheet_decisions(svc, ssid, feats, only_codes={code})
+
+    meta = svc.spreadsheets().get(spreadsheetId=ssid).execute()
+    existing = {sh["properties"]["title"]: sh["properties"]["sheetId"] for sh in meta["sheets"]}
+    tab = tab_title(f)
+    if tab not in existing:
+        raise SystemExit(f"Sheet chưa có tab {tab!r} — dùng `build.py sheet` (full) để tạo tab mới")
+    get = lambda rng, opt="FORMATTED_VALUE": svc.spreadsheets().values().get(
+        spreadsheetId=ssid, range=rng, valueRenderOption=opt).execute().get("values", [])
+
+    # (1) tab tính năng
+    rows = load(f)
+    svc.spreadsheets().values().clear(spreadsheetId=ssid, range=f"'{tab}'").execute()
+    svc.spreadsheets().values().update(spreadsheetId=ssid, range=f"'{tab}'!A1",
+                                       valueInputOption="RAW", body={"values": [COLS] + rows}).execute()
+
+    # (2) tab mâu thuẫn — giữ nguyên vị trí khối của tính năng này
+    # Đọc FORMATTED + ghi RAW (giống to_sheet). KHÔNG dùng USER_ENTERED: ô bắt đầu bằng - + =
+    # (câu trả lời kiểu "- Logic hiện tại...") sẽ bị hiểu là công thức → #ERROR! (sự cố 2026-10-12).
+    cur = get(f"'{TAB_CONFLICTS}'")
+    head, body = cur[0], cur[1:]
+    _, conf = load_conflicts(f)
+    mine = [[tab] + list(c) for c in conf]
+    idx = [i for i, r in enumerate(body) if r and r[0].split(" ")[0] == code]
+    pos = idx[0] if idx else len(body)
+    others = [r for r in body if not (r and r[0].split(" ")[0] == code)]
+    new_body = others[:pos] + mine + others[pos:]
+    svc.spreadsheets().values().clear(spreadsheetId=ssid, range=f"'{TAB_CONFLICTS}'").execute()
+    svc.spreadsheets().values().update(spreadsheetId=ssid, range=f"'{TAB_CONFLICTS}'!A1",
+                                       valueInputOption="RAW",
+                                       body={"values": [head] + new_body}).execute()
+    bad = [x for r in get(f"'{TAB_CONFLICTS}'") for x in r if x.startswith(("#ERROR", "#NAME", "#REF"))]
+    if bad:
+        raise SystemExit(f"⚠ {TAB_CONFLICTS} có {len(bad)} ô lỗi sau khi ghi — kiểm tra ngay")
+
+    # (3) _README — chỉ dòng tiến độ của tính năng này
+    readme = get(f"'{TAB_README}'")
+    st, done, total = screen_status(f)
+    line = [code, f"{f['vi']} ({f['jp']})", len(rows), f"{done} / {total}", f.get("applied") or "—", st]
+    rn = next((i + 1 for i, r in enumerate(readme) if r and r[0] == code), None)
+    if rn:
+        svc.spreadsheets().values().update(spreadsheetId=ssid, range=f"'{TAB_README}'!A{rn}",
+                                           valueInputOption="RAW", body={"values": [line]}).execute()
+
+    svc.spreadsheets().batchUpdate(spreadsheetId=ssid, body={
+        "requests": fmt_reqs_for_tab(existing[tab], ncol=len(COLS))}).execute()
+    print(f"  {tab}: {len(rows)} TC")
+    print(f"  {TAB_CONFLICTS}: thay {len(idx)} → {len(mine)} dòng của {code}, giữ {len(others)} dòng tính năng khác")
+    print(f"  {TAB_README}: " + (f"cập nhật dòng {rn}" if rn else "KHÔNG thấy dòng tiến độ — bỏ qua"))
+    print(f"\nSheet: https://docs.google.com/spreadsheets/d/{ssid}/edit")
+
+
 def _slug_vi(s):
     """Tên tiếng Việt → slug ASCII liền: 'Chat 1:1' → 'chat11' · 'Quản lý thẻ' → 'quanlythe'."""
     s = unicodedata.normalize("NFD", s.lower()).replace("đ", "d")
@@ -1732,10 +1860,12 @@ if __name__ == "__main__":
             print("\nFile .md cũ không còn được sinh (xoá tay nếu không cần):")
             for x in stale:
                 print(f"  - kho-tcs/{x}")
+    elif mode == "sheet" and len(sys.argv) > 2:
+        to_sheet_one(sys.argv[2])   # VD: build.py sheet FA-020 — chỉ đẩy 1 tính năng
     elif mode == "sheet":
         to_sheet(FEATURES)
     elif mode == "format":
         # Chỉ đồng bộ ĐỊNH DẠNG (đóng băng + độ rộng cột), KHÔNG ghi đè dữ liệu trong tab
         apply_format(FEATURES)
     else:
-        print("usage: build.py [md|sheet|format]")
+        print("usage: build.py [md|sheet [FA-xxx]|format]")

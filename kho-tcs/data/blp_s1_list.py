@@ -283,7 +283,7 @@ S1 = [
        "5 trạng thái như tiền đề",
        "- 正常 → nút「契約詳細」màu xanh da trời\n"
        "- 延滞中 → nút「詳細を確認」màu đỏ\n"
-       "- 口座発行中 → nút「振込キャンセル」màu đỏ\n"
+       "- 口座発行中 (hợp đồng mua mới lần đầu) → nút「振込キャンセル」màu đỏ\n"
        "- 解約済み / 強制解約 → nút「アカウントの操作」màu xám",
        note="Nguồn: r60, r62, r64, r72, r74. Đối chiếu feature-spec.md §2 bảng 'Nút Action theo trạng thái'."),
 

@@ -8,7 +8,7 @@ User muốn sync TCs từ `04-tc-list.md` lên Google Sheet **đã được user
 
 **Folder review cần sync:** `$ARGUMENTS`
 
-Nếu `$ARGUMENTS` trống → liệt kê các folder con trong `tasks/` (sắp xếp theo ngày mới nhất), hỏi user chọn 1 trong đó rồi tiếp tục. KHÔNG được tự đoán.
+Nếu `$ARGUMENTS` trống → liệt kê các folder con trong `tasks/` và `MCP/` (sắp xếp theo ngày mới nhất), hỏi user chọn 1 trong đó rồi tiếp tục. KHÔNG được tự đoán.
 
 ### BƯỚC 1 — Pre-flight check
 Verify TRƯỚC khi chạy script. Nếu fail, DỪNG và hướng dẫn user fix:
@@ -61,7 +61,7 @@ Forward URL cho user. Nhắc:
 | `No target spreadsheet resolved` | Cả CLI args, HTML comment, config đều thiếu | Truyền `--spreadsheet <URL>`, hoặc add HTML comment vào 04-tc-list.md |
 | `Config not found` | Chưa copy từ example | `Copy-Item scripts/sync-tc.config.example.json scripts/sync-tc.config.json` |
 | `Credentials not found` | Chưa setup service account | Trỏ đến `docs/MCP-SETUP.md` |
-| `No TCs found` | File 04 không có bảng TC valid | Cột đầu của header bảng TC phải là `ID` (14 cột, chuẩn từ 2026-10-07) / `TC No.` (16 cột) / `TC ID` (10 cột cũ); mỗi dòng TC có ID + tên case |
+| `No TCs found` | File 04 không có bảng TC valid | Cột đầu của header bảng TC phải là `ID` (15 cột chuẩn từ 2026-10-14 / 14 cột từ 2026-10-07) / `TC No.` (16 cột) / `TC ID` (10 cột cũ); mỗi dòng TC có ID + tên case |
 
 ### QUY TẮC
 - KHÔNG sửa file `04-tc-list.md` trong quá trình sync (trừ trường hợp ở Bước 1 phải add HTML comment nếu thiếu — có hỏi user trước).

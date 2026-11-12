@@ -121,7 +121,7 @@ Người dùng mở trang
 | 「詳細を確認」 | Status là 延滞中 |
 | 「契約詳細」 | Status là 正常, 解約待ち, 入金待ち |
 | 「アカウントの操作」 | Status là 解約済み, 強制解約 |
-| 「振込キャンセル」 | Status là 入金待ち (điều kiện cụ thể chưa xác nhận đầy đủ) |
+| 「振込キャンセル」 | **Chỉ** hợp đồng **mua mới lần đầu** đang chờ chuyển khoản (口座発行中 / 入金待ち): mua mới スタンダード / プロ, nâng từ フリー lên スタンダード / プロ. Các case **update hợp đồng** (đổi phương thức thẻ → chuyển khoản, gia hạn 1 năm, スタンダード → プロ, 再契約) và **job bill định kỳ** → KHÔNG hiện 「振込キャンセル」, chỉ hiện 「契約詳細」. _(Leader chốt 2026-10-16 — Specchange 03/2026)_ |
 
 #### Banner thông báo (theo điều kiện)
 
@@ -603,6 +603,8 @@ Khi hủy chuyển khoản pending (EP-10), hệ thống cố gắng khôi phụ
 | Gia hạn (`extendContract`) | Khôi phục `expired_date_contract` về giá trị trước |
 | Mặc định | Hủy hoàn toàn (`status=3`) |
 
+**Phạm vi được hủy (Leader chốt 2026-10-16 — Specchange 03/2026)**: nút 「振込キャンセル」 chỉ hiện cho hợp đồng **mua mới lần đầu** (mua mới スタンダード / プロ, nâng từ フリー). Đổi phương thức, gia hạn, スタンダード → プロ, 再契約 và job bill định kỳ **không** có nút → user không hủy được đăng ký chuyển khoản của các case này từ màn hình. Các nhánh khôi phục `upgradeFromStandard` / `extendContract` ở bảng trên (và nhánh trả hạn cũ cho 再契約 thêm ở #42058 v6) không còn điểm vào từ UI.
+
 ### BR-06: Quy tắc lọc payment history hợp lệ
 
 Chỉ hiển thị bản ghi thỏa mãn:
@@ -807,7 +809,7 @@ Các button sau hiển thị trong UI nhưng chưa tìm được endpoint tươn
 | N8 | `strip_bots` table — được dùng bởi CheckStatusWebhook nhưng chưa có trong db-mapping | db-mapping.md |
 | N9 | `rich_menus` bị UPDATE khi force cancel — side effect chưa documented đầy đủ trong db-mapping | db-mapping.md |
 | N10 | `CancelContractService` — độ tin cậy Thấp, chưa đọc chi tiết | logic-spec.md |
-| N11 | Điều kiện cụ thể hiển thị button「振込キャンセル」vs「契約詳細」khi status 入金待ち — cần xem code | logic-spec.md |
+| N11 | ~~Điều kiện cụ thể hiển thị button「振込キャンセル」vs「契約詳細」khi status 入金待ち — cần xem code~~ → ✅ Đã chốt 2026-10-16 (Leader): chỉ hiện cho mua mới lần đầu, xem bảng "Nút Action theo trạng thái" + BR-05 | logic-spec.md |
 
 ---
 

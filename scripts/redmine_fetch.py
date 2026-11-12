@@ -8,9 +8,13 @@ Dung cho /new-task BUOC 1. Doc `REDMINE_URL` + `REDMINE_API_KEY` truc tiep tu fi
   python scripts/redmine_fetch.py 36437 --json out.json     # + dump JSON goc
   python scripts/redmine_fetch.py 36437 --no-journals       # bo journals cho nhe
   python scripts/redmine_fetch.py --check                   # test ket noi + API key
+  python scripts/redmine_fetch.py 39446 --download-attachments MCP/<folder>/docs
+                                                            # tai attachment tai lieu (/new-task-mcp)
 
 stdout = digest markdown (metadata + description nguyen van + journals co notes),
 du de auto-fill 01-bug-task.md / 03-dev-impact.md. --json ghi payload goc ra file.
+--download-attachments chi tai file tai lieu (DOC_EXTS, bo anh/video); .zip giai nen
+vao <DIR>/<ten zip>/. Danh sach file da luu in them o cuoi stdout.
 
 Exit code: 0 OK - 2 thieu config/tham so - 3 URL sai - 4 loi HTTP - 5 khong ket noi duoc.
 """
@@ -24,7 +28,8 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-from pathlib import Path
+import zipfile
+from pathlib import Path, PurePosixPath
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
@@ -33,7 +38,13 @@ ROOT = Path(__file__).resolve().parent.parent
 ENV_FILE = ROOT / ".env"
 SETUP_DOC = "docs/REDMINE-SETUP.md"
 TIMEOUT = 30
+DOWNLOAD_TIMEOUT = 120
 ISSUE_URL_RE = re.compile(r"^(?P<base>https?://.+?)/issues/(?P<id>\d+)(?:[/?#].*)?$", re.I)
+# Attachment duoc coi la tai lieu (docs MCP) - anh / video / log binary bo qua.
+DOC_EXTS = (".md", ".markdown", ".html", ".htm", ".txt", ".pdf", ".json", ".yaml", ".yml",
+            ".csv", ".xlsx", ".docx", ".zip")
+ZIP_MAX_BYTES = 200 * 1024 * 1024  # tong dung luong giai nen toi da / 1 zip
+UNSAFE_NAME_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 
 
 def die(msg, code=1, hint=True):
@@ -79,13 +90,11 @@ def resolve_target(arg, env):
     return base.rstrip("/"), issue_id
 
 
-def api_get(base, path, params, key, verify_ssl=True):
-    url = f"{base}{path}"
-    if params:
-        url += "?" + urllib.parse.urlencode(params)
+def http_get(url, key, verify_ssl=True, accept="application/json", timeout=TIMEOUT):
+    """GET 1 URL Redmine kem API key, tra ve bytes. Loi HTTP / mang -> die()."""
     req = urllib.request.Request(url, headers={
         "X-Redmine-API-Key": key,
-        "Accept": "application/json",
+        "Accept": accept,
         "User-Agent": "lme-review-TCs/redmine_fetch",
     })
     ctx = None
@@ -94,8 +103,8 @@ def api_get(base, path, params, key, verify_ssl=True):
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
     try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT, context=ctx) as r:
-            return json.loads(r.read().decode("utf-8"))
+        with urllib.request.urlopen(req, timeout=timeout, context=ctx) as r:
+            return r.read()
     except urllib.error.HTTPError as e:
         reason = {
             401: "API key sai hoac het han - lay lai key o Redmine: My account -> API access key.",
@@ -104,9 +113,79 @@ def api_get(base, path, params, key, verify_ssl=True):
         }.get(e.code, "")
         die(f"HTTP {e.code} khi GET {url}. {reason}".strip(), 4)
     except urllib.error.URLError as e:
-        die(f"Khong ket noi duoc {base}: {e.reason}. Verify REDMINE_URL / VPN / mang noi bo.", 5)
-    except json.JSONDecodeError:
+        host = urllib.parse.urlsplit(url).netloc or url
+        die(f"Khong ket noi duoc {host}: {e.reason}. Verify REDMINE_URL / VPN / mang noi bo.", 5)
+
+
+def api_get(base, path, params, key, verify_ssl=True):
+    url = f"{base}{path}"
+    if params:
+        url += "?" + urllib.parse.urlencode(params)
+    raw = http_get(url, key, verify_ssl)
+    try:
+        return json.loads(raw.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
         die(f"Response tu {url} khong phai JSON - co the URL tro vao trang login (API key sai / REST API tat).", 4)
+
+
+def safe_name(name):
+    """Ten file an toan tren Windows: bo thu muc, thay ky tu cam bang '_'."""
+    name = UNSAFE_NAME_RE.sub("_", PurePosixPath(name.replace("\\", "/")).name).strip(" .")
+    return name or "attachment"
+
+
+def extract_zip(zip_path, dest):
+    """Giai nen zip vao dest, bo entry tuyet doi / co '..' (path traversal). Tra ve list file."""
+    out = []
+    with zipfile.ZipFile(zip_path) as zf:
+        members = [m for m in zf.infolist() if not m.is_dir()]
+        total = sum(m.file_size for m in members)
+        if total > ZIP_MAX_BYTES:
+            print(f"  ! bo qua giai nen {zip_path.name}: {total} bytes > {ZIP_MAX_BYTES}", file=sys.stderr)
+            return out
+        root = dest.resolve()
+        for m in members:
+            parts = PurePosixPath(m.filename.replace("\\", "/")).parts
+            if not parts or parts[0] in ("/", "") or ".." in parts or ":" in parts[0]:
+                print(f"  ! bo qua entry khong an toan trong {zip_path.name}: {m.filename}", file=sys.stderr)
+                continue
+            target = root.joinpath(*[safe_name(p) for p in parts]).resolve()
+            if root not in target.parents:
+                print(f"  ! bo qua entry nam ngoai thu muc dich: {m.filename}", file=sys.stderr)
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with zf.open(m) as src:
+                target.write_bytes(src.read())
+            out.append(target)
+    return out
+
+
+def download_attachments(issue, out_dir, key, verify_ssl):
+    """Tai attachment tai lieu (DOC_EXTS) ve out_dir. Trung ten: ban moi nhat giu ten goc,
+    ban cu them tien to `<attachment_id>_`. Tra ve (saved, skipped)."""
+    atts = issue.get("attachments") or []
+    docs = [a for a in atts if Path(a.get("filename") or "").suffix.lower() in DOC_EXTS]
+    skipped = [a.get("filename") for a in atts if a not in docs]
+    newest = {}
+    for a in docs:
+        n = safe_name(a.get("filename") or "")
+        if n not in newest or int(a.get("id") or 0) > int(newest[n].get("id") or 0):
+            newest[n] = a
+    out_dir.mkdir(parents=True, exist_ok=True)
+    saved = []
+    for a in sorted(docs, key=lambda x: int(x.get("id") or 0)):
+        n = safe_name(a.get("filename") or "")
+        fname = n if newest[n] is a else f"{a.get('id')}_{n}"
+        path = out_dir / fname
+        path.write_bytes(http_get(a.get("content_url"), key, verify_ssl,
+                                  accept="*/*", timeout=DOWNLOAD_TIMEOUT))
+        saved.append(path)
+        if path.suffix.lower() == ".zip":
+            try:
+                saved += extract_zip(path, out_dir / path.stem)
+            except zipfile.BadZipFile:
+                print(f"  ! {fname} khong phai zip hop le - giu nguyen file, khong giai nen", file=sys.stderr)
+    return saved, skipped
 
 
 def fmt_user(d, field):
@@ -165,6 +244,8 @@ def main():
     p.add_argument("--json", metavar="PATH", help="Dump JSON goc cua issue ra file.")
     p.add_argument("--no-journals", action="store_true", help="Khong fetch/in journals.")
     p.add_argument("--check", action="store_true", help="Test ket noi + API key (GET /users/current.json) roi thoat.")
+    p.add_argument("--download-attachments", metavar="DIR",
+                   help="Tai attachment tai lieu (" + " ".join(DOC_EXTS) + ") ve DIR; .zip giai nen vao DIR/<ten zip>/.")
     args = p.parse_args()
 
     env = load_env()
@@ -201,6 +282,22 @@ def main():
         print(f"[json] {out}", file=sys.stderr)
 
     print(digest(issue, base, not args.no_journals))
+
+    if args.download_attachments:
+        out_dir = Path(args.download_attachments)
+        saved, skipped = download_attachments(issue, out_dir, key, verify_ssl)
+        print("")
+        print(f"## Attachments da tai ({len(saved)}) -> {out_dir.as_posix()}")
+        for f in saved:
+            try:
+                rel = f.resolve().relative_to(out_dir.resolve()).as_posix()
+            except ValueError:
+                rel = f.as_posix()
+            print(f"- {rel} ({f.stat().st_size} bytes)")
+        if not saved:
+            print("- (khong co attachment tai lieu nao)")
+        if skipped:
+            print(f"- Bo qua (khong phai tai lieu): {', '.join(skipped)}")
 
 
 if __name__ == "__main__":

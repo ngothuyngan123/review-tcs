@@ -28,6 +28,7 @@ S6 = [
        "- Tạo event cho booking status 1, 2, 5 (kể cả booking khách ngoài hệ thống)\n"
        "- KHÔNG tạo event cho status 0, 4, 6, 7\n"
        "- Booking qua ngày: tạo event loại qua ngày, ngày giờ start-end đúng",
+       group="UI",
        note="Nguồn: Sync google calendar r3-r11. Spec BR-09, EP-47/EP-48."),
 
     tc("Googleカレンダー連携", "INTG-CAL-001", "Normal",
@@ -42,6 +43,7 @@ S6 = [
        "- コース: tên quản lý course; không chọn course →「指定なし」\n"
        "- 予約枠: tên quản lý staff; 指定なし →「指定なし」; calendar 個人 →「運営者」\n"
        "- Khách trong hệ thống: hiện line name + link my_page; khách ngoài: KHÔNG hiện phần này",
+       group="UI",
        note="Nguồn: Sync google calendar r12-r21."),
 
     tc("Googleカレンダー連携", "INTG-CAL-001", "Normal",
@@ -57,6 +59,7 @@ S6 = [
        "- B1, B3, B5, B7: TẠO event trên Google với đủ thông tin (ngày giờ, course, staff, "
        "friend info, line name + link my_page)\n"
        "- B2, B4, B6: KHÔNG tạo event",
+       group="UI",
        note="Nguồn: Sync google calendar r33-r40."),
 
     tc("Googleカレンダー連携", "INTG-CAL-001", "Normal",
@@ -71,6 +74,7 @@ S6 = [
        "- B1, B3, B5, B7: XÓA event trên Google\n"
        "- B2, B4, B6: KHÔNG xóa event\n"
        "- B8: lúc hủy đã xóa event rồi nên khi xóa booking KHÔNG sync thêm",
+       group="UI",
        note="Nguồn: Sync google calendar r46-r58."),
 
     tc("Googleカレンダー連携", "INTG-CAL-001", "Boundary",
@@ -82,6 +86,7 @@ S6 = [
        "Event Google qua ngày",
        "- Tạo 2 bản ghi block time: bản 1 từ 22:00 đến 23:59 ngày 1; bản 2 từ 00:00 đến 02:00 ngày 2\n"
        "- Lưới admin và LINE user đều chặn đúng 2 khoảng",
+       group="Data",
        note="Nguồn: Sync google calendar r61, r321-r344 (Bug #26739, 23/09/2024)."),
 
     tc("Googleカレンダー連携", "INTG-CAL-001", "Normal",
@@ -93,6 +98,7 @@ S6 = [
        "Event thường + event lặp",
        "- Mọi trường hợp: block time tương ứng bị xóa khỏi `calendar_salon_booking_by_google`\n"
        "- Lưới admin và slot phía LINE user mở lại đúng các khung tương ứng",
+       group="Data",
        note="Nguồn: Sync google calendar r77-r80."),
 
     tc("Googleカレンダー連携", "STATE-CLEAN-001", "Normal",
@@ -118,22 +124,26 @@ S6 = [
        "- Staff không chọn calendar: KHÔNG liên kết, không sync\n"
        "- Mỗi staff sync đúng dữ liệu của calendar mình chọn\n"
        "- Khác tài khoản: mỗi staff sync lên calendar của tài khoản tương ứng",
+       group="UI",
        note="Nguồn: Sync google calendar r81-r84."),
 
     tc("Googleカレンダー連携", "INTG-CAL-001", "Abnormal",
        "Bug #26653: 2 staff liên kết CHUNG 1 Google Calendar",
        GG + "\n- Tài khoản Google A có calendar X",
        "1. S1 liên kết calendar X → sau đó S2 cũng liên kết calendar X\n"
-       "2. Tạo booking cho S1 → kiểm tra event trên calendar X\n"
-       "3. Tạo booking cho S2 → kiểm tra\n4. Tạo event trực tiếp trên calendar X → kiểm tra block time\n"
+       "2. Tạo booking LME cho S1 11/07 10:00-11:00 → kiểm tra event trên calendar X và lưới của S2\n"
+       "3. Tạo booking LME cho S2 11/07 14:00-15:00 → kiểm tra calendar X và lưới của S1\n"
+       "4. Tạo event trực tiếp trên calendar X 11/07 16:00-17:00 → kiểm tra block time của S1 và S2\n"
        "5. Hủy liên kết của S1 → kiểm tra dữ liệu của S2",
        "2 staff cùng calendar X",
-       "- Cả 2 staff sync được lên calendar X, event không đè lên nhau\n"
-       "- Event từ Google sync về tạo block time cho CẢ 2 staff (hoặc theo rule đã chốt)\n"
-       "- Hủy liên kết S1: dữ liệu sync của S2 KHÔNG bị mất",
+       "- B2: booking S1 sync lên calendar X VÀ trở thành block time của S2 10:00-11:00\n"
+       "- B3: booking S2 sync lên calendar X VÀ trở thành block time của S1 14:00-15:00\n"
+       "- B4: event Google tạo block time cho CẢ 2 staff 16:00-17:00\n"
+       "- B5: dữ liệu sync của S2 KHÔNG bị mất",
+       group="UI",
        spec="Đã hỏi leader",
-       note="Nguồn: Sync google calendar r280-r320 (Bug #26653, 11/09/2024). "
-            "⚠ Corpus không ghi rõ block time chung tạo cho 1 hay 2 staff → cần Leader chốt, xem MT-34."),
+       note="Leader chốt MT-34 (2026-10-12): liên kết chung → block time tính cho cả 2 staff. "
+            "Nguồn: Sync google calendar r280-r320 (Bug #26653). ⚠ B5 chưa được chốt — giữ theo corpus."),
 
     tc("Googleカレンダー連携", "INTG-CAL-001", "Abnormal",
        "Bug #29844: SyncToken lỗi (410 Gone) → fallback đồng bộ theo khoảng thời gian",
@@ -145,6 +155,7 @@ S6 = [
        "- Khi token lỗi: job fallback sang đồng bộ theo khoảng thời gian, dữ liệu vẫn đúng\n"
        "- Khi token bình thường: đồng bộ theo token, dữ liệu đúng\n"
        "- Không sinh block time rác hoặc mất block time",
+       group="Job",
        note="Nguồn: Sync google calendar r431-r447 (Bug #29844, 13/05/2025). Spec §7.1.1."),
 
     tc("Googleカレンダー連携", "INTG-CAL-001", "Abnormal",
@@ -158,6 +169,7 @@ S6 = [
        "- Cả 2 trường hợp: block time bị xóa hoàn toàn khỏi LME\n"
        "- Không còn khung giờ bị chặn mà không có event tương ứng trên Google\n"
        "- Chiều LME → Google cũng đồng bộ đúng",
+       group="UI",
        note="Nguồn: Sync google calendar r392-r430, r448-r456 (Bug #28770, #29169, #30419)."),
 
     tc("Googleカレンダー連携", "INTG-CAL-001", "Abnormal",
@@ -170,6 +182,7 @@ S6 = [
        "2 tài khoản Google khác nhau",
        "- Event trên tài khoản A bị XÓA\n- Event mới được tạo trên tài khoản B\n"
        "- Trường hợp cùng tài khoản: event chuyển đúng calendar tương ứng",
+       group="UI",
        note="Nguồn: Sync google calendar r457-r509 (Bug tự detect change staff google calendar)."),
 
     tc("Googleカレンダー連携", "JOB-001", "Normal",
@@ -208,6 +221,7 @@ S6 = [
        "≥ 500 booking",
        "- Các thao tác hoàn tất trong thời gian chấp nhận được, KHÔNG treo màn hình\n"
        "- Dữ liệu sau thao tác đúng và đầy đủ",
+       group="UI",
        env="PRODUCTION",
        note="Nguồn: Sync google calendar r621-r634 (Bug tự detect #38446, 07/2026). "
             "RULE-08: performance BẮT BUỘC test production."),
@@ -222,6 +236,7 @@ S6 = [
        "- Hủy liên kết Calendar thành công\n"
        "- Liên kết Google Spreadsheet VẪN còn nguyên\n"
        "- Booking mới VẪN được ghi vào Google Sheet",
+       group="UI",
        note="Nguồn: Sync google calendar r614-r620 (Support #35768, 09/04/2026)."),
 
     tc("Googleカレンダー連携", "PERM-002", "Normal",
@@ -232,10 +247,11 @@ S6 = [
        "Tài khoản staff có quyền",
        "- Staff thao tác được như admin trên màn đã được cấp quyền\n"
        "- Kết quả liên kết/hủy liên kết đúng",
+       group="UI",
        spec="Đã hỏi leader",
        note="Nguồn: Sync google calendar r520-r521 + Quản lý calendar r1866, r3118, r3287 — corpus ghi "
             "「trên dev acc staff thiếu quyền salon nên ko check được」→ nhóm case này CHƯA từng được "
-            "test, xem MT-35."),
+            "test. Gap spec §9.2 mục 9 (phân quyền Staff chi tiết) — cần môi trường dev có account staff đủ quyền salon."),
 
     tc("Googleカレンダー連携", "INTG-HOOK-001", "Abnormal",
        "Webhook Google Calendar tới TRỄ / TRÙNG / sai thứ tự",
@@ -248,6 +264,7 @@ S6 = [
        "- Trạng thái block time trên LME khớp trạng thái CUỐI CÙNG trên Google (không kẹt ở bước giữa)\n"
        "- Callback trùng KHÔNG sinh block time nhân đôi\n"
        "- Không còn bản ghi callback kẹt ở trạng thái đang xử lý",
+       group="Job",
        env="PRODUCTION",
        note="Spec §7.1.1 (queue `salon_google_calendar_callback`, 5 consumer thread, per-bot "
             "serialization). ⚠ Corpus KHÔNG có TC cho webhook trễ/trùng → TC bổ sung theo spec. RULE-08."),
@@ -263,6 +280,7 @@ S6 = [
        "- Bấm đăng nhập: mở màn OAuth của Google\n"
        "- Sau liên kết: hiện tên tài khoản + ảnh đại diện\n"
        "- Bấm link: mở tab mới file Google Sheet mang tên cửa hàng",
+       group="UI",
        note="Nguồn: Setting calendar r1534-r1537."),
 
     tc("Googleスプレッドシート連携", "INTG-SHEET-001", "Abnormal",
@@ -276,6 +294,7 @@ S6 = [
        "- Không cấp quyền: lỗi「Google スプレッドシートのアクセス権限をチェックしてください」\n"
        "- Cấp đủ quyền ở lần sau: liên kết thành công\n"
        "- Liên kết tài khoản khác có cấp quyền: thành công",
+       group="UI",
        note="Nguồn: Sync google calendar r87-r103."),
 
     tc("Googleスプレッドシート連携", "INTG-SHEET-001", "Normal",
@@ -287,6 +306,7 @@ S6 = [
        "3 booking cũ + 1 booking mới",
        "- Ngay sau khi liên kết: file chưa có dữ liệu booking cũ\n"
        "- Sau khi có booking mới: file hiện TOÀN BỘ booking (cả cũ và mới)",
+       group="UI",
        note="Nguồn: Setting calendar r1538-r1540. ⚠ Hành vi này khác trực giác — cần nêu rõ với member "
             "khi test."),
 
@@ -304,6 +324,7 @@ S6 = [
        "- コース: có system_name thì lấy system_name; không chọn course →「指定なし」\n"
        "- スタッフ: 指定なし →「指定なし」; calendar 個人 →「運営者」\n"
        "- 決済金額: luôn hiện `payment_amount` kể cả khi tắt 決済",
+       group="Data",
        note="Nguồn: Setting calendar r1547-r1570."),
 
     tc("Googleスプレッドシート連携", "INTG-SHEET-001", "Normal",
@@ -318,6 +339,7 @@ S6 = [
        "- PRODUCTION: admin book「決済なし」· user duyệt ngay「決済済み」· user request「未決済」· "
        "duyệt request「決済済み」· refund「返金済み」· course+staff free「決済なし」· 指定なし「決済なし」\n"
        "- TEST: không bill →「決済なし」; còn lại →「テスト決済」",
+       group="UI",
        env="PRODUCTION",
        note="Nguồn: Setting calendar r1571-r1581. RULE-08: bill tiền test production."),
 
@@ -334,19 +356,19 @@ S6 = [
        "- Dòng trong Sheet được CẬP NHẬT theo trạng thái mới (không sinh dòng mới)\n"
        "- Admin xóa booking:「キャンセル（手動）」và KHÔNG bị xóa khỏi danh sách\n"
        "- Duyệt booking có bill: chuyển「決済済み」\n- Hoàn tiền: chuyển「返金済み」",
+       group="UI",
        note="Nguồn: Setting calendar r1584-r1600."),
 
     tc("Googleスプレッドシート連携", "INTG-SHEET-001", "Abnormal",
        "Booking KHÔNG được ghi vào Google Sheet",
        GG.replace("「Googleカレンダー連携」", "「Googleスプレッドシート連携」"),
-       "1. LINE user đăng ký chờ thông báo khi slot đầy (status 3) → kiểm tra file\n"
-       "2. Admin book vào slot đã đầy → kiểm tra file\n"
-       "3. Booking đã bị xóa (`deleted_at` khác NULL) → kiểm tra file",
-       "Booking status 3 · admin book full slot · booking đã xóa",
-       "- Booking status 3: KHÔNG insert vào file\n"
+       "1. Admin book vào slot đã đầy → kiểm tra file\n"
+       "2. Booking đã bị xóa (`deleted_at` khác NULL) → kiểm tra file",
+       "Admin book full slot · booking đã xóa",
        "- Admin book full slot:「予約確定（手動追加）」có insert\n"
        "- Booking đã xóa: hiện tại KHÔNG hiển thị trong file",
-       note="Nguồn: Setting calendar r1596-r1597, r1601."),
+       group="Data",
+       note="Nguồn: Setting calendar r1596-r1597, r1601. Leader chốt MT-30 + MT-07 (2026-10-12): salon KHÔNG có tính năng danh sách chờ → status 3 không tồn tại."),
 
     tc("Googleスプレッドシート連携", "INTG-SHEET-001", "Normal",
        "Cột friend info trong Google Sheet thay đổi theo cấu hình câu hỏi",
@@ -359,6 +381,7 @@ S6 = [
        "- Thêm: dữ liệu cột mới được thêm vào (KHÔNG hiển thị tiêu đề cột)\n"
        "- Xóa: các cột bị xóa được đẩy ra sau\n- Đổi: các cột vừa đổi đẩy ra sau\n"
        "- Sắp xếp: các cột hiển thị đúng thứ tự đã sắp xếp",
+       group="UI",
        note="Nguồn: Setting calendar r1543-r1546."),
 
     tc("Googleスプレッドシート連携", "INTG-SHEET-001", "Abnormal",
@@ -374,6 +397,7 @@ S6 = [
        "- B2: dữ liệu KHÔNG được cập nhật (đã có ghi chú cảnh báo trên màn)\n"
        "- B3: các booking cũ cũng được ghi lại vào file tự tạo\n"
        "- B4: dữ liệu vẫn ghi vào file CŨ",
+       group="UI",
        note="Nguồn: Setting calendar r1541-r1542, r1602-r1603."),
 
     tc("Googleスプレッドシート連携", "INTG-SHEET-001", "Normal",
@@ -388,6 +412,7 @@ S6 = [
        "- status 0, 1, 3: lỗi「スプレッドシートを作成しているため、接続を解除できません。"
        "３〜5分少し待ってから操作してください。」\n"
        "- status 2: hủy thành công\n- Tài khoản không cấp quyền: hủy thành công",
+       group="UI",
        note="Nguồn: Sync google calendar r94-r98 + Setting calendar r1604-r1607."),
 
     tc("Googleスプレッドシート連携", "INTG-SHEET-001", "Normal",
@@ -407,6 +432,7 @@ S6 = [
        "- Có booking mới hoặc update: sync TOÀN BỘ booking của calendar vào file mới "
        "(gồm cả thông tin mới nhất của booking có update)\n"
        "- Email khác: hành vi tương tự",
+       group="Data",
        note="Nguồn: Setting calendar r1614-r1620 (Support #32733, 05/11/2025)."),
 
     tc("Googleスプレッドシート連携", "COMPAT-LEGACY-001", "Normal",
@@ -433,6 +459,7 @@ S6 = [
        "- Cả 2 bot liên kết thành công, mỗi bot có file riêng\n"
        "- Icon spreadsheet hiện đúng ở màn list của từng bot\n"
        "- Dữ liệu ghi đúng file, không lẫn giữa 2 bot",
+       group="UI",
        note="Nguồn: Sync google calendar r92."),
 
     tc("Googleスプレッドシート連携", "INTG-SHEET-001", "Abnormal",
@@ -445,6 +472,7 @@ S6 = [
        "- Hiện alert báo mất liên kết Google\n"
        "- Dữ liệu không sync được nhưng KHÔNG chặn việc đặt lịch\n"
        "- Sau khi liên kết lại: sync lại được",
+       group="UI",
        note="Nguồn: Sync google calendar r93 + Setting calendar r1610 (Support #32733 — "
             "「Cảnh báo cần liên kết lại với Google」, triển khai ngang cho Salon/Lesson/QrCode)."),
 
@@ -457,5 +485,6 @@ S6 = [
        "Booking 19:00-00:00",
        "- Sheet có ĐÚNG 1 dòng cho booking này\n- Cột ngày ghi 11/07 (KHÔNG phải 12/07)\n"
        "- KHÔNG sinh dòng ảo / dòng trùng ở ngày hôm sau",
+       group="UI",
        note="Nguồn: #38520 r56 (Bug KH #38520, 07/2026)."),
 ]

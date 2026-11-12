@@ -123,6 +123,26 @@ Soi 5 loại lệch:
 4. **TC lấp Gap của spec** (spec ghi "chưa xác nhận" / confidence Thấp mà TC đã test thật) → đề xuất đóng Gap.
 5. **Vùng mù giữa 2 spec** (VD form con của shared component chưa ai scan) → nêu rõ ảnh hưởng bao nhiêu tính năng.
 
+**Điều kiện vào bảng mâu thuẫn — phải đủ CẢ 2**, thiếu 1 thì KHÔNG phải mâu thuẫn:
+- (a) Có **≥ 2 nguồn nói KHÁC NHAU về cùng một hành vi**: TC vs TC, TC vs spec (kể cả spec ghi dạng đoán
+  như "4?, 5?"), spec vs spec. Cả 2 cột `TCs nói gì` và `Spec nói gì` phải nêu được **nội dung cụ thể**,
+  không phải "không có" / "chưa test" / "spec không ghi".
+- (b) Leader **đóng được bằng một quyết định** (chọn bên, hoặc chốt quy tắc mới).
+
+Các trường hợp sau **KHÔNG đưa vào bảng mâu thuẫn** (bài học MT-35 của FA-020, gỡ 2026-10-12: "phân
+quyền Staff chưa từng test được + spec ghi Gap", không có 2 bên để chọn, đưa vào bảng chỉ làm tab
+không bao giờ lên ✅ XONG):
+
+| Trường hợp | Ghi vào đâu |
+|---|---|
+| **Vùng chưa từng test**: corpus ghi "không test được", cột kết quả trống, thiếu môi trường / account | `Ghi chú` của TC liên quan: `CHƯA từng được test — <lý do> — cần <điều kiện môi trường>` + mục 6 báo cáo cuối |
+| **Spec bỏ sót / Gap** mà TC có rule rõ (loại 3, 4 ở trên) | `Ghi chú` TC: `Gap spec <file §mục> → TC này lấp Gap` + mục 5 báo cáo cuối |
+| **Cả TC lẫn spec đều thiếu** (VD thiếu giá trị biên) | `Ghi chú` TC: `Thiếu <thông tin> — cần hỏi Dev` + mục 7 báo cáo cuối |
+| **Vùng mù giữa 2 spec** (loại 5) | mục 5 báo cáo cuối |
+
+Phân vân → tự hỏi: *"Leader trả lời 1 câu là đóng được không?"* Nếu câu trả lời là "phải đi test" hoặc
+"phải đi viết spec" thì đó không phải mâu thuẫn.
+
 **Bảng mâu thuẫn — 10 cột bắt buộc**:
 `ID · Mức độ · Trạng thái · Chủ đề · TCs nói gì (nguồn) · Spec nói gì (nguồn) · Vì sao mâu thuẫn · TC liên quan · QUYẾT ĐỊNH CỦA LEADER · Việc phải làm tiếp`
 
@@ -248,6 +268,7 @@ In bảng `<nhóm chức năng> · <số TC> · <dải TC No.>` cho user duyệt
    python kho-tcs/build.py sheet   # đẩy lên Google Sheet (tự áp định dạng chuẩn)
    python kho-tcs/build.py format  # CHỈ đồng bộ định dạng, KHÔNG ghi đè dữ liệu trong tab
    ```
+   ⚠️ `build.py sheet` CLEAR rồi ghi lại TOÀN BỘ tab. Leader điền cột `QUYẾT ĐỊNH CỦA LEADER` thẳng trên Sheet → script tự DỪNG nếu Sheet có câu trả lời mà data local chưa có (liệt kê dòng). Khi đó chép câu trả lời vào `data/<feature>_conflicts.py` rồi chạy lại — KHÔNG bỏ qua. Sửa nhỏ (1 dòng / 1 ô) thì sửa đúng ô bằng API, không full push; full push phải hỏi user trước.
 
 ### Định dạng tab — KHÔNG chỉnh tay trên Sheet
 
@@ -327,6 +348,8 @@ tuổi TC và "CẦN VERIFY LẠI", đừng trình bày như hiện trạng.
 3. Tổng số TC + bảng coverage theo nhóm chức năng.
 4. Số mâu thuẫn theo mức độ; nêu 3–5 mâu thuẫn nặng nhất bằng văn xuôi, mỗi cái nói rõ
    TC nói gì / spec nói gì / vì sao quan trọng.
-5. Các gap của spec mà TC lấp được (đề xuất đóng Gap).
-6. Câu hỏi còn treo cần user quyết.
-7. **DỪNG** — chờ user duyệt rồi mới sang tính năng tiếp theo.
+5. Các gap của spec mà TC lấp được (đề xuất đóng Gap) + vùng mù giữa 2 spec.
+6. **Vùng chưa từng test** (corpus không có kết quả / thiếu môi trường) — kèm điều kiện môi trường cần chuẩn bị.
+   KHÔNG đưa vào bảng mâu thuẫn.
+7. Thông tin còn thiếu cần hỏi Dev (cả TC lẫn spec đều không có) + câu hỏi còn treo cần user quyết.
+8. **DỪNG** — chờ user duyệt rồi mới sang tính năng tiếp theo.

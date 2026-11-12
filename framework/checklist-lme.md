@@ -1,4 +1,4 @@
-# Quan điểm test LME — Tầng 1 (80 quan điểm / 18 nhóm + 13 RULE)
+# Quan điểm test LME — Tầng 1 (81 quan điểm / 18 nhóm + 13 RULE)
 
 > **Nguồn**: [Bảng quan điểm test — HỢP NHẤT ELME v1.0](https://docs.google.com/spreadsheets/d/1IijLnq0gLZDFxOMWOYxXafz1Wnzv3W0g/edit?gid=1184713662#gid=1184713662) (2026-07-10, biên soạn: QA Lead) — file `.xlsx` trên Drive, 13 sheet.
 >
@@ -14,7 +14,7 @@
 
 | Tầng | File | Trả lời câu hỏi |
 |---|---|---|
-| **Tầng 1 — Quan điểm** | File này | "Soi ở góc nào?" — 80 quan điểm / 18 nhóm |
+| **Tầng 1 — Quan điểm** | File này | "Soi ở góc nào?" — 81 quan điểm / 18 nhóm |
 | **Tầng 2 — Catalog** | [catalog-lme.md](catalog-lme.md) | "Ở đâu trong LME, nhập dữ liệu gì?" — 21 kiểu input (A), 15 thành phần UI (B), bản đồ 21 đường gửi tin (C), khác biệt production (D/D2), ma trận media (E) |
 
 **Cầu nối**: mỗi quan điểm ghi `Catalog: A/B/C/D/E`; mỗi dòng catalog ghi ngược lại mã quan điểm liên kết.
@@ -78,20 +78,19 @@
 | Mã | Khi nào |
 |---|---|
 | **200** | Success |
-| **400** | Sai cấu trúc / sai datatype / sai format |
+| **400** hoặc **422** | Sai cấu trúc / sai datatype / sai format / sai validation nghiệp vụ |
 | **401** | Authentication failed / thiếu hoặc sai token |
 | **403** hoặc **404** | Bot A access/sửa dữ liệu của bot B · access dữ liệu không tồn tại |
-| **422** | Đúng cấu trúc nhưng giá trị vi phạm validation nghiệp vụ |
 | **429** | Gọi API quá nhiều, vượt rate limit |
 | **500** | Unexpected server error |
 | **502** | Lỗi từ dịch vụ bên thứ ba: LINE API, cổng thanh toán... |
 
-- **400 vs 422**: sai cấu trúc / kiểu / format (thiếu tham số, `"abc"` cho field số) = **400**; cấu trúc đúng mà giá trị vi phạm rule nghiệp vụ (hạn mức gói, biên ngày, enum ngoài danh sách, mã xác thực sai) = **422**.
+- **400 hoặc 422** (Leader chốt 2026-10-14): mọi lỗi dữ liệu đầu vào — sai cấu trúc / kiểu / format (thiếu tham số, `"abc"` cho field số) **và** vi phạm rule nghiệp vụ (hạn mức gói, biên ngày, enum ngoài danh sách, mã xác thực sai) — trả **400 hoặc 422 đều Đạt**. Expected ghi `400 hoặc 422`, không ép chọn 1 trong 2.
 - Mã Dev đang trả **lệch bảng** (vd cross-bot trả `200` kèm `success=false`) → giữ expected theo quy ước, ghi mã code đang trả ở `Ghi chú` và báo Dev. **Không sửa expected cho khớp code.**
 
 ---
 
-## 2. 80 quan điểm test
+## 2. 81 quan điểm test
 
 > Ký hiệu mỗi mục: `MÃ` — quan điểm · **Ưu tiên** · `Catalog cần mở kèm`.
 > **Trigger** = cột "Khi nào bắt buộc chọn". **Evidence** = bằng chứng bắt buộc khi tick Đạt (RULE-02).
@@ -323,6 +322,11 @@
 - **Trigger**: **BẮT BUỘC** với mọi thao tác lưu/gửi/đồng bộ **có thông báo kết quả**.
 - **Kiểm tra**: báo "thành công" thì dữ liệu phải **THẬT SỰ** được lưu/đồng bộ/gửi; báo lỗi thì phải **đúng nguyên nhân**. Đổi cấu hình hiển thị (tên người gửi, avatar) → kiểm **cả 2 phía độc lập**: UI hiển thị đúng cấu hình mới **VÀ** hành động thực tế (tin gửi đi) cũng dùng cấu hình mới.
 - **Evidence**: đối chiếu thông báo UI với dữ liệu thật trong DB / màn khác / log job.
+
+#### `TOOL-KNOW-005` — MCP/API tạo hoặc cập nhật message/action phải kiểm chứng kết quả thực tế trên LINE user · **Cao** · Catalog C, E
+- **Trigger**: **BẮT BUỘC** khi thêm/sửa **MCP tool · API · service dùng chung** có chức năng **tạo / cập nhật / sao chép** message hoặc action; hoặc khi đổi **media, vùng tap, button, liên kết, cấu hình** được dùng lúc gửi tin.
+- **Kiểm tra**: sau khi `create_*` / `update_*` qua MCP hoặc API trả **thành công** → **KHÔNG dừng ở response / DB / preview**. Phải **gửi hoặc kích hoạt THẬT** message/action vừa tạo-sửa → **nhận trên LINE app thật của user** (iOS + Android) → đối chiếu: nội dung, **vùng tap / button**, media, biến `[name]`, action gắn kèm chạy đúng. `200` + dữ liệu lưu đúng + preview đúng **vẫn CHƯA đủ để kết luận Đạt** (RULE-06 · nối `MCP-RULE-05` get-sau-ghi · `OUT-PREVIEW-001` · `MSG-004`).
+- **Evidence**: screenshot/log tin **nhận thật trên LINE app** (iOS + Android) sau khi gửi/kích hoạt qua MCP/API — không chấp nhận chỉ response API hoặc preview admin. _(Nguồn: quan điểm tool `TOOL-KNOW-005` của MCP TEST STUDIO — thêm 2026-11-09 theo RULE-10.)_
 
 #### `OUT-EXPORT-001` ★ — CSV / Spreadsheet export · **Trung bình → BẮT BUỘC (nâng Cao)** với mọi chức năng export CSV / ghi Google Spreadsheet / sinh file cho khách tải · Catalog C, A
 - **Kiểm tra**: (1) **từng cột** trong file == giá trị trên màn hình (đặc biệt cột enum/phân loại — test **từng giá trị riêng biệt**); (2) format datetime đúng spec (**có giờ nếu spec ghi có giờ**); (3) tên file chứa ký tự đặc biệt / tiếng Nhật / dài sát **255 byte** → vẫn tải được; (4) encoding **UTF-8 và Shift-JIS** → mở Excel không mojibake; (5) dữ liệu chứa dấu phẩy → phải bọc trong `"`; (6) export vượt ngưỡng (>500 bản ghi form answer) và ở quy mô khách lớn nhất; (7) **giá trị 0 vs bỏ trống** phân biệt rõ, không mất số 0 đầu; (8) tiêu đề cột spreadsheet có xuống dòng.

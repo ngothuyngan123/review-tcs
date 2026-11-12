@@ -1,5 +1,5 @@
 ---
-description: Review bộ TCs của 1 task — lấy TC theo 3 nguồn ưu tiên (MCP LME TEST STUDIO → link Google Sheet human cung cấp → file 04), dừng ở nguồn đầu tiên có TC. Trả lời coverage 2 chiều (dev-impact + diff code) ĐỦ/CHƯA ĐỦ, rà TC trùng lặp · mâu thuẫn (TC vs TC / spec-features / kho-tcs) · TC thừa ngoài phạm vi, rồi đề xuất TC bổ sung kèm regression. Sinh draft 05-review-report.md 9 section theo 80 quan điểm LME + 13 RULE.
+description: Review bộ TCs của 1 task — lấy TC theo 3 nguồn ưu tiên (MCP LME TEST STUDIO → link Google Sheet human cung cấp → file 04), dừng ở nguồn đầu tiên có TC. Trả lời coverage 2 chiều (dev-impact + diff code) ĐỦ/CHƯA ĐỦ, rà TC trùng lặp · mâu thuẫn (TC vs TC / spec-features / kho-tcs) · TC thừa ngoài phạm vi, rồi đề xuất TC bổ sung kèm regression. Sinh draft 05-review-report.md 9 section theo 81 quan điểm LME + 13 RULE.
 argument-hint: <folder review> [ticket_id | task:<studio_task_id> | <link Google Sheet>]
 model: claude-opus-5-5[1m]
 ---
@@ -23,6 +23,8 @@ Bạn là trợ lý cho Test Leader review Test Cases.
 > Luôn in ra trước khi review: **đang dùng nguồn nào · vì sao nguồn ưu tiên cao hơn không dùng được · tổng số TC lấy về**.
 
 ### 0.1 — Xác định đầu vào định danh
+
+> ⛔ **Task MCP đi luồng riêng** (từ 2026-10-14): `arg1` nằm trong `MCP/` (folder do `/new-task-mcp` tạo), hoặc Studio trả task `type = mcp-test` → in "Task MCP → dùng `/review-docs-mcp <arg1>` rồi `/review-tc-mcp <arg1>`" và **DỪNG**. Human nói rõ vẫn muốn chạy `/review-tc` → mới tiếp tục. (Chỉ áp cho `/review-tc` — `/review-tc-mcp` dẫn chiếu BƯỚC 0 này thì **bỏ qua** đoạn này.) Task chỉ gọi tới MCP như caller (vd filter dùng chung web / app / MCP) vẫn ở `tasks/`, review bằng `/review-tc` như thường.
 
 Theo thứ tự, dừng ở cái đầu tiên có kết quả:
 
@@ -107,7 +109,7 @@ Dùng khi 0.2 không ra TC, **hoặc** human đã đưa link ở `arg2` / trong 
 ### 0.4 — NGUỒN 3: file `04-tc-list.md` trong folder
 
 Chỉ dùng khi **cả 0.2 và 0.3** không ra TC. Đọc file, xác định format:
-- **14 cột** (chuẩn từ 2026-10-07 — giống hệt bảng §7 của report; TC do `/write-tc` / member viết). Map impact đọc ở **đầu `Ghi chú`** (`BUG` / `F<n>` / `D<n>` / `T<n>`); đánh giá spec ở `Ghi chú` (`Đánh giá spec: ...`); `Kết quả thực thi` để trống = chưa chạy.
+- **15 cột** (chuẩn từ 2026-10-14 — giống hệt bảng §7 của report; TC do `/write-tc` / member viết; cột `Surface` sau `Phạm vi ENV`) · **14 cột** (2026-10-07 → 2026-10-13, chưa có `Surface` — review bình thường, không flag thiếu cột). Map impact đọc ở **đầu `Ghi chú`** (`BUG` / `F<n>` / `D<n>` / `T<n>`); đánh giá spec ở `Ghi chú` (`Đánh giá spec: ...`); `Kết quả thực thi` để trống = chưa chạy.
 - **16 cột canonical** (2026-07-16 → 2026-10-06, và snapshot Studio / Sheet do `/new-task` · `/review-tc` ghi) → review bình thường, **KHÔNG** bắt member convert.
 - **10 cột cũ** (task trước 2026-07-16: TC ID / Title / Type / Priority / ... / Output note / Assignee / Status) → review bình thường theo format đó, **KHÔNG** bắt member convert; chỉ nhắc `[NIT]`.
 
@@ -172,6 +174,7 @@ Chỉ 4 check, đọc thẳng từ digest script / bảng TC — không cần b�
    - `screen` / tiêu đề / steps của từng TC ở BƯỚC 0.
 
    Ghi ra scratchpad danh sách **mục khớp** (mã `IG-xx` → `F*/T*` / file diff / TC nào). Danh sách này dùng ở BƯỚC 2 (loại khỏi mẫu số), 4c (`CONF-IGNORE`), 4d và 5 (không đề xuất TC).
+5. **[framework/php-upgrade-checklist.md](../../framework/php-upgrade-checklist.md)** — **CHỈ đọc khi task là nâng version PHP / Laravel / thư viện nền**. Nhận diện: diff / `spec_delta.files[]` chạm `composer.json`·`composer.lock`, đổi version PHP·Laravel, hoặc ticket/`01-bug-task.md` ghi "nâng cấp" / "upgrade" / "PHP 8.x" / "Laravel 1x". Khớp → file này là **trục quét BỔ SUNG** cho BƯỚC 2·3·3a: mỗi điểm nóng **A1–A6** (sort stable · ngày giờ/Carbon signed · tiền decimal · null/TypeError · encoding · type juggling), **lib B** (LINE SDK v12 · Intervention v3 · Stripe · UnivaPay · Mail/WebPush · Google/CSV · Collective), **auth C** (APP_KEY giải mã · bcrypt · 2FA) và **3 surface** (web · app LME · LINE user/LIFF) + thao tác chuẩn mỗi màn → 1 câu hỏi "có TC không"; thiếu → `GAP`/`RISK` §1·§2 hoặc issue §5 theo severity trong file. Toàn bộ checklist này nền trên **RULE-08**: điểm nào chỉ chạy dev/local = `RISK`, chưa xác nhận trên server mới. Task **không** phải nâng version → bỏ qua mục này.
 
 ⚠️ **KHÔNG check gate auto-fill** (bỏ 2026-09-21): checkbox "Tester verify auto-fill chính xác" ở `03-dev-impact.md` chưa tick **không** phải issue — `/review-tc` không flag, không ghi vào report. (Checkbox vẫn còn trong template + `/new-task` + `/write-tc`, chỉ skill review thôi không dùng.)
 
@@ -249,7 +252,7 @@ Tự lập bảng quan điểm **đáng lẽ phải ◯** cho task (dựa root c
 
 ### 3a — Chốt PHẠM VI TÍNH NĂNG trước khi quét Trigger (bắt buộc)
 
-> ⛔ **KHÔNG lọc 80 quan điểm theo danh sách file trong diff.** Rất nhiều Trigger là thuộc tính của **màn hình / tính năng**, không bao giờ xuất hiện trong diff: `SYNC-APP-001` ("có mặt trên cả web và app"), `OUT-EXPORT-001` ("có export CSV"), `BULK-001` ("bộ lọc + thao tác hàng loạt"), `LIST-001` ("màn danh sách có filter"), `JOB-001` ("có xử lý nền"), `INTG-CAL-001` / `INTG-SHEET-001` ("đồng bộ Google"). Lọc theo diff là **sót sạch nhóm này**.
+> ⛔ **KHÔNG lọc 81 quan điểm theo danh sách file trong diff.** Rất nhiều Trigger là thuộc tính của **màn hình / tính năng**, không bao giờ xuất hiện trong diff: `SYNC-APP-001` ("có mặt trên cả web và app"), `OUT-EXPORT-001` ("có export CSV"), `BULK-001` ("bộ lọc + thao tác hàng loạt"), `LIST-001` ("màn danh sách có filter"), `JOB-001` ("có xử lý nền"), `INTG-CAL-001` / `INTG-SHEET-001` ("đồng bộ Google"), `LIFF-ENTRY-001` ("tính năng phát sinh URL cho LINE user access": form, item, event, salon, lesson, conversion, QR, popup — điểm‑vào là thuộc tính của trang khách, không có trong diff). Lọc theo diff là **sót sạch nhóm này**.
 
 Trước khi mở index quan điểm, viết ra 3 dòng (nháp nội bộ):
 
@@ -280,11 +283,23 @@ Mỗi ô trong ma trận: có TC cover · hoặc 1 dòng lý do loại (VD *"opt
 
 ⚠️ Quét rộng ≠ đẻ TC cho mọi nhóm. Nhóm nào chỉ **đổi execution plan mà không đổi kết quả** thì ghi 1 dòng yêu cầu Dev xác nhận ở §5, **không** đẻ TC (tránh over-coverage `AP-5`).
 
+**Task chạm LINK phía LINE user (`LIFF-ENTRY-001` ◯)** — form / item / event / salon / lesson / conversion / QR / popup → bắt buộc **bung ma trận ĐIỂM‑VÀO**, mỗi ô 1 TC cover hoặc 1 `skipReason` có căn cứ. ⛔ **KHÔNG coi "đã có vài TC LIFF-ENTRY" là đủ** — phải đếm từng ô:
+
+| Trục | Giá trị bắt buộc quét |
+|---|---|
+| **Điểm vào** | ① in-app LINE (LIFF trong app) · ② **trình duyệt ngoài** (URL LIFF `liff.line.me/...` mở Chrome/Safari) · ③ button trong tin nhắn · ④ PC |
+| **Trạng thái kết bạn** | CHƯA bạn → redirect màn kết bạn · ĐÃ bạn → vào thẳng (kể cả bot có LIFF khác kênh LINE Login) · đã chặn → redirect kết bạn |
+| **Loại link** | link mới `s.lmes.jp` · link cũ `step3.lmes.jp`; với booking thêm: **URL LIFF vs link `u_code`** |
+
+- ⛔ **Ô ② "trình duyệt ngoài" KHÔNG được coi là đã cover bởi các TC API dùng `u_code`** — mở **URL LIFF** bằng browser ngoài là nhánh khác (thiếu/ sai `id_token` → mất userId, hành vi auth khác hẳn u_code). Phải có **TC riêng** cho ô này.
+- Thiếu ô ② (hoặc bất kỳ ô nào) mà **không có `skipReason`** → `GAP`; vì `LIFF-ENTRY-001` ưu tiên **Cao** nên lên `[BLOCKER]` ở §1, và §7 **bắt buộc** đẻ `G<x>`.
+- TC trang khách đã tồn tại nhưng **gắn mã khác** (`RULE-07`, `RULE-TOOL-029`, `SYNC-APP-001`, `DATA-001`…) → **không tính là cover** ô LIFF-ENTRY; ghi `RISK` + đề nghị đổi mã (không cần TC mới). _(Bài học #42437: AI chỉ viết ô ① in-app (Normal), bỏ ô ② trình duyệt ngoài; human phải thêm tay NEW-64/65 sau. Lỗi lặp lại ở review #42335/#42326 — chỉ bắt "sai mã"/"thiếu loại case" chung, không đếm ô điểm‑vào.)_
+
 **Ghi bảng quét ra scratchpad**, mỗi mã bị loại kèm **1 dòng lý do**. Report không in bảng này, nhưng có file mới tự kiểm được và mới trả lời được khi Leader hỏi *"đã xét quan điểm X chưa?"*.
 
 > ⚡ **Đọc INDEX, KHÔNG nạp toàn văn 2 file gốc** (574 + 375 dòng ≈ 37k token):
-> 1. [framework/checklist-lme.index.md](../../framework/checklist-lme.index.md) — 80 dòng `Mã · Ưu tiên · Catalog · Nhóm · Trigger · Dòng`. Đủ để chốt quan điểm nào Trigger khớp task.
-> 2. `sed -n '58,90p' framework/checklist-lme.md` — 13 RULE, đọc đủ.
+> 1. [framework/checklist-lme.index.md](../../framework/checklist-lme.index.md) — 81 dòng `Mã · Ưu tiên · Catalog · Nhóm · Trigger · Dòng`. Đủ để chốt quan điểm nào Trigger khớp task.
+> 2. `sed -n '58,89p' framework/checklist-lme.md` — 13 RULE, đọc đủ.
 > 3. Chỉ với các mã đã chốt là ◯: `sed -n '<Dòng>p' framework/checklist-lme.md` → `Kiểm tra` + `Evidence` (dùng cho BƯỚC 5c và để phán TC có đủ chiều chưa).
 > 4. [framework/catalog-lme.index.md](../../framework/catalog-lme.index.md) §2 — tra ngược `quan điểm ◯ → mục catalog phải mở` + số dòng, rồi `sed -n '<Dòng>p' framework/catalog-lme.md`.
 >
@@ -305,8 +320,9 @@ Quy tắc flag:
 - Task chạm **media / domain / job nền / loadbalance / bill tiền** mà mọi TC chỉ chạy local/staging → `[MAJOR] RULE-08 / ENV-003`.
 - Task chạm đối tượng **đã version-up** (template group, form `s.lmes.jp` vs `step3.lmes.jp`, remind cũ/mới, header spread cũ/mới) mà TC chỉ test nhánh mới → `[MAJOR] RULE-09 / COMPAT-LEGACY-001`.
 - TC không ghi **loại evidence bắt buộc** ở `Ghi chú` (format cũ: `Output note`) → `[MINOR] RULE-02`.
-- TC thiếu mã quan điểm (`Mã quan điểm` ở 14 cột / `Mã quan điểm liên kết` ở 16 cột), hoặc ID (`ID` / `TC No.`) sai format `TC-<mã quan điểm bỏ gạch>-<nn>` → `[MINOR]` (chỉ với format 14 / 16 cột; không áp cho ID hiển thị của Studio `NEW-xx`).
-- TC thiếu đánh giá spec (cột `Trạng thái đánh giá spec` ở 16 cột / `Đánh giá spec: ...` trong `Ghi chú` ở 14 cột), hoặc ghi `Spec không ghi` mà không nêu đã hỏi ai → `[MAJOR]` (nguy cơ tự suy diễn rồi cho Đạt).
+- TC thiếu mã quan điểm (`Mã quan điểm` ở 15 / 14 cột / `Mã quan điểm liên kết` ở 16 cột), hoặc ID (`ID` / `TC No.`) sai format `TC-<mã quan điểm bỏ gạch>-<nn>` → `[MINOR]` (chỉ với format 15 / 14 / 16 cột; không áp cho ID hiển thị của Studio `NEW-xx`).
+- TC thiếu đánh giá spec (cột `Trạng thái đánh giá spec` ở 16 cột / `Đánh giá spec: ...` trong `Ghi chú` ở 15 / 14 cột), hoặc ghi `Spec không ghi` mà không nêu đã hỏi ai → `[MAJOR]` (nguy cơ tự suy diễn rồi cho Đạt).
+- File 04 **15 cột** có TC để trống `Surface`, ghi giá trị ngoài 7 giá trị, hoặc `Surface` lệch thao tác (vd bước đặt lịch trên LIFF mà ghi `web`; gửi request tay tới endpoint mà ghi `web`) → `[MINOR]` (push lên Studio sai mặt tiếp xúc → runner chạy sai chỗ).
 - Member đã tick "Base quan điểm LME" trong file 04 nhưng TC thực tế chưa cover → `[MAJOR]`.
 - **Quan điểm chỉ được cover bởi TC mang mã Studio lạ** (mục 0.6 #6) → tính là **chưa cover**, flag theo ưu tiên như trên.
 
@@ -460,7 +476,7 @@ Mỗi TC đề xuất (kể cả TC `R<x>`) phải qua **2 lần check trùng** 
 
 §7 **bắt buộc** có dòng xác nhận: "Đã đối chiếu `<n>` TC ở BƯỚC 0 + `<file kho>` — không TC đề xuất nào trùng."
 
-### 5c — Viết TC (**14 cột**)
+### 5c — Viết TC (**15 cột**)
 
 TC bổ sung sinh từ **3 nguồn**:
 
@@ -472,7 +488,7 @@ TC bổ sung sinh từ **3 nguồn**:
 
 ⚠️ `R<x>` là chỗ duy nhất AI được chủ động thêm TC ngoài §1 / §2 — nhưng vẫn cấm bịa: không có căn cứ trong Studio / kho / danh sách caller thì thôi.
 
-**Quy tắc 14 cột nằm ở [templates/05-review-report.template.md](../../templates/05-review-report.template.md) §7** (12 cột kho + `Chạy` + `Phạm vi ENV`) — đọc thẳng ở đó, KHÔNG lặp lại tại đây. 8 điểm hay sai nhất:
+**Quy tắc 15 cột nằm ở [templates/05-review-report.template.md](../../templates/05-review-report.template.md) §7** (12 cột kho + `Chạy` + `Phạm vi ENV` + `Surface`) — đọc thẳng ở đó, KHÔNG lặp lại tại đây. 9 điểm hay sai nhất:
 
 1. `ID` = `TC-<mã quan điểm bỏ gạch>-<nn>` (VD `TC-PERM002-01`) — **không** dùng prefix tuần tự của kho (`TC-TAG-267`), vì `kho-tcs/build.py` đánh số lại mỗi lần build.
 2. `Mã quan điểm` **bắt buộc** — đây là cột map coverage.
@@ -482,6 +498,7 @@ TC bổ sung sinh từ **3 nguồn**:
 6. `Chạy` **mặc định `auto`** — kể cả TC nhóm `UI` và TC có bước "bạn bè thao tác trên LINE" (runner dùng browser tự động + mô phỏng callback). `manual` **chỉ** khi scope chỉ có `prd` / thiết bị thật / mail thật / mắt người phán đoán, và phải ghi `manual vì <lý do>` ở `Ghi chú`.
 7. `Nhóm` theo **cách kiểm chứng**, thắng `GROUP_MAP`: TC có bước **gửi request trực tiếp tới endpoint** → `API` bất kể mã quan điểm (VD `DATA-DB-001` gửi POST → `API`, không phải `Data`). TC **chỉ thao tác trên màn hình** (kể cả chặn request bằng DevTools rồi nhìn UI) → **không** xếp `API` dù `GROUP_MAP` ra `API` (VD `OUT-TRUTH-001` thao tác UI → `UI`). Bài học review #41489 (2026-10-03).
 8. **Mỗi TC tự đầy đủ** (Leader chốt 2026-10-07): `Tiền điều kiện` chép đủ dữ liệu TC dùng; **cấm** `Như TC-…` / `như NEW-…` / `xem bảng đầu §7` / `Đúng bằng TC-…` ở mọi cột lên tool — §7 push lên Studio từng dòng, bảng tổng quan không đi theo. `Kết quả mong đợi` ghi số + tập người kèm lý do. Bạn bè test viết tắt `F01`, `F02` …. Tham chiếu chéo chỉ ở `Ghi chú`.
+9. `Surface` = mặt tiếp xúc, **bắt buộc**, chỉ 7 giá trị: `web` (UI admin trên browser thật) · `mcp` (gọi qua MCP server/client) · `api` (API nội bộ, session HTTP) · `public-api` (Public API `/v1`) · `job` (job / batch chạy nền) · `line-friend` (bạn bè thao tác từ app LINE / LIFF) · `mobile-app` (app mobile LME). Nhiều mặt ngăn `, `, **giá trị đầu = mặt chính** (nơi phán quyết pass/fail); mặt phụ chỉ khai khi có bước thật dùng tới. `Surface` ≠ `Nhóm` (Nhóm = cách kiểm chứng). Quy tắc đầy đủ + bảng quy đổi khi push Studio: §7 template report. Đây là cột để `/sync-review-tc` gắn `surfaces` trên Studio — để trống là TC bị chạy như web.
 
 - `GAP` ở quan điểm ưu tiên **Cao** (§2) → đề xuất đủ **3 loại case** (RULE-01).
 - Steps lấy từ **Cách kiểm tra** của quan điểm ([checklist-lme.md](../../framework/checklist-lme.md)) + dữ liệu cụ thể ([catalog-lme.md](../../framework/catalog-lme.md)) — member đọc là dựng được env và chạy được.
@@ -502,7 +519,7 @@ Ghi `<arg1>/05-review-report.md` theo [templates/05-review-report.template.md](.
 | **§4 Mâu thuẫn trong TCs** | 4 loại `CONF-TC` (TC vs TC) · `CONF-SPEC` (vs `spec-features/`) · `CONF-KHO` (vs `kho-tcs/`) · `CONF-IGNORE` (Dev ghi tính năng đã bỏ → đề nghị xóa TC, không tạo TC bổ sung). **Bắt buộc fill kể cả khi sạch.** Mỗi dòng kèm 1 dòng ở §8, trừ `CONF-IGNORE` | BƯỚC 4c |
 | **§5 Issues khác** | 1 bảng theo severity — chất lượng **nguồn** (0.6 + spec thiếu ở BƯỚC 1) trên cùng, rồi chất lượng **từng TC** (4a) + anti-pattern. **Không chứa GAP coverage, không chứa mâu thuẫn.** | BƯỚC 0.6 + 1 + 2 + 3 + 4a |
 | **§6 TCs thừa / ngoài phạm vi task** | TC không cần test trong phạm vi task (đủ 3 tiêu chí, hoặc test layer không bị chạm code). **Bắt buộc fill kể cả khi không có** | BƯỚC 4d |
-| **§7 TCs đề xuất bổ sung (`<n>`)** | Tiêu đề **bắt buộc kèm số TC đề xuất trong ngoặc** — `## 7. TCs đề xuất bổ sung (20)`, `<n>` = số dòng TC thật trong bảng (không đếm row template rỗng / dòng dùng lại TC kho); không có TC nào → `(0)`. Bảng **14 cột**, kèm bảng xác nhận đã đối chiếu kho-tcs + chống trùng. Sinh từ **`G<x>` + `Q<x>` + `R<x>` (regression AI đánh giá)** | BƯỚC 5 |
+| **§7 TCs đề xuất bổ sung (`<n>`)** | Tiêu đề **bắt buộc kèm số TC đề xuất trong ngoặc** — `## 7. TCs đề xuất bổ sung (20)`, `<n>` = số dòng TC thật trong bảng (không đếm row template rỗng / dòng dùng lại TC kho); không có TC nào → `(0)`. Bảng **15 cột**, kèm bảng xác nhận đã đối chiếu kho-tcs + chống trùng. Sinh từ **`G<x>` + `Q<x>` + `R<x>` (regression AI đánh giá)** | BƯỚC 5 |
 | **§8 Spec update needed** | Không cần → đúng 1 dòng "Không cần update spec." | BƯỚC 1 + 4c + 5a |
 
 **Nguyên tắc số 1 của report: cái gì ĐỦ thì không viết ra.** Bảng coverage 2 chiều và bảng quan điểm là **nháp nội bộ** — vẫn phải chạy, nhưng KHÔNG ghi vào file. Leader chỉ đọc phần thiếu + việc phải làm.

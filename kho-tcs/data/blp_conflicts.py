@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """FA-031 契約プラン・決済情報 (Bill tiền tool) — Các điểm MÂU THUẪN giữa kho TCs tổng hợp và spec-features.
-Trạng thái: TOÀN BỘ đang CHỜ QUYẾT ĐỊNH của Leader (chưa mục nào được chốt).
+Trạng thái: đang CHỜ QUYẾT ĐỊNH của Leader, trừ các mục đánh dấu ✅ ĐÃ CHỐT (MT-01 — 2026-10-16).
 
 Nguồn TCs: TCsLine_Bill tiền_Improve2025 (9 tab) + TCsLine_Bill tiền (21 tab).
 Nguồn spec: spec-features/admin/billing-plan/ (feature-spec.md · web/logic-spec.md · web/api-spec.md ·
@@ -55,7 +55,7 @@ CONFLICTS = [
      ""],
 
     # ══════════════ Mức CAO ══════════════
-    ["MT-01", "CAO", W,
+    ["MT-01", "CAO", "✅ ĐÃ CHỐT",
      "Nút 振込キャンセル: chỉ hiện cho mua mới, hay còn hiện cho hợp đồng chờ chuyển khoản khác?",
      "「Quản lý hợp đồng」r1515 (Specchange 03/2026, 20/04/2026) ghi RÕ: 「Nút hủy chuyển khoản 振込キャンセル "
      "**chỉ hiển thị cho case mua hợp đồng lần đầu** (Không hiển thị cho các case update hợp đồng, bill job...)」, "
@@ -69,8 +69,14 @@ CONFLICTS = [
      "Nút này XÓA HẲN bản ghi hợp đồng ở case mua mới. Hiện sai chỗ → user hủy nhầm hợp đồng đang chờ tiền; "
      "ẩn sai chỗ → user không hủy được và bị treo tiền. Spec tự nhận không biết điều kiện, corpus thì có 3 "
      "phát biểu không thống nhất.",
-     "Nhóm『Hủy chuyển khoản』TC 1-3", "",
-     ""],
+     "Nhóm『Hủy chuyển khoản』TC 1-3",
+     "Nút 振込キャンセル chỉ hiển thị cho case mua hợp đồng mới lần đầu. Các case update hợp đồng, "
+     "bill job... sẽ không hiển thị. (Leader chốt 2026-10-16, review #42058)",
+     "ĐÃ ÁP 2026-10-16: spec `billing-plan/feature-spec.md` (bảng nút cột 8 + BR-05 + N11), "
+     "`billing-plan/ui/ui-spec.md`, `detail-contract/feature-spec.md` §2.1.1, `detail-contract/ui/ui-spec.md`. "
+     "TCs nhóm『Hủy chuyển khoản』: 再契約 (解約済み / 強制解約) và gia hạn → không có nút; upgrade "
+     "standard→pro bỏ khỏi TC hủy upgrade; 2 TC hủy extend / hủy tái ký thay bằng TC 'không có nút'. "
+     "Còn hỏi: 2 TC hủy khi hợp đồng cũ quá hạn (≤ 7 / > 7 ngày) còn điểm vào không."],
 
     ["MT-02", "CAO", W,
      "Hủy chuyển khoản khi hợp đồng cũ quá hạn: mốc 7 ngày cho kết quả gì?",

@@ -56,6 +56,7 @@ GROUP_MAP = (
     ("ENV-",           "API"),
     ("DEPLOY-",        "API"),
     ("TOOL-",          "API"),
+    ("MCP-",           "API"),  # MCP-E2E-* — TC prompt E2E của task MCP (framework/mcp-rules.md)
 )
 GROUPS = ("UI", "API", "Data", "Job")
 
@@ -302,7 +303,8 @@ SECTIONS_SLN = [
     "受付上限 — 店舗・スタッフ", "前後の空き時間",
     "予約・キャンセル メッセージ", "予約・キャンセル アクション",
     "予約の開始・締切", "1人あたりの予約上限", "予約時のお客様への質問項目",
-    "リマインド — cài đặt", "リマインド — job gửi", "空き枠通知受け取り設定",
+    "リマインド — cài đặt", "リマインド — job gửi",
+    # 空き枠通知受け取り設定: salon KHÔNG có tính năng này (Leader chốt MT-30, 2026-10-12)
     "トップ・店舗情報・利用規約", "システムワード & 予約ページ表示設定",
     "予約ページの非表示 (filter)", "予約システムの削除",
     # ── Liên kết ngoài ──

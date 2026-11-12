@@ -226,8 +226,8 @@ S2 = [
        "- DB: confirm_count = 0, has_status_1 = 1, has_status_0 = 0\n"
        "- Bản ghi unconfirm_message của G bị xoá; bots.count_user_unconfirm giảm 1",
        spec="Đã hỏi leader",
-       note="MT-08: hành vi này khớp BR-05 (feature-spec.md:467) nhưng TC gốc ghi 「spec cũ là ẩn đi thì sẽ confirm」 "
-            "→ cần Leader chốt còn đúng không. Nguồn: Leftbar+Header r241 + improve count comfirm_message r31"),
+       note="MT-08 (Leader chốt 2026-10-23): ẩn bạn bè → conversation.confirm_count tự reset về 0, hội thoại thành ĐÃ xác nhận "
+            "(đúng BR-05 feature-spec.md:467). Nguồn: Leftbar+Header r241 + improve count comfirm_message r31"),
 
     tc("Quick action — xác nhận, ẩn, block", "FUNC-001", "Normal",
        "ブロックする — bot block bạn bè, hội thoại hiện message block",
@@ -364,16 +364,16 @@ S2 = [
             "Nguồn: Leftbar+Header r281-r311"),
 
     tc("Quick action — tag & kết hợp action", "STATE-DEP-001", "Abnormal",
-       "Kết hợp 確認状況を変更 =「未確認」với 非表示 — kết quả ngược với lựa chọn",
+       "Kết hợp 確認状況を変更 =「未確認」với 非表示 — 非表示 thắng, hội thoại thành đã xác nhận",
        BOT + "\n- Friend I đang có tin chưa xác nhận, đang hiển thị bình thường",
        "1. Mở modal quick action cho I\n2. Tick 「未確認」に変更 VÀ 非表示にする cùng lúc\n"
        "3. Click 実行する\n4. Chọn filter 非表示中, kiểm tra trạng thái xác nhận của I và DB confirm_count",
        "Chọn 未確認 + 非表示 cùng lúc",
-       "- Ghi nhận kết quả thực tế và đối chiếu với quyết định của Leader ở MT-08\n"
-       "- Theo hành vi hiện tại: I bị ẩn VÀ chuyển thành ĐÃ xác nhận (ngược với lựa chọn 未確認)",
+       "- I bị ẩn VÀ chuyển thành ĐÃ xác nhận — lựa chọn 非表示 (auto-confirm) thắng, bỏ qua lựa chọn 未確認\n"
+       "- DB: confirm_count = 0, has_status_1 = 1, bảng unconfirm_message không còn bản ghi của I",
        spec="Đã hỏi leader",
-       note="MT-08: TC gốc ghi 「chọn option chưa confirm nhưng friend vẫn bị hiển thị đã confirm là đúng」 — "
-            "người dùng chọn 未確認 mà nhận kết quả ngược. Nguồn: Leftbar+Header r289"),
+       note="MT-08 (Leader chốt 2026-10-23): ẩn bạn bè luôn reset confirm_count về 0 và thành đã xác nhận; khi chọn đồng thời "
+            "未確認 + 非表示 thì 非表示 thắng. Nguồn: Leftbar+Header r289"),
 
     tc("Quick action — tag & kết hợp action", "CONC-001", "Abnormal",
        "Double click nút 実行する — chỉ thực thi 1 lần",
@@ -440,13 +440,14 @@ S2 = [
        BOT,
        "1. Click ＋追加 mở modal 送信ユーザーの新規追加\n"
        "2. Lần lượt thử upload từng file ở cột Dữ liệu test\n3. Ghi nhận kết quả từng lần",
-       "PNG hợp lệ · PNG có tên file tiếng Nhật · PNG có tên chứa khoảng trắng · JPG · GIF · JPEG",
-       "- 3 file PNG (kể cả tên tiếng Nhật / có khoảng trắng): upload thành công\n"
+       "PNG hợp lệ · PNG có tên file tiếng Nhật · PNG có tên chứa khoảng trắng · PNG > 1 MB · JPG · GIF · JPEG",
+       "- 3 file PNG ≤ 1 MB (kể cả tên tiếng Nhật / có khoảng trắng): upload thành công\n"
+       "- PNG > 1 MB: bị chặn (giới hạn 1 MB)\n"
        "- JPG, GIF, JPEG: hiện thông báo「png画像を選択してください。」hoặc không hiện file để chọn\n"
        "- Ảnh không bắt buộc: bỏ trống vẫn lưu được profile",
        spec="Đã hỏi leader",
-       note="MT-11: chỗ này chỉ nhận PNG nhưng upload ảnh ở friend info (Rightbar r112) lại nhận cả PNG và JPG. "
-            "Nguồn: Leftbar+Header r343-r348"),
+       note="MT-11 (Leader chốt 2026-10-23): ảnh profile người gửi CHỈ nhận PNG, tối đa 1 MB (khác friend info kiểu ảnh "
+            "nhận jpg/jpeg/png 1 MB — xem Rightbar — 友だち情報). Nguồn: Leftbar+Header r343-r348"),
 
     tc("Profile người gửi — quản lý", "UI-INPUT-001", "Abnormal",
        "Thêm profile — 送信ユーザー名 là trường bắt buộc, tự trim khoảng trắng",
@@ -461,19 +462,18 @@ S2 = [
        note="Nguồn: Leftbar+Header r349-r358"),
 
     tc("Profile người gửi — quản lý", "UI-INPUT-001", "Boundary",
-       "Giới hạn độ dài 送信ユーザー名 — xác định ngưỡng thực tế",
+       "Giới hạn độ dài 送信ユーザー名 — tối đa 20 ký tự",
        BOT,
        "1. Mở modal 送信ユーザーの新規追加\n"
        "2. Nhập lần lượt các độ dài ở cột Dữ liệu test (dùng ký tự latinh và ký tự tiếng Nhật)\n"
        "3. Ghi nhận: ký tự thứ mấy thì không gõ được nữa; ở độ dài nào thì báo lỗi khi bấm 保存\n"
        "4. Kiểm tra giá trị thực lưu trong DB bots_profiles.nick_name",
-       "Độ dài: 1 · 19 · 20 · 21 · 30 · 31 ký tự — thử cả latinh và tiếng Nhật",
-       "- Ghi nhận ngưỡng thực tế và đối chiếu với quyết định của Leader ở MT-07\n"
-       "- Ở ngưỡng vượt giới hạn: phải chặn nhập hoặc báo lỗi rõ ràng, KHÔNG cắt âm thầm\n"
-       "- Giá trị lưu DB khớp đúng với giá trị hiển thị",
+       "Độ dài: 1 · 19 · 20 · 21 ký tự — thử cả latinh và tiếng Nhật",
+       "- Nhập tới 20 ký tự: lưu thành công\n"
+       "- Nhập ký tự thứ 21: bị chặn nhập hoặc báo lỗi rõ ràng, KHÔNG cắt âm thầm\n"
+       "- Giá trị lưu DB bots_profiles.nick_name khớp đúng giá trị hiển thị (tối đa 20 ký tự)",
        spec="Đã hỏi leader",
-       note="MT-07: corpus tự mâu thuẫn — Leftbar r352「20 ký tự success」, r356「Nhập 20 ký tự → không nhập được ký tự 31」, "
-            "r387「Nhập 31 ký tự → invalid」. Spec không ghi giới hạn nào"),
+       note="MT-07 (Leader chốt 2026-10-23): 送信ユーザー名 giới hạn 20 ký tự. Spec feature-spec.md:507 cần ghi vào cột Validation"),
 
     tc("Profile người gửi — quản lý", "STATE-CLEAN-001", "Abnormal",
        "Nhập đủ thông tin profile rồi đóng bằng X hoặc 戻る — không lưu",

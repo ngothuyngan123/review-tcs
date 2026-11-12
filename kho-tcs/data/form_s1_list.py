@@ -198,7 +198,7 @@ S1 = [
        "Bot plan Free, mốc 1000 và 1001 folder",
        "Bot Free chặn ở ĐÚNG mốc 1000 folder, giống hệt bot Standard — KHÔNG có giới hạn riêng cho plan Free",
        spec="Đã hỏi leader",
-       note="Leader chốt MT-03: giới hạn folder/item/ký tự là giới hạn CHUNG cho mọi bot (free và có phí). Lưu ý giới hạn SỐ FORM thì vẫn theo plan — spec BR-01: free ≤ 3 form. Nguồn: Limit Form answer r8"),
+       note="Leader chốt MT-03: giới hạn folder/item/ký tự là giới hạn CHUNG cho mọi bot (free và có phí). Lưu ý giới hạn SỐ FORM thì vẫn theo plan — spec BR-01: Free mới ≤ 3 form, Free cũ không giới hạn (MT-24). Nguồn: Limit Form answer r8"),
 
     # ═══════════════════════ Sort & search form ═══════════════════════
     tc("Sort & search form", "FUNC-SORT-001", "Normal",
@@ -370,13 +370,14 @@ S1 = [
        "Space đầu cuối tự bị cắt, tên lưu là 「アンケート」· chuỗi xuống dòng bị gộp thành 1 dòng, không phá layout list",
        note="Nguồn: r504-r505"),
 
-    tc("Tạo form", "FUNC-UNIQ-001", "Normal",
-       "Cho phép tạo form TRÙNG 管理名 với form đã có (không unique)",
+    tc("Tạo form", "FUNC-UNIQ-001", "Abnormal",
+       "Tạo form TRÙNG 管理名 với form đã có trong bot → báo lỗi, không tạo form",
        ADMIN + "\n- Đã tồn tại form 管理名 =「アンケート」",
-       "1. Mở modal tạo form\n2. Nhập 管理名 = 「アンケート」(trùng 100%)\n3. Lưu\n4. Về màn list form đếm số dòng",
+       "1. Mở modal tạo form\n2. Nhập 管理名 = 「アンケート」(trùng 100%), nhập フォーム名 hợp lệ\n3. Click フォームの新規作成に進む\n4. Về màn list form đếm số form tên「アンケート」",
        "「アンケート」trùng tên form đã có",
-       "Lưu thành công, KHÔNG báo lỗi trùng · màn list hiển thị 2 form cùng tên, 2 id khác nhau",
-       note="Khác với validate tên page (page trùng tên trong cùng form bị chặn). Nguồn: r508"),
+       "Báo lỗi 管理名 đã tồn tại · không tạo form mới, modal vẫn mở · màn list chỉ có ĐÚNG 1 form「アンケート」",
+       spec="Đã hỏi leader",
+       note="Leader chốt MT-23 (2026-10-13, review #39446): KHÔNG được tạo trùng 管理名 — thay hành vi cũ r508 (cho trùng). Áp cả form tạo qua MCP create_form_survey. Message lỗi JP chưa có trong spec — ghi nguyên văn khi chạy. Nguồn: r508 (đã đảo kết quả)"),
 
     tc("Tạo form", "UI-FIELD-001", "Normal",
        "Dropdown フォルダ trong modal tạo form: default lấy theo folder đang mở ở ngoài",
@@ -435,13 +436,14 @@ S1 = [
        note="Nguồn: r545"),
 
     tc("Tạo form", "PAY-LIMIT-001", "Boundary",
-       "Giới hạn số form theo plan: bot Free tối đa 3 form, Standard/Pro không giới hạn",
-       "- Chuẩn bị 2 bot: bot Free và bot Standard\n- Kiểm tra cả bot có flag_contract_new=0 (tạo trước 30/4/23) và =1",
-       "1. Bot Free: tạo lần lượt form 1,2,3 → tạo form thứ 4\n2. Bot Standard: tạo > 3 form\n3. Lặp lại cho bot flag_contract_new = 0 và = 1",
-       "Bot Free: 3 form + form thứ 4\nBot Standard: 5 form",
-       "Bot Free: 3 form đầu tạo được, form thứ 4 bị chặn kèm message giới hạn · Bot Standard: tạo được > 3 form, không bị chặn · Hành vi giống nhau ở cả flag_contract_new = 0 và = 1",
+       "Giới hạn số form theo plan: bot Free MỚI tối đa 3 form; bot Free CŨ và Standard/Pro không giới hạn",
+       "- Chuẩn bị 3 bot: bot Free mới (flag_contract_new=1), bot Free cũ (flag_contract_new=0, tạo trước 30/4/23), bot Standard",
+       "1. Bot Free mới: tạo lần lượt form 1,2,3 → tạo form thứ 4\n2. Bot Free cũ: tạo lần lượt form 1,2,3 → tạo form thứ 4 và thứ 5\n3. Bot Standard: tạo > 3 form",
+       "Bot Free mới: 3 form + form thứ 4\nBot Free cũ: 5 form\nBot Standard: 5 form",
+       "Bot Free mới: 3 form đầu tạo được, form thứ 4 bị chặn kèm message giới hạn · Bot Free cũ: tạo được cả form thứ 4 và thứ 5, không bị chặn · Bot Standard: tạo được > 3 form, không bị chặn",
        env="PRODUCTION",
-       note="Liên quan bill tiền/plan → RULE-08 yêu cầu chạy PRODUCTION. Nguồn: r93-r98"),
+       spec="Đã hỏi leader",
+       note="Leader chốt MT-24 (2026-10-13, review #39446): bot Free cũ được tạo form không giới hạn — thay kết quả cũ 'hành vi giống nhau ở cả flag_contract_new = 0 và = 1'. Liên quan bill tiền/plan → RULE-08 yêu cầu chạy PRODUCTION. Nguồn: r93-r98"),
 
     # ═══════════════════════ Copy form ═══════════════════════
     tc("Copy form", "UI-001", "Normal",

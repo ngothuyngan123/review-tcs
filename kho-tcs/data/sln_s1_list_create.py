@@ -96,6 +96,7 @@ S1 = [
        "- Chưa liên kết: KHÔNG hiện icon spreadsheet\n"
        "- Đã liên kết: hiện icon; bấm icon mở đúng file Google Sheet của calendar đó ở tab mới\n"
        "- Sau khi hủy liên kết: icon biến mất",
+       group="UI",
        note="Nguồn: Calendar list r315-r317."),
 
     tc("Màn list calendar", "FUNC-003", "Normal",
@@ -186,8 +187,9 @@ S1 = [
        "- Bước 3 và 5: tự cắt hoặc báo lỗi quá số ký tự cho phép\n"
        "- Bước 6: tạo thành công, đóng popup, sang màn chọn loại calendar; "
        "bảng `calendar_salon` sinh 1 bản ghi mới",
-       note="Nguồn: Calendar list r92-r97, r100. ⚠ Corpus ghi「tự động cắt HOẶC báo lỗi」— "
-            "hành vi chưa chốt, xem MT-05."),
+       spec="Đã hỏi leader",
+       note="Nguồn: Calendar list r92-r97, r100. ⚠ Corpus ghi「tự động cắt HOẶC báo lỗi」. "
+            "MT-05 (2026-10-12) chỉ chốt cho TÊN COURSE (tự cắt) — tên CALENDAR chưa chốt, cần Leader xác nhận."),
 
     tc("Tạo calendar — wizard", "FUNC-DRAFT-001", "Normal",
        "Popup tạo calendar: nút X và nút back không lưu dữ liệu",
@@ -307,12 +309,13 @@ S1 = [
        "4. Set 所要時間 = 0h00 → lưu\n5. Set 0h05 / 1h00 / 23h55 → lưu\n"
        "6. Bỏ trống số tiền → lưu\n7. Nhập 5000 → lưu\n8. Nhập -100 / 1.5 / abc",
        "Tên 50 và 51 ký tự · 0h00 · 0h05 · 1h00 · 23h55 · 5000 · -100 · 1.5 · abc",
-       "- B1: required\n- B2: lưu thành công\n- B3: báo lỗi\n"
+       "- B1: required\n- B2: lưu thành công\n- B3: lưu thành công, TỰ CẮT còn 50 ký tự\n"
        "- B4: lỗi「所要時間は5分以上に設定してください。」\n- B5: cả 3 mốc đều lưu thành công\n"
        "- B6: lưu thành công, tự fill 0 và ngoài list hiện「設定なし」\n"
        "- B7: hiện format 5,000\n- B8: invalid, không lưu",
-       note="Nguồn: Calendar list r194-r205. ⚠ Tên course ở wizard = 51 ký tự BÁO LỖI, còn ở màn "
-            "コース作成・編集 = TỰ CẮT (Quản lý course&staff r239) → xem MT-05."),
+       note="Leader chốt MT-05 (2026-10-12): コース名 max 50, quá 50 TỰ CẮT ở mọi lối vào. "
+            "Nguồn: Calendar list r194-r205 — corpus ghi wizard 51 ký tự BÁO LỖI → nếu còn báo lỗi là "
+            "DỰ KIẾN FAIL, cần raise bug."),
 
     tc("Tạo calendar — wizard", "FUNC-004", "Normal",
        "Wizard tạo course: nút 基本情報を保存 kết thúc wizard, về màn quản lý calendar",
@@ -366,19 +369,25 @@ S1 = [
        note="Nguồn: Calendar list r236."),
 
     tc("Tạo calendar — wizard", "FUNC-002", "Boundary",
-       "Ngày T7/CN đang là ngày nghỉ, thêm ca qua ngày cho T6 → chỉ hiển thị hết T6",
+       "Ngày T7/CN đang là ngày nghỉ, thêm ca qua ngày cho T6 → ghi đè T7 thành ca 00:00~06:00",
        ADM + "\n- Trong wizard, T7 và CN đã set là ngày nghỉ",
-       "1. Thêm lịch làm việc thứ 6 dạng qua ngày (vd 20:00~06:00)\n"
-       "2. Quan sát hiển thị T6 và T7",
-       "T6 20:00~06:00 · T7 và CN = ngày nghỉ",
-       "- Add thành công nhưng CHỈ hiển thị đến hết thứ 6\n- T7 vẫn hiển thị là ngày nghỉ",
-       note="Nguồn: Calendar list r176, r279. ⚠ Quản lý calendar r2429 lại ghi「nếu đã add t7 cn là ngày "
-            "nghỉ khi add lịch qua ngày sẽ báo lỗi」— 2 kết quả khác nhau, xem MT-06."),
+       "1. Thêm lịch làm việc thứ 6 dạng qua ngày 20:00~06:00\n"
+       "2. Lưu\n"
+       "3. Quan sát hiển thị T6, T7 và CN",
+       "T6 20:00~06:00 · T7 và CN = ngày nghỉ (trước khi thêm)",
+       "- Add thành công, không báo lỗi\n"
+       "- T6 có ca bắt đầu 20:00\n"
+       "- T7 KHÔNG còn là ngày nghỉ, có ca làm việc 00:00 ~ 06:00\n"
+       "- CN vẫn là ngày nghỉ (ca kết thúc 06:00 T7, không chạm CN)",
+       note="Leader chốt MT-06 (2026-10-12): ca qua ngày GHI ĐÈ ngày nghỉ kế tiếp. "
+            "Corpus Calendar list r176, r279 (「T7 vẫn là ngày nghỉ」) và Quản lý calendar r2429/r2500 "
+            "(「báo lỗi」) đều đã lỗi thời. Spec chưa ghi → SPEC CẦN BỔ SUNG (§2.2 + Field #21)."),
 
     # ══════════════ 3. Giới hạn theo plan ══════════════
     tc("Giới hạn theo plan", "PAY-LIMIT-001", "Boundary",
        "Plan free: tối đa 1 calendar 個人 + 1 calendar スタッフ",
-       ADM + "\n- Bot A đang ở plan free (hoặc plan_type = 2)\n- Bot A chưa có calendar nào",
+       ADM + "\n- Bot A đang ở plan free (hoặc plan_type = 2) — áp dụng cả bot free CŨ (flag_contract_new = 0)\n"
+             "- Bot A chưa có calendar nào",
        "1. Tạo calendar loại 個人 → thành công\n"
        "2. Tạo tiếp calendar loại 個人 → chọn loại 個人 → bấm next\n"
        "3. Tạo calendar loại スタッフ → thành công\n"
@@ -388,8 +397,9 @@ S1 = [
        "- B2: màn chọn loại tự nhảy sang loại スタッフ; nếu cố chọn 個人 rồi next → lỗi "
        "「現在のプランは利用できない機能です。アップグレードが必要になります。」\n"
        "- B4: báo lỗi ngay, không mở được wizard",
-       note="Nguồn: Calendar list r23-r27, r46. Spec BR-01. ⚠ §1.4 feature-spec ghi「2 tổng (bất kỳ loại)」"
-            "mâu thuẫn BR-01「tối đa 1 mỗi loại」→ MT-01."),
+       group="UI",
+       note="Leader chốt MT-01 + MT-02 (2026-10-12): plan free (mới và cũ) tối đa 1 個人 + 1 スタッフ. "
+            "Nguồn: Calendar list r23-r27, r46. Spec BR-01 đúng; §1.4 feature-spec「2 tổng (bất kỳ loại)」SAI → cần sửa spec."),
 
     tc("Giới hạn theo plan", "PAY-LIMIT-001", "Normal",
        "Plan free: bộ đếm 登録カレンダー数 đúng theo từng filter",
@@ -397,6 +407,7 @@ S1 = [
        "1. Filter 全て → đọc bộ đếm\n2. Filter 個人 → đọc bộ đếm\n3. Filter スタッフ → đọc bộ đếm",
        "1 個人 + 1 スタッフ",
        "- 全て: 2/2\n- 個人: 1/1\n- スタッフ: 1/1",
+       group="UI",
        note="Nguồn: Calendar list r8, r28-r30."),
 
     tc("Giới hạn theo plan", "PAY-LIMIT-001", "Boundary",
@@ -409,19 +420,21 @@ S1 = [
        "- B1, B2: báo lỗi「現在のプランは利用できない機能です。アップグレードが必要になります。」\n"
        "- B3: báo lỗi ngay khi bấm tạo mới\n"
        "- B4: 全て = n/6, 個人 = n/3, スタッフ = n/3",
+       group="UI",
        note="Nguồn: Calendar list r10-r11, r31-r38, r74-r81. Spec BR-01."),
 
     tc("Giới hạn theo plan", "PAY-LIMIT-001", "Boundary",
-       "Plan pro / standard cũ (flag_contract_new=0): tối đa 10 個人 + 10 スタッフ",
-       ADM + "\n- Bot A plan pro (hoặc standard với flag_contract_new = 0)",
+       "Plan pro (mới và cũ) / standard cũ (flag_contract_new=0): tối đa 10 個人 + 10 スタッフ",
+       ADM + "\n- Bot A plan pro (lặp lại với bot standard cũ flag_contract_new = 0)",
        "1. Tạo đủ 10 calendar 個人 → tạo calendar 個人 thứ 11\n"
        "2. Tạo đủ 10 calendar スタッフ → tạo thứ 11\n"
        "3. Khi tổng = 20, bấm nút tạo mới\n4. Đọc bộ đếm ở 3 filter",
-       "Plan pro",
+       "Plan pro · standard cũ",
        "- B1, B2: báo lỗi「現在のプランは利用できない機能です。アップグレードが必要になります。」\n"
        "- B3: báo lỗi ngay\n- B4: 全て = n/20, 個人 = n/10, スタッフ = n/10",
-       note="Nguồn: Calendar list r58-r73. Spec BR-01. ⚠ Calendar list r39-r40 lại ghi plan pro "
-            "「không giới hạn số calendar, tạo calendar thứ 11 → cho phép」→ MT-02."),
+       group="UI",
+       note="Leader chốt MT-02 (2026-10-12): plan pro và bot standard cũ giới hạn 10 mỗi loại calendar. "
+            "Nguồn: Calendar list r58-r73 (r39-r40「pro không giới hạn」đã lỗi thời)."),
 
     tc("Giới hạn theo plan", "PAY-LIMIT-001", "Normal",
        "Plan enterprise: giới hạn ăn theo standard hoặc pro tương ứng",
@@ -431,6 +444,7 @@ S1 = [
        "2 bot enterprise khác loại",
        "- enterprise (standard): giống plan standard (3/3)\n"
        "- enterprise (pro): giống plan pro (10/10)",
+       group="UI",
        note="Nguồn: Calendar list r14-r15, r44-r45."),
 
     tc("Giới hạn theo plan", "PAY-LIMIT-001", "Boundary",
@@ -441,6 +455,7 @@ S1 = [
        "Plan free",
        "- Cả 2 bước: chặn tạo, báo lỗi giới hạn plan / yêu cầu upgrade\n"
        "- DB không sinh bản ghi course/staff thứ 3",
+       group="Data",
        note="Nguồn: Calendar list r47-r48; Quản lý course&staff r136, r142. Spec BR-02."),
 
     tc("Giới hạn theo plan", "PAY-LIMIT-001", "Boundary",
@@ -454,8 +469,11 @@ S1 = [
        "- B3: lỗi「スタッフ数の上限（200）を超えるため、これ以上作成できません。」\n"
        "- B4: lỗi「質問数の上限（100）を超えるため、これ以上作成できません。」\n"
        "- Không bản ghi nào được tạo",
+       group="Data",
+       spec="Đã hỏi leader",
        note="Nguồn: Quản lý course&staff r132-r135, r140, r146, r152-r159. Spec BR-02. "
-            "⚠ Calendar list r49-r54 (bot flag_contract_new=0) ghi「Không giới hạn」→ MT-02."),
+            "⚠ MT-02 (2026-10-12) chỉ chốt giới hạn CALENDAR của bot cũ; giới hạn course/staff của bot cũ "
+            "(corpus r49-r54「Không giới hạn」) chưa chốt → cần Leader xác nhận."),
 
     tc("Giới hạn theo plan", "PAY-LIMIT-001", "Normal",
        "Bot plan free bấm bật 決済機能 ở form course → hiện cảnh báo + link upgrade",
@@ -464,5 +482,6 @@ S1 = [
        "Plan free",
        "- Hiện text「決済機能の利用は、有料プランにアップグレードする必要があります。」\n"
        "- Bấm アップグレード → mở tab mới /admin/bot-add?upgrade_bot_id={id bot đã mã hóa}",
+       group="UI",
        note="Nguồn: Quản lý course&staff r260."),
 ]

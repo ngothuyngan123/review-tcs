@@ -277,31 +277,15 @@ S7 = [
        "- Action của『mọi friend』hiện đúng ở trang 既存友だち用 VÀ trang ブロック解除時用\n"
        "- Không mất action nào, không nhân đôi action",
        env="PRODUCTION",
-       note="⚠️ MT-10. Nguồn: r341-r345 (『job recover action của unblock』). Spec FA-007 KHÔNG có "
-            "mô tả nào về job này — đề xuất bổ sung vào job-spec.md. TC chỉ chạy được ở đợt "
-            "migration; giữ lại làm hồ sơ.",
+       note="✅ Leader chốt MT-10 (2026-10-23): job recover action unblock chỉ chạy 1 LẦN (migration), "
+            "không cần confirm thêm. Giữ TC làm HỒ SƠ migration (không còn chạy định kỳ). Nguồn "
+            "r341-r345. Đề xuất ghi job này vào job-spec.md như mục lịch sử migration.",
        spec="Spec không ghi"),
 
-    tc("Đổi bot, recover & legacy", "COMPAT-LEGACY-001", "Abnormal",
-       "Bot chỉ có cấu hình đời cũ (tag/scenario V1), chưa có action V2 — hành vi khi friend kết bạn",
-       "- Có 1 bot dữ liệu đời cũ: chưa cài action ở màn あいさつメッセージ V2 nhưng còn cấu hình "
-       "gắn tag / khởi động scenario của phiên bản cũ\n"
-       "- Có tài khoản LINE test chưa từng kết bạn",
-       "1. Xác nhận trang 新規友だち用 hiển thị「エルメアクションは登録されていません」\n"
-       "2. Dùng tài khoản LINE test kết bạn với bot\n"
-       "3. Kiểm tra friend có bị gắn tag / vào scenario nào không\n"
-       "4. Đối chiếu với cấu hình đời cũ",
-       "Bot có cấu hình V1 (tag + scenario), không có action V2",
-       "- Ghi lại chính xác: friend CÓ hay KHÔNG được gắn tag / vào scenario theo cấu hình đời cũ\n"
-       "- Nếu CÓ chạy: màn admin phải cho admin thấy được cấu hình đó (không phải cấu hình ẩn "
-       "chạy ngầm mà UI báo『chưa đăng ký action nào』)",
-       env="PRODUCTION",
-       note="⚠️ MT-11. Nguồn: feature-spec.md §5 BR-10 (『Khi action_new_id/action_old_id = null, "
-            "job fallback sang new_tag_id/old_tag_id và new_scenario_id/old_scenario_id — chưa "
-            "được expose trên UI V2』, mức tin cậy Trung bình; spec tự ghi nhận VĐ-TBC-01 chưa "
-            "document đủ). Corpus TCs KHÔNG có case này. Rủi ro: UI nói không có action nhưng thực "
-            "tế vẫn chạy. CẦN LEADER CHỐT.",
-       spec="Đã hỏi leader"),
+    # ⛔ MT-11 (2026-10-23): Leader chốt fallback đời cũ (tag/scenario V1) "KHÔNG dùng nữa" →
+    # đã GỠ TC "Bot chỉ có cấu hình đời cũ (tag/scenario V1), chưa có action V2". Việc sửa spec:
+    # gỡ BR-10 (new_tag_id/old_tag_id/new_scenario_id/old_scenario_id) khỏi feature-spec.md §5 và
+    # đóng VĐ-TBC-01 ở §9; db-mapping.md đánh dấu 4 cột V1 là dead.
 
     # ═══════════ 20. Phân quyền & môi trường ═══════════
     tc("Phân quyền & môi trường", "PERM-001", "Normal",

@@ -73,6 +73,7 @@ S2 = [
        "3. Tick 1 booking → bấm lại",
        "-",
        "- B2: không mở modal action\n- B3: mở modal action đồng loạt",
+       group="UI",
        note="Nguồn: Quản lý calendar r684-r685."),
 
     tc("Tab 本日/新着の予約", "UI-003", "Normal",
@@ -270,10 +271,12 @@ S2 = [
        "4. Kiểm tra booking của khách nhập tay",
        "1 LINE user có system_name, 1 LINE user KHÔNG có system_name, 1 khách nhập tay",
        "- Mặc định là LINE名/システム表示名\n"
-       "- Mỗi tuỳ chọn: tên ở cả 5 màn đổi đúng theo setting\n"
+       "- Mỗi tuỳ chọn: tên ở 4 màn (danh sách theo ngày · detail booking · detail lịch sử · modal cancel) "
+       "đổi đúng theo setting\n"
+       "- Modal admin thêm booking: LUÔN hiển thị LINE名/システム表示名, KHÔNG theo setting\n"
        "- Khách nhập tay: luôn hiện tên đã nhập lúc booking, không phụ thuộc setting",
-       note="Nguồn: Quản lý calendar r168-r175. ⚠ Corpus ghi NG ở modal admin add booking cho 3/4 tuỳ chọn "
-            "(case user không có system_name) → cần verify lại sau khi fix, xem MT-08."),
+       note="Leader chốt MT-08 (2026-10-12): modal admin thêm booking luôn hiện LINE名/システム表示名, "
+            "không ăn theo modal 表示変更. Nguồn: Quản lý calendar r168-r175 (NG cũ ở modal này là hành vi đúng)."),
 
     # ══════════════ 6. Calendar theo tuần ══════════════
     tc("Calendar theo tuần", "UI-001", "Normal",
@@ -295,7 +298,8 @@ S2 = [
        "Các trạng thái ca như mô tả",
        "- B1: icon có thể book\n- B2: icon KHÔNG thể book\n- B3: icon KHÔNG thể book\n"
        "- B4: khung giờ có ca hiện O, khung ngoài ca hiện O gạch chéo",
-       note="Nguồn: Quản lý calendar r543-r550."),
+       note="Leader chốt MT-09 (2026-10-12): ngày/tuần/tháng thống nhất — không staff nào có ca → "
+            "icon KHÔNG thể book. Nguồn: Quản lý calendar r543-r550."),
 
     tc("Calendar theo tuần", "UI-001", "Boundary",
        "Ô ngày ở lưới tuần tô xanh theo hợp của các khoảng ca",
@@ -364,16 +368,18 @@ S2 = [
 
     # ══════════════ 7. Calendar theo tháng ══════════════
     tc("Calendar theo tháng", "UI-001", "Normal",
-       "Icon ở lưới tháng theo trạng thái ca — khác quy tắc lưới tuần",
+       "Icon ở lưới tháng theo trạng thái ca — thống nhất với lưới ngày/tuần",
        CAL,
        "1. Chuyển sang chế độ tháng\n2. Ngày chỉ có 1 staff nhưng đã OFF → quan sát\n"
        "3. Ngày có 2 staff, 1 ON 1 OFF → quan sát\n4. Ngày không staff nào có ca → quan sát\n"
        "5. Ngày có staff set nghỉ (các staff khác không có ca / có ca) → quan sát",
        "Các trạng thái như mô tả",
        "- B2: icon KHÔNG thể book\n- B3: icon CÓ thể book\n"
-       "- B4: icon CÓ thể book\n- B5: cả 2 trường hợp đều icon CÓ thể book",
-       note="Nguồn: Quản lý calendar r595-r599. ⚠ Lưới tháng cho ngày KHÔNG có ca vẫn hiện「có thể book」"
-            "trong khi lưới tuần hiện「không thể book」(r548) → hành vi lệch giữa 2 lưới, xem MT-09."),
+       "- B4: icon KHÔNG thể book\n"
+       "- B5: staff set nghỉ + các staff khác KHÔNG có ca → KHÔNG thể book; các staff khác CÓ ca → CÓ thể book",
+       note="Leader chốt MT-09 (2026-10-12): 3 lưới thống nhất, không staff nào có ca → KHÔNG thể book. "
+            "Nguồn: Quản lý calendar r595-r599 — corpus ghi B4/B5「có thể book」→ nếu còn như vậy là "
+            "DỰ KIẾN FAIL, cần raise bug."),
 
     tc("Calendar theo tháng", "DATA-COUNT-001", "Normal",
        "Thống kê booking theo ngày ở lưới tháng đếm đúng 3 nhóm, bỏ event Google",
@@ -504,14 +510,14 @@ S2 = [
 
     tc("Modal filter booking & shift", "LIST-001", "Normal",
        "Filter theo 予約ステータス — ánh xạ đúng sang giá trị status",
-       CAL + "\n- Có booking đủ các status 0,1,2,3,4,5,6,7",
+       CAL + "\n- Có booking đủ các status 0,1,2,4,5,6,7",
        "1. Chọn 予約確定 → lọc\n2. Chọn 予約リクエスト中 → lọc\n3. Chọn キャンセルリクエスト中 → lọc\n"
        "4. Chọn キャンセル → lọc\n5. Chọn「全選択」→ lọc",
-       "Booking đủ 8 status",
+       "Booking đủ 7 status",
        "- 予約確定 → status 1, 2\n- 予約リクエスト中 → status 0\n- キャンセルリクエスト中 → status 5\n"
        "- キャンセル → status 4, 7\n"
-       "- 全選択 → status 0,1,2,4,5,7 (KHÔNG gồm status 3 đợi thông báo và 6 bị deny)",
-       note="Nguồn: Quản lý calendar r840-r845."),
+       "- 全選択 → status 0,1,2,4,5,7 (KHÔNG gồm status 6 bị deny)",
+       note="Nguồn: Quản lý calendar r840-r845. Leader chốt MT-30 + MT-07 (2026-10-12): salon KHÔNG có tính năng danh sách chờ → status 3 không tồn tại."),
 
     tc("Modal filter booking & shift", "LIST-001", "Normal",
        "Filter theo 決済ステータス — 4 trạng thái cơ bản",
@@ -530,8 +536,8 @@ S2 = [
        "2 booking 現地決済",
        "- Chưa thanh toán: lọc ra booking có `payment_time` = 2 và `payment_status` = 0\n"
        "- Đã thanh toán: `payment_time` = 2 và `payment_status` = 1",
-       note="Nguồn: Quản lý calendar r2823-r2825. ⚠ Spec §9.1 mục 1 ghi「現地決済 không có constants "
-            "trong source」→ TC này LẤP GAP của spec, xem MT-12."),
+       note="Leader chốt MT-12 (2026-10-12): theo TC là đúng (現地決済 = payment_time 2 + payment_status 0/1). "
+            "Nguồn: Quản lý calendar r2823-r2825. Spec §9.1 mục 1 + Field #15 (+4,5) SAI → cần sửa spec."),
 
     tc("Modal filter booking & shift", "LIST-001", "Normal",
        "Nút xóa filter, bấm 絞り込み表示 nhiều lần, và trường hợp không chọn gì",
@@ -564,6 +570,7 @@ S2 = [
        "1. Bấm「リクエスト一括操作」\n2. Quan sát lựa chọn mặc định + số lượng\n3. Bấm X / 閉じる",
        "3 booking đã tick",
        "- Mặc định chọn「新規予約リクエストを承認する」\n- Hiện「3人を選択中」\n- X/閉じる: đóng popup",
+       group="UI",
        note="Nguồn: Quản lý calendar r870-r872."),
 
     tc("リクエスト一括操作", "BULK-001", "Abnormal",
@@ -572,6 +579,7 @@ S2 = [
        "1. Không tick booking nào\n2. Quan sát nút「リクエスト一括操作」",
        "-",
        "- Nút bị disable, không mở được modal",
+       group="UI",
        note="Nguồn: Quản lý calendar r873."),
 
     tc("リクエスト一括操作", "MSG-001", "Normal",
@@ -587,6 +595,7 @@ S2 = [
        "- (c): KHÔNG gửi tin nhắn\n- (d): gửi message pattern + toàn bộ multi action\n"
        "- Trước khi chạy hiện alert「※コース・スタッフ別の予約完了時アクションを設定している場合、"
        "全体設定の予約（リクエスト承認）時アクションは稼働しません。」",
+       group="UI",
        note="Nguồn: Quản lý calendar r874-r878."),
 
     tc("リクエスト一括操作", "MSG-001", "Normal",
@@ -598,6 +607,7 @@ S2 = [
        "3 booking request",
        "- 3 booking chuyển「予約確定」\n- KHÔNG gửi tin nhắn nào cho LINE user\n"
        "- KHÔNG sinh bản ghi trong `action_lineuser`",
+       group="Data",
        note="Nguồn: Quản lý calendar r879-r881, r887."),
 
     tc("リクエスト一括操作", "MSG-002", "Normal",
@@ -613,8 +623,9 @@ S2 = [
        "- B2: gửi action CHUNG của booking (không phải của course/staff)\n"
        "- B3: gửi action của course + staff\n- B4: gửi message + multi action của course + staff\n"
        "- B5: KHÔNG gửi action nào",
-       note="Nguồn: Quản lý calendar r883-r887, r1115-r1118. ⚠ Spec KHÔNG có BR nào mô tả thứ tự ưu tiên "
-            "action course/staff vs booking chung → MT-10."),
+       group="UI",
+       note="Leader chốt MT-10 (2026-10-12): course/staff CÓ setting action riêng → chạy action riêng; "
+            "KHÔNG setting action riêng → chạy action chung. Nguồn: Quản lý calendar r883-r887, r1115-r1118."),
 
     tc("リクエスト一括操作", "JOB-001", "Normal",
        "Duyệt request booking hàng loạt → sinh bản ghi remind vào event_step_time",
@@ -637,6 +648,7 @@ S2 = [
        "- 3 booking chuyển「否認済」\n- Action gửi theo đúng cấu hình (giống quy tắc duyệt)\n"
        "- Chọn 実行しない: KHÔNG gửi action nào\n"
        "- KHÔNG sinh bản ghi remind trong `event_step_time`",
+       group="Data",
        note="Nguồn: Quản lý calendar r888-r895. Ghi chú corpus: nhánh này KHÔNG quan tâm action của course/staff."),
 
     tc("リクエスト一括操作", "MSG-001", "Normal",
@@ -648,6 +660,7 @@ S2 = [
        "3 booking request cancel",
        "- 3 booking chuyển「キャンセル」\n- Action gửi theo đúng cấu hình; 実行しない → không gửi\n"
        "- Toàn bộ remind CHƯA gửi của các booking này bị xóa khỏi `event_step_time`",
+       group="Data",
        note="Nguồn: Quản lý calendar r896-r903."),
 
     tc("リクエスト一括操作", "MSG-001", "Normal",
@@ -658,6 +671,7 @@ S2 = [
        "3 booking request cancel",
        "- 3 booking quay về「予約確定」\n- Action gửi theo cấu hình; 実行しない → không gửi\n"
        "- Remind trong `event_step_time` KHÔNG bị xóa",
+       group="Data",
        note="Nguồn: Quản lý calendar r904-r911."),
 
     tc("リクエスト一括操作", "BULK-001", "Abnormal",
@@ -669,6 +683,7 @@ S2 = [
        "- 2 booking 予約リクエスト chuyển「予約確定」\n"
        "- 3 booking 予約確定 giữ nguyên trạng thái, KHÔNG bị đổi\n"
        "- KHÔNG gửi action cho 3 booking bị bỏ qua",
+       group="UI",
        note="Nguồn: Quản lý calendar r913."),
 
     tc("リクエスト一括操作", "BULK-001", "Normal",
@@ -678,6 +693,7 @@ S2 = [
        "2. Kiểm tra status 2 booking đó",
        "≥ 4 trang dữ liệu",
        "- 2 booking ở trang 3 chuyển「予約確定」bình thường",
+       group="UI",
        note="Nguồn: Quản lý calendar r916."),
 
     # ══════════════ 11. Admin thêm booking thủ công ══════════════
@@ -769,12 +785,12 @@ S2 = [
        "4. Ô số nguyên: nhập số nguyên → nhập chữ\n5. Book và kiểm tra friend info",
        "カタカナ · 0901234567 · 090123456789 · 09012345678 · a+b@test.com · abc · 100",
        "- カナ sai: lỗi「カナのみ入力してください。」\n"
-       "- Điện thoại 10 hoặc 12 số: lỗi「携帯電話11桁の数値を入力してください。」; 11 số: pass\n"
+       "- Điện thoại 10 hoặc 11 số: pass; 12 số hoặc nhập chữ: lỗi「携帯電話11桁の数値を入力してください。」\n"
        "- Email sai: lỗi「Emailフォーマットが不正なメールアドレスです。フォーマットを確認してください。」\n"
        "- Số nguyên sai: lỗi「数値のみ入力してください。」\n"
        "- Giá trị hợp lệ: lưu đúng vào friend info tương ứng",
-       note="Nguồn: Quản lý calendar r1051-r1055. ⚠ Corpus ghi chú「Nhập số 10 chữ số => cho pass giống "
-            "lesson」ở nhánh điện thoại — hành vi chưa thống nhất, xem MT-11."),
+       note="Leader chốt MT-11 (2026-10-12): 10 hoặc 11 chữ số đều pass (giống lesson). "
+            "Nguồn: Quản lý calendar r1051-r1055."),
 
     tc("Admin thêm booking thủ công", "FUNC-003", "Abnormal",
        "Câu hỏi bắt buộc bỏ trống → chặn; không bắt buộc thì bỏ trống vẫn qua",
@@ -843,6 +859,7 @@ S2 = [
        "- B1: không gửi gì\n- B2: gửi tin nhắn text\n- B3: KHÔNG gửi tin nhắn\n"
        "- B4: chạy multi action\n- B5: gửi tin nhắn + chạy multi action\n"
        "- Verify ở LINE app của F1 và ở chat 1:1 của admin",
+       group="UI",
        note="Nguồn: Quản lý calendar r1102-r1106, r1109-r1113. RULE-06."),
 
     tc("Admin thêm booking thủ công", "PAY-CONFIRM-001", "Normal",
@@ -858,22 +875,40 @@ S2 = [
        "この予約を登録してよろしいですか？」\n"
        "- B4, B5: KHÔNG hiện alert, booking thành công luôn\n"
        "- B6: OK → tạo booking; Hủy → KHÔNG tạo booking",
+       group="UI",
        note="Nguồn: Quản lý calendar r1120-r1124."),
 
     tc("Admin thêm booking thủ công", "FUNC-001", "Normal",
-       "Admin book KHÔNG bị chặn bởi mọi ràng buộc đặt lịch",
+       "Admin book KHÔNG bị chặn bởi limit / course OFF / staff OFF — vẫn được tính vào limit",
        CAL + "\n- Modal「予約追加」đang mở",
-       "1. Chọn khung giờ staff KHÔNG có ca → book\n"
+       "1. Chọn khung giờ staff KHÔNG có ca (ngày KHÔNG phải ngày nghỉ) → book\n"
        "2. Chọn khung giờ staff đã đạt 受付上限 của staff → book\n"
        "3. Chọn khung giờ đã đạt 受付上限 của calendar → book\n"
        "4. Chọn khách đã đạt giới hạn số lần đặt của 1 người → book\n"
-       "5. Chọn khung giờ trùng block time sync từ Google → book\n"
-       "6. Course đang bật 決済 → book",
+       "5. Chọn course đang OFF → book\n6. Chọn staff đang OFF → book\n"
+       "7. Course đang bật 決済 → book\n"
+       "8. Sau B2, B3: LINE user mở LIFF xem khung giờ đó",
        "Các trạng thái chặn như mô tả",
-       "- Cả 6 trường hợp: booking THÀNH CÔNG (admin book bỏ qua toàn bộ validate)\n"
-       "- Trường hợp 6: KHÔNG bill tiền, không tính phí khách",
-       note="Nguồn: Quản lý calendar r1020, r1143-r1148. ⚠ Spec KHÔNG mô tả rule『admin book bỏ qua "
-            "validate』→ MT-13."),
+       "- B1 → B7: booking THÀNH CÔNG\n"
+       "- B7: KHÔNG bill tiền, không tính phí khách\n"
+       "- B8: booking do admin tạo VẪN được tính vào limit (khung đã đủ thì LINE user không đặt được)",
+       spec="Spec không ghi",
+       note="Leader chốt MT-13 (2026-10-12): admin book CHỈ bị chặn ở ngày nghỉ và block time Google "
+            "(xem TC kế tiếp); limit staff, course OFF, staff OFF vẫn book được; booking admin vẫn tính vào limit. "
+            "Nguồn: Quản lý calendar r1020, r1143-r1148 + Test limit booking_V4_2 r46-r95."),
+
+    tc("Admin thêm booking thủ công", "FUNC-001", "Abnormal",
+       "Admin book bị chặn ở 2 trường hợp: ngày nghỉ và block time sync từ Google",
+       CAL + "\n- Modal「予約追加」đang mở\n- Ngày 11/07 của S1 là 休業日\n"
+             "- S1 liên kết Google Calendar, có event chặn 10:00-11:00 ngày 12/07",
+       "1. Chọn S1, ngày 11/07 → book\n2. Chọn S1, ngày 12/07 khung 10:00-11:00 → book",
+       "Ngày nghỉ 11/07 · block time Google 12/07 10:00-11:00",
+       "- B1: lỗi「指定された日時には休業日が設定されています。休業日に予約を追加することはできませんので、"
+       "休業日設定を削除してください。」, không tạo booking\n"
+       "- B2: lỗi「指定の時間帯はブロックされています。予約時間を変更してください。」, không tạo booking",
+       spec="Spec không ghi",
+       note="Leader chốt MT-13 (2026-10-12). ⚠ Corpus r1143-r1148 ghi admin book TRÙNG block time Google "
+            "vẫn thành công → nếu còn như vậy là DỰ KIẾN FAIL, cần raise bug."),
 
     tc("Admin thêm booking thủ công", "CONC-001", "Abnormal",
        "Double-click nút 登録する → chỉ tạo 1 booking",
@@ -883,6 +918,7 @@ S2 = [
        "Booking 10:00-11:00 cho F1",
        "- Chỉ 1 booking được tạo\n- Lưới calendar chỉ hiện 1 booking\n"
        "- LINE user chỉ nhận 1 lần action (nếu có)",
+       group="Data",
        note="Nguồn: Quản lý calendar r1150."),
 
     tc("Admin thêm booking thủ công", "FUNC-002", "Normal",
@@ -915,6 +951,7 @@ S2 = [
        "Khung 09:00-09:30 ngày 01/10",
        "- Mở modal lý do không đặt được\n- Label: icon +「予約が追加できない日時」\n"
        "- Thời gian: đúng khung đã bấm, format「2024.10.01(日) 09:00~09:30」\n- X: đóng modal",
+       group="UI",
        note="Nguồn: Quản lý calendar r1166-r1168, r1222."),
 
     tc("Modal lý do không đặt được", "OUT-TRUTH-001", "Normal",
@@ -931,8 +968,10 @@ S2 = [
        "- B3, B4: lý do「予約受付可能なシフトが登録されていません」(không có ca thắng lý do giờ nhận)\n"
        "- B5: lý do chưa đến giờ nhận booking\n- B6: lý do đã quá giờ nhận booking\n"
        "- B7: lý do đã đạt 受付上限 của calendar",
+       group="UI",
        note="Nguồn: Quản lý calendar r1169-r1178, r1200-r1203, r1242-r1253. "
-            "⚠ r1250 ghi「QL tháng NG」ở nhánh không-có-ca + chưa-đến-giờ → cần verify lại lưới tháng."),
+            "Leader chốt MT-09: lưới tháng phải cho kết quả giống ngày/tuần (r1250 ghi「QL tháng NG」→ "
+            "verify lại, NG là bug)."),
 
     tc("Modal lý do không đặt được", "MSG-004", "Normal",
        "Nội dung lý do 'chưa đến thời gian nhận booking' và hyperlink sang màn cài đặt",
@@ -942,6 +981,7 @@ S2 = [
        "- Lý do:「予約の受付を開始していません。予約設定 > 予約・変更・キャンセルのリクエストと締切 > "
        "予約の開始・締め切り より予約受付開始時間をご確認ください。」\n"
        "- Bấm hyperlink: mở đúng màn cài đặt thời gian nhận booking",
+       group="UI",
        note="Nguồn: Quản lý calendar r1191-r1193, r1221. ⚠ Corpus đánh NG cho nội dung text ở thời điểm "
             "test, đã có yêu cầu đổi text → cần verify text hiện tại trên môi trường."),
 
@@ -1007,16 +1047,18 @@ S2 = [
        "- 決済システム: hiện stripe / univapay, disable không sửa\n"
        "- Số tiền format「¥ 5,000」· Số thẻ「XXXXXXXX1234」· Hạn thẻ「01/30」\n"
        "- Bấm 返金する: mở màn hoàn tiền",
+       group="UI",
        note="Nguồn: Quản lý calendar r1298-r1302."),
 
     tc("Detail booking & lịch sử", "OUT-TRUTH-001", "Normal",
        "Nhãn trạng thái ở tab lịch sử ánh xạ đúng theo status",
-       CAL + "\n- Có booking ở đủ các status 0,1,2,3,4,5,6,7",
+       CAL + "\n- Có booking ở đủ các status 0,1,2,4,5,6,7",
        "1. Mở tab lịch sử booking của từng booking\n2. Đối chiếu nhãn hiển thị",
-       "Booking đủ 8 status",
-       "- status 0, 5 →「リクエスト」\n- status 1, 2 →「予約確定」\n- status 3 →「通知受取希望」\n"
+       "Booking đủ 7 status",
+       "- status 0, 5 →「リクエスト」\n- status 1, 2 →「予約確定」\n"
        "- status 4, 7 →「キャンセル」\n- status 6 →「否認済」",
-       note="Nguồn: Quản lý calendar r1340-r1344."),
+       group="UI",
+       note="Nguồn: Quản lý calendar r1340-r1344 (bỏ dòng status 3 →「通知受取希望」). Leader chốt MT-30 + MT-07 (2026-10-12): salon KHÔNG có tính năng danh sách chờ → status 3 không tồn tại."),
 
     tc("Detail booking & lịch sử", "LIST-001", "Normal",
        "Danh sách 10 booking gần nhất của khách ở tab lịch sử",
@@ -1049,6 +1091,7 @@ S2 = [
        "- Sửa trên Google:「Googleカレンダーのスケジュールが変更されました」\n"
        "- Xóa trên Google:「Googleカレンダーからスケジュールが削除されました」\n"
        "- Thời gian format「2024.09.24 (木) 10:31」",
+       group="UI",
        note="Nguồn: Quản lý calendar r1347-r1350."),
 
     tc("Detail booking & lịch sử", "MSG-005", "Normal",
@@ -1065,6 +1108,7 @@ S2 = [
        "- B3: KHÔNG gửi message\n- B4: gửi message + multi action\n"
        "- Calendar bật 決済 + course có giá: approve và BILL TIỀN\n"
        "- Calendar bật 決済 + course giá 0: chỉ approve\n- Calendar tắt 決済: chỉ approve, KHÔNG bill",
+       group="UI",
        note="Nguồn: Quản lý calendar r1355-r1365."),
 
     tc("Detail booking & lịch sử", "MSG-005", "Normal",
@@ -1074,6 +1118,7 @@ S2 = [
        "Course + staff có action riêng",
        "- Booking chuyển「否認済」\n"
        "- Gửi action CHUNG của booking (deny), KHÔNG dùng action riêng của course/staff",
+       group="UI",
        note="Nguồn: Quản lý calendar r1371-r1377."),
 
     tc("Detail booking & lịch sử", "MSG-005", "Normal",
@@ -1085,6 +1130,7 @@ S2 = [
        "- 承認する: booking chuyển「キャンセル」, action gửi theo cấu hình\n"
        "- 否認する: booking quay về「予約確定」, action gửi theo cấu hình\n"
        "- Chọn 実行しない: KHÔNG gửi action ở cả 2 nhánh",
+       group="UI",
        note="Nguồn: Quản lý calendar r1366-r1370, r1379-r1383."),
 
     tc("Detail booking & lịch sử", "UI-001", "Normal",
@@ -1141,9 +1187,12 @@ S2 = [
     tc("Detail booking & lịch sử", "OUT-TRUTH-001", "Abnormal",
        "Booking đang ở 予約リクエスト thì LINE user KHÔNG hủy được",
        CAL + "\n- Booking của F1 đang ở 予約リクエスト",
-       "1. F1 mở màn lịch sử → mở detail booking\n2. Tìm nút hủy",
+       "1. F1 mở màn lịch sử → mở detail booking\n2. Tìm nút hủy\n"
+       "3. Dùng công cụ dev gửi trực tiếp request hủy (request mà nút hủy gửi ở booking 予約確定) "
+       "với id booking 予約リクエスト của F1",
        "Booking status 0",
-       "- KHÔNG có nút hủy; nếu gọi trực tiếp thì hiện「予約リクエストの取り消しはできません」",
+       "- B2: KHÔNG có nút hủy\n"
+       "- B3: bị chặn, trả「予約リクエストの取り消しはできません」; booking vẫn ở status 0",
        note="Nguồn: Quản lý calendar r2213 + Booking phía line user r1235."),
 
     tc("Detail booking & lịch sử", "FUNC-001", "Normal",
@@ -1172,8 +1221,11 @@ S2 = [
        CAL + "\n- Có booking có `deleted_at` = hôm nay - 89 ngày và booking `deleted_at` = hôm nay - 91 ngày",
        "1. Mở màn「削除済み予約」\n2. Tìm 2 booking trên",
        "deleted_at 89 ngày và 91 ngày trước",
-       "- Booking xóa 89 ngày: VẪN hiển thị\n- Booking xóa 91 ngày: KHÔNG còn hiển thị",
-       note="Nguồn: Quản lý calendar r2293. ⚠ Spec KHÔNG có rule retention 90 ngày → MT-14."),
+       "- Booking xóa 89 ngày: VẪN hiển thị, bản ghi còn trong DB\n"
+       "- Booking xóa 91 ngày: KHÔNG còn hiển thị VÀ bản ghi đã bị xóa khỏi `calendar_salon_line_booking`",
+       spec="Spec không ghi",
+       note="Leader chốt MT-14 (2026-10-12): sau 90 ngày kể từ ngày xóa, booking bị xóa khỏi DB. "
+            "Nguồn: Quản lý calendar r2293. ⚠ Thời điểm/job thực hiện xóa vật lý chưa rõ — hỏi Dev nếu cần test job."),
 
     tc("Booking đã xóa", "UI-001", "Normal",
        "Detail booking đã xóa hiện đủ thông tin thanh toán và 5 trạng thái bill",
@@ -1187,14 +1239,16 @@ S2 = [
 
     tc("Booking đã xóa", "DATA-REF-001", "Normal",
        "Booking bị xóa do xóa ca làm việc hiển thị ở màn booking đã xóa",
-       CAL + "\n- Có ca làm việc chứa booking ở trạng thái cho phép xóa ca",
+       CAL + "\n- Có ca làm việc chỉ chứa booking đã キャンセル (status 4, 7) hoặc 否認済 (status 6)",
        "1. Xóa ca làm việc đó\n2. Mở màn quản lý theo ngày / tuần / tháng\n"
        "3. Mở màn「削除済み予約」\n4. Mở detail và xem lịch sử",
-       "Ca có booking status 2, 4, 6, 7",
+       "Ca có booking status 4, 6, 7",
        "- Các booking liên quan biến mất khỏi lưới quản lý\n"
        "- Xuất hiện ở màn「削除済み予約」\n"
        "- Lịch sử ghi「受付枠削除による予約削除」(status 13)",
-       note="Nguồn: Quản lý calendar r711-r716, r724, r2324. ⚠ Xung đột với Bug #29394 (03/2025) — xem MT-03."),
+       note="Leader chốt MT-03 (2026-10-12): xóa ca xóa toàn bộ booking trong ca; chỉ xóa được khi mọi "
+            "booking đã cancel/deny. Nguồn: Quản lý calendar r711-r716, r724, r2324. ⚠ Ngược Bug #29394 "
+            "(03/2025 bỏ logic xóa booking) → nếu code hiện tại không xóa booking là DỰ KIẾN FAIL."),
 
     # ══════════════ 15. Hoàn tiền 返金 ══════════════
     tc("Hoàn tiền 返金", "PAY-STATE-001", "Normal",
@@ -1209,6 +1263,7 @@ S2 = [
        "- Cả 2 booking: `payment_status` = 3, `refund_type` = 'now'\n"
        "- Sinh lịch sử `calendar_salon_line_booking_history_actions.reason` = '¥5,000の返金（エルメから）'\n"
        "- Trên dashboard UnivaPay: giao dịch đã hoàn tiền thành công",
+       group="Data",
        note="Nguồn: Quản lý calendar r2167-r2168. RULE-07 (verify 3 tầng: DB + màn hình + hệ thống bill)."),
 
     tc("Hoàn tiền 返金", "PAY-STATE-001", "Abnormal",
@@ -1218,6 +1273,7 @@ S2 = [
        "2. Đọc thông báo lỗi\n3. Kiểm tra `payment_status`",
        "Booking đã refund trên UnivaPay",
        "- Lỗi「返金金額が課金金額を超過しています。」\n- `payment_status` KHÔNG đổi",
+       group="Data",
        note="Nguồn: Quản lý calendar r2169-r2170."),
 
     tc("Hoàn tiền 返金", "PAY-STATE-001", "Abnormal",
@@ -1228,6 +1284,7 @@ S2 = [
        "Booking đã refund trên Stripe",
        "- Hiện lỗi do Stripe trả về, dạng「Charge ch_xxx has already been refunded.」\n"
        "- `payment_status` KHÔNG đổi",
+       group="Data",
        note="Nguồn: Quản lý calendar r2184-r2185, r2192."),
 
     tc("Hoàn tiền 返金", "PAY-STATE-001", "Normal",
@@ -1241,6 +1298,7 @@ S2 = [
        "- `payment_status` = 3 (返金済み) trên エルメ\n"
        "- Lịch sử ghi reason có ghi rõ nguồn thao tác「決済システムから操作（Stripe/UnivaPay）」\n"
        "- Trên Stripe/UnivaPay: KHÔNG phát sinh giao dịch hoàn tiền",
+       group="Data",
        note="Nguồn: Quản lý calendar r2174, r2181, r2188, r2194, r2322."),
 
     tc("Hoàn tiền 返金", "PAY-STATE-001", "Abnormal",
@@ -1250,6 +1308,7 @@ S2 = [
        "Booking đã thanh toán",
        "- Nút hoàn tiền không thực thi / hiện lỗi bắt buộc tick checkbox\n"
        "- `payment_status` không đổi",
+       group="Data",
        note="Nguồn: Quản lý calendar r2176, r2189."),
 
     tc("Hoàn tiền 返金", "ENV-001", "Normal",
@@ -1262,6 +1321,7 @@ S2 = [
        "Booking thật, số tiền nhỏ nhất có thể",
        "- `payment_status` = 3, lịch sử ghi đúng\n"
        "- Giao dịch hoàn tiền xuất hiện trên dashboard nhà cung cấp\n- Khách nhận được hoàn tiền",
+       group="Data",
        env="PRODUCTION",
        note="Nguồn: Quản lý calendar r2177-r2181, r2190-r2194. RULE-08: bill tiền BẮT BUỘC test production."),
 ]

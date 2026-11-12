@@ -362,3 +362,36 @@ CONFLICTS = [
      "",
      "Chốt xong phải: ① chạy nốt TC này; ② ghi kết quả vào kho và cập nhật spec nếu cần."],
 ]
+
+# ══════════════════════════════════════════════════════════════════════════
+# QUYẾT ĐỊNH CỦA LEADER — kéo VERBATIM từ tab「_Mâu thuẫn cần quyết」của Google
+# Sheet kho về local 2026-10-23 (18/18 ĐÃ CHỐT). Giữ NGUYÊN VĂN câu trả lời của
+# Leader để push không ghi đè. Loop set cột Trạng thái (2) + QUYẾT ĐỊNH (8).
+# ══════════════════════════════════════════════════════════════════════════
+DONE = "✅ ĐÃ CHỐT"
+
+DECISIONS = {
+    "MT-01": "Nếu QR setting có sử dụng action kết bạn あいさつメッセージの併用\nthì sẽ chạy cả action QR và action kết bạn:\nTrường hợp QR new thì có 2 option radio (Chỉ chọn 1):\n併用する : Có chạy action kết bạn new\n併用しない : Không chạy action kết bạn new\n\nTrường hợp QR all thì có 3 option checkbox (Có thể tích 0,1,2,3):\n新規友だち用あいさつメッセージを併用: Có chạy action kết bạn new\n既存友だち用あいさつメッセージを併用: Có chạy action kết bạn old\nブロックを解除した友だち用あいさつメッセージを併用: Có chạy action unblock",
+    "MT-02": "Trường hợp QR OFF nhưng có bật các option sử dụng action kết bạn đã nêu ở MT-01 và ở mục 稼働OFF時に友だち追加された場合のアクション(通常友だち追加として扱われます) có chọn setting あいさつメッセージを稼働させる thì sẽ gửi action kết bạn lúc OFF",
+    "MT-03": "Màn setting kết bạn old và setting lúc unblock cũng có khối 友だち追加URL nhưng hiển thị ở tab テスト方法",
+    "MT-04": "Màn setting kết bạn new thì tiêu đề là: 新規友だち用アクションのテスト方法\r\nMàn setting kết bạn old thì tiêu đề là: 既存友だち用アクションのテスト方法\r\nMàn setting unblock thì tiêu đề là: ブロック解除時用アクションのテスト方法",
+    "MT-05": "新規友だち用, 既存友だち用,, ブロック解除時用: Các marker ở đầu trang thì không click được\nCó 2 dòng này thì khi click 新規友だち và 既存友だち sẽ hiển thị tooltip tương ứng\nこのページで設定したメッセージ・アクションは  新規友だち のみ稼働します。\nこのページで設定したメッセージ・アクションは  既存友だち のみ稼働します。",
+    "MT-06": "Không. Phải click button 保存 thì mới save",
+    "MT-07": "Add spec có chặn ở tầng API",
+    "MT-08": "Đây là phần setting của landing. Khi friend quét QR landing thì mới sử dụng setting này, còn nếu quét mã kết bạn thường thì vẫn sử dụng setting kết bạn bình thường",
+    "MT-09": "Theo TC",
+    "MT-10": "Không cần confirm nữa, vì job này chỉ chạy 1 lần",
+    "MT-11": "Không dùng nữa",
+    "MT-12": "Hiển thị đủ N action, đúng thứ tự đã cài (Trong khung hiển thị có thanh scroll để xem all action đã cài đặt)",
+    "MT-13": "Khi setting action kết bạn có cài đặt filter QR mà QR đó bị xóa thì filter không còn điều kiện QR nữa",
+    "MT-14": "Mục action thường dùng có 5 nút này:\n「ステップ配信を開始・停止する」·「リッチメニューを表示する」·「テンプレートを送信する」·「タグを付け・外しする」·「その他のアクションをみる」",
+    "MT-15": "Ở màn kết bạn NEW thì link hướng dẫn là https://www.youtube.com/watch?v=9TTugIBdQGs&t=56s\n\nỞ màn kết bạn OLD thì link hướng dẫn là  https://www.youtube.com/watch?v=9TTugIBdQGs&t=232s",
+    "MT-16": "Action text đang bị gửi sau multi action => Đã fix\n\n1. Action lại hiển thị trước cả tin nhắn của friend? => Chưa fix\n2. Action text chưa có trigger send từ đâu => Chưa fix",
+    "MT-17": "Bot xóa follow, friend quét QR kết bạn lại thì được tính là kết bạn old",
+    "MT-18": "Hiển thị trigger: \n機能名 = QRコードアクション \n管理名 = <Tên QR đã quét>\n詳細 = URL読み込み",
+}
+
+for _row in CONFLICTS:
+    _row[2] = DONE
+    if _row[0] in DECISIONS:
+        _row[8] = DECISIONS[_row[0]]

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>Forward Webhook Job</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,600;0,700;0,800&family=Noto+Sans+JP:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root{
+    --bg:#ffffff; --surface:#f8fafc; --surface2:#eef2f8;
+    --ink:#1f2937; --ink-strong:#111a29; --muted:#5b6b80;
+    --line:#d6dfec; --line-strong:#334155;
+    --blue:#2563eb; --blue-soft:#eff6ff; --blue-line:#cfe0ff;
+    --green:#15803d; --green-soft:#f0fdf4; --green-line:#bbf7d0;
+    --amber:#a16207; --amber-soft:#fffaf0; --amber-line:#f6c979;
+    --red:#b91c1c; --red-soft:#fef2f2; --red-line:#fecaca;
+    --code-bg:#0f172a; --code-ink:#e5e7eb;
+    --shadow:0 1px 2px rgba(15,23,42,.05);
+    --sans:"Noto Sans","Noto Sans JP",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0e1520; --surface:#161f2e; --surface2:#1c2637;
+      --ink:#dbe3ee; --ink-strong:#f1f5f9; --muted:#93a3b8;
+      --line:#2c3849; --line-strong:#3f4d61;
+      --blue:#7fb2ff; --blue-soft:#152239; --blue-line:#2b4570;
+      --green:#6ee7a8; --green-soft:#122619; --green-line:#265f3c;
+      --amber:#f0b755; --amber-soft:#2a2010; --amber-line:#6b5220;
+      --red:#fca5a5; --red-soft:#2a1414; --red-line:#6d2b2b;
+      --code-bg:#080d16; --code-ink:#dbe3ee;
+      --shadow:0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0e1520; --surface:#161f2e; --surface2:#1c2637;
+    --ink:#dbe3ee; --ink-strong:#f1f5f9; --muted:#93a3b8;
+    --line:#2c3849; --line-strong:#3f4d61;
+    --blue:#7fb2ff; --blue-soft:#152239; --blue-line:#2b4570;
+    --green:#6ee7a8; --green-soft:#122619; --green-line:#265f3c;
+    --amber:#f0b755; --amber-soft:#2a2010; --amber-line:#6b5220;
+    --red:#fca5a5; --red-soft:#2a1414; --red-line:#6d2b2b;
+    --code-bg:#080d16; --code-ink:#dbe3ee;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); line-height:1.8; font-size:15.5px;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4,p,li,td,th{overflow-wrap:anywhere}
+  h2,h3{text-wrap:balance}
+  a{color:var(--blue)}
+  code{font-family:var(--mono); font-size:.86em}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  header.hero{background:linear-gradient(135deg,#10243f 0%,#1d3c64 55%,#245b86 100%);color:#fff;padding:44px 0 38px}
+  .hero-inner{max-width:1180px;margin:0 auto;padding:0 24px}
+  .hero .kicker{display:inline-block;font-size:11.5px;letter-spacing:.13em;font-weight:800;text-transform:uppercase;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);padding:5px 13px;border-radius:999px;margin:0 0 16px;color:#fff}
+  .hero h1{font-size:29px;line-height:1.4;margin:0 0 8px;font-weight:800;color:#fff}
+  .hero .sub{font-size:14px;color:rgba(255,255,255,.82);margin:0 0 20px}
+  .hero .lead{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);border-left:4px solid #7fb2ff;
+    border-radius:0 12px 12px 0;padding:17px 21px;max-width:940px}
+  .hero .lead p{margin:0;font-size:14.5px;line-height:1.85;color:rgba(255,255,255,.95)}
+  .hero .lead .hl{color:#b7d6ff;font-weight:700}
+  .hero .hmeta{margin-top:22px;display:flex;gap:9px;flex-wrap:wrap}
+  .hero .hmeta span{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);padding:5px 12px;
+    border-radius:999px;font-size:12.5px;color:rgba(255,255,255,.9)}
+  .hero .hmeta span b{color:#fff;font-weight:700;font-family:var(--mono);font-size:12px}
+
+  nav.toc{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+  .toc-inner{max-width:1180px;margin:0 auto;padding:9px 24px;display:flex;gap:4px;overflow-x:auto}
+  .toc-inner a{color:var(--muted);text-decoration:none;font-size:12.5px;font-weight:700;padding:7px 11px;border-radius:8px;white-space:nowrap}
+  .toc-inner a:hover{background:var(--blue-soft);color:var(--blue)}
+  .toc-inner a:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+  @media print{nav.toc{display:none}}
+
+  main{padding:32px 0 70px}
+  section{margin-top:44px;scroll-margin-top:58px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}
+  .num{font-size:12.5px;font-weight:800;color:#fff;background:#162033;min-width:28px;height:28px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;font-family:var(--mono)}
+  :root[data-theme="dark"] .num{background:#2b4570}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .num{background:#2b4570}}
+  h2{font-size:21px;line-height:1.45;margin:0;color:var(--ink-strong);font-weight:800}
+  h3{font-size:17px;line-height:1.55;margin:0 0 8px;color:var(--ink-strong);font-weight:700}
+  h4{font-size:14px;line-height:1.6;margin:0 0 6px;color:var(--ink-strong);font-weight:700}
+  .section-lead{color:var(--muted);margin:6px 0 18px;max-width:900px;font-size:14.5px}
+
+  .conclusion{border:1px solid var(--line);border-left:4px solid var(--blue);background:var(--blue-soft);
+    border-radius:0 12px 12px 0;padding:19px 22px;box-shadow:var(--shadow)}
+  .conclusion .k{font-size:11.5px;font-weight:800;color:var(--blue);margin:0 0 6px;letter-spacing:.08em;text-transform:uppercase}
+  .conclusion .lead-line{font-size:17.5px;font-weight:800;line-height:1.65;margin:0 0 8px;color:var(--ink-strong)}
+  .conclusion p{margin:0;color:var(--ink);font-size:14.5px}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .box{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:17px 19px;box-shadow:var(--shadow)}
+  .box p{margin:0;color:var(--ink);font-size:14px}
+  .box p + p{margin-top:8px}
+  .box .tag{display:inline-block;font-size:11.5px;font-weight:800;color:var(--blue);background:var(--blue-soft);
+    border:1px solid var(--blue-line);border-radius:999px;padding:2px 9px;margin-bottom:9px}
+  .box.ok{background:var(--green-soft);border-color:var(--green-line)}
+  .box.ok .tag{background:var(--green-soft);border-color:var(--green-line);color:var(--green)}
+  .box.warn{background:var(--amber-soft);border-color:var(--amber-line)}
+  .box.warn .tag{background:var(--amber-soft);border-color:var(--amber-line);color:var(--amber)}
+  .box.danger{background:var(--red-soft);border-color:var(--red-line)}
+  .box.danger .tag{background:var(--red-soft);border-color:var(--red-line);color:var(--red)}
+
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line-strong);border-radius:6px;background:var(--bg);box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;min-width:820px;font-size:13.8px}
+  th,td{padding:10px 13px;text-align:left;border:1px solid var(--line);vertical-align:top;background:var(--bg);color:var(--ink)}
+  thead th{background:var(--surface2);color:var(--ink-strong);font-size:11.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+  tbody tr:hover td{background:var(--surface)}
+  td.k{font-weight:700;color:var(--ink-strong);white-space:nowrap}
+  .num-col{font-variant-numeric:tabular-nums;font-family:var(--mono)}
+
+  .pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:800;white-space:nowrap;border:1px solid}
+  .p-ok{background:var(--green-soft);color:var(--green);border-color:var(--green-line)}
+  .p-wait{background:var(--amber-soft);color:var(--amber);border-color:var(--amber-line)}
+  .p-block{background:var(--red-soft);color:var(--red);border-color:var(--red-line)}
+  .p-info{background:var(--blue-soft);color:var(--blue);border-color:var(--blue-line)}
+  code.act{display:inline-block;background:var(--blue-soft);border:1px solid var(--blue-line);color:var(--blue);
+    border-radius:6px;padding:1px 7px;font-size:12px;white-space:nowrap;margin:1px 2px}
+  .val-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+
+  .prebox{background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);border-radius:10px;
+    padding:15px 17px;overflow-x:auto;font-size:12.5px;line-height:1.65;margin:0}
+  .prebox code{font-family:var(--mono);color:var(--code-ink)}
+
+  .api-stack{display:grid;gap:18px}
+  .api-card{border:1px solid var(--line);border-radius:10px;background:var(--bg);box-shadow:var(--shadow);overflow:hidden}
+  .api-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);
+    border-bottom:1px solid var(--line);padding:13px 16px}
+  .api-head h3{margin:0;font-size:15.5px}
+  .api-body{padding:16px}
+  .api-body > p{margin:0 0 12px;color:var(--ink);font-size:14.2px}
+  .api-body h4{margin:18px 0 8px}
+  .api-body h4:first-of-type{margin-top:0}
+  .mtd{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:2px 10px;
+    font-size:11.5px;font-weight:800;color:#fff;min-width:58px;font-family:var(--mono)}
+  .mtd.post{background:#16a34a}
+  .mtd.job{background:#2563eb}
+  .api-path{font-family:var(--mono);font-size:12.5px;color:var(--ink-strong);font-weight:700;overflow-wrap:anywhere}
+
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .step{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:14px}
+  .step b{display:block;color:var(--blue);font-size:11.5px;margin-bottom:6px;font-family:var(--mono);letter-spacing:.05em}
+  .step span{display:block;font-size:13.8px;line-height:1.65;color:var(--ink);font-weight:600}
+  .step.danger{background:var(--red-soft);border-color:var(--red-line)}
+  .step.danger b{color:var(--red)}
+
+  .note{font-size:13px;color:var(--muted);line-height:1.75;margin-top:12px}
+  .rule-list{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+  .rule-list li{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:13px 15px;font-size:14.2px}
+  .rule-list li.hard{border-left:3px solid var(--red);background:var(--red-soft)}
+  .rule-list li.soft{border-left:3px solid var(--amber);background:var(--amber-soft)}
+  .rule-list b{color:var(--ink-strong)}
+
+
+  footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  footer p{margin:0 0 6px}
+
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  @media(max-width:900px){
+    .grid2,.grid3,.flow{grid-template-columns:1fr}
+    .hero h1{font-size:23px}
+    .wrap,.hero-inner{padding-left:18px;padding-right:18px}
+    .toc-inner{padding-left:18px;padding-right:18px}
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <p class="kicker">Đặc tả kết nối · Webhook転送</p>
+    <h1>Chuyển tiếp dữ liệu từ LME sang hệ thống bên ngoài</h1>
+    <p class="sub">Tài liệu dành cho bên tích hợp — mô tả dữ liệu LME gửi ra, thời điểm gửi, và yêu cầu đối với endpoint bên nhận.</p>
+    <div class="lead"><p>LME cung cấp <span class="hl">2 kênh chuyển tiếp độc lập</span>: kênh <span lang="ja">LINE公式アカウントデータ転送</span> gửi lại nguyên trạng event mà LINE gửi tới, và kênh <span lang="ja">L Messageデータ転送</span> chuyển tiếp event của LME khi friend được thực hiện gắn/gỡ bỏ tag hoặc đăng ký/update/xóa friend info. Mỗi kênh có URL đích riêng và công tắc bật/tắt riêng.</p></div>
+    <div class="hmeta">
+      <span>Bản: <b>1.0.0</b></span>
+      <span>Cập nhật: <b>16/09/2026 19:35 JST</b></span>
+      <span>Người tạo: <b>WSSJ</b></span>
+      <span>Phạm vi: <b>Phase 1</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Mục lục"><div class="toc-inner">
+  <a href="#s1">1. Tổng quan</a><a href="#s2">2. Quy định chung</a><a href="#s3">3. Kênh LINE</a><a href="#s4">4. Kênh LME</a><a href="#s5">5. Xác thực</a><a href="#s6">6. Khi gửi thất bại</a><a href="#s7">7. Yêu cầu với endpoint</a><a href="#s8">8. Lịch sử cập nhật</a>
+</div></nav>
+
+<main><div class="wrap">
+
+<section id="s1"><div class="sec-head"><span class="num">1</span><h2>Tổng quan</h2></div>
+  <div class="conclusion">
+    <p class="k">Kết luận</p>
+    <p class="lead-line">Hai kênh chuyển tiếp hoàn toàn độc lập, bật/tắt và cấu hình riêng.</p>
+    <p>Bên nhận có thể chỉ dùng một kênh, hoặc dùng cả hai với hai URL khác nhau. Bật một kênh không ảnh hưởng kênh còn lại.</p>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:18px"><table>
+    <thead><tr><th style="width:22%">Kênh</th><th style="width:30%">Nội dung gửi đi</th><th style="width:26%">Thời điểm gửi</th><th>Xác thực</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="k"><span lang="ja">LINE公式アカウント<br>データ転送</span></td>
+        <td>Nguyên trạng event mà LINE Platform gửi tới LME — message, follow, unfollow, postback…</td>
+        <td>Ngay sau khi LME tiếp nhận event đó, thường trong vài giây</td>
+        <td><span class="pill p-info">Không có chữ ký</span></td>
+      </tr>
+      <tr>
+        <td class="k"><span lang="ja">L Messageデータ転送</span></td>
+        <td>Thao tác tag hoặc friend info phát sinh trong LME, đóng gói theo <code>events[]</code></td>
+        <td>Ngay sau khi thao tác hoàn tất trong LME</td>
+        <td><span class="pill p-ok">Có header <code>X-Lme-Signature</code></span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="grid2" style="margin-top:16px">
+    <div class="box ok"><span class="tag">Phạm vi Phase 1</span>
+      <p>Kênh LINE: <strong>toàn bộ event</strong> LINE Platform gửi tới tài khoản đó — không lọc theo loại, không phụ thuộc LME có xử lý được hay không.</p>
+      <p>Kênh LME: <strong>đúng 2 loại</strong> — thao tác <code>tag</code> và <code>friend_info</code>.</p>
+    </div>
+    <div class="box warn"><span class="tag">Ngoài phạm vi Phase 1</span>
+      <p>Các event nội bộ khác của LME (trả lời form, phân phối scenario…) <strong>không</strong> thuộc Phase 1. Muốn bổ sung ở phase sau thì cần thống nhất payload riêng cho chúng trước khi triển khai.</p>
+    </div>
+  </div>
+
+  <div class="box warn" style="margin-top:14px"><span class="tag">Lưu ý khi bắt đầu sử dụng</span>
+    <p>Khi bật kênh, LME <strong>chỉ chuyển tiếp event phát sinh từ thời điểm bật trở đi</strong>. Dữ liệu lịch sử có trước đó sẽ không được gửi lại. Nếu bên nhận cần dữ liệu quá khứ, phải lấy qua API riêng, không lấy qua kênh chuyển tiếp.</p>
+  </div>
+
+  <div class="box warn" style="margin-top:14px"><span class="tag">Thay đổi cấu hình có độ trễ tới khoảng 1 phút</span>
+    <p>Để không phải truy vấn lại cấu hình cho từng event, LME đọc cấu hình chuyển tiếp theo chu kỳ <strong>1 phút</strong> một lần. Vì vậy sau khi bấm 「保存する」 trên màn <span lang="ja">「Webhook転送」</span>, thay đổi <strong>chưa có hiệu lực ngay</strong> — trong khoảng tới 1 phút, luồng chuyển tiếp vẫn chạy theo cấu hình cũ.</p>
+    <p>Ba tình huống cần lưu ý:</p>
+    <p>・<strong>Vừa bật kênh</strong>: event phát sinh trong khoảng chờ này có thể <strong>không được chuyển tiếp</strong>, và cũng <strong>không</strong> xuất hiện trong danh sách lỗi — vì với hệ thống lúc đó, kênh vẫn đang tắt. Nên bật kênh trước, chờ khoảng 1 phút rồi mới bắt đầu thao tác thử.<br>
+       ・<strong>Vừa tắt kênh hoặc vừa đổi URL đích</strong>: đích cũ vẫn có thể nhận thêm request trong khoảng chờ này. Chỉ nên đóng endpoint cũ sau khi đã quá 1 phút.<br>
+       ・<strong>Vừa tái tạo secret</strong>: xem mục 5 — đây là tình huống cần phối hợp kỹ nhất.</p>
+  </div>
+</section>
+
+<section id="s2"><div class="sec-head"><span class="num">2</span><h2>Quy định chung</h2></div>
+  <p class="section-lead">Áp dụng cho cả 2 kênh, trừ khi ghi rõ khác.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th style="width:22%">Hạng mục</th><th style="width:26%">Quy định</th><th>Ghi chú</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Method</td><td><code>POST</code></td><td>Gửi tới URL đích do người dùng cấu hình trên màn <span lang="ja">「Webhook転送」</span>.</td></tr>
+      <tr><td class="k">Content-Type</td><td><code>application/json; charset=utf-8</code></td><td>Bảng mã UTF-8.</td></tr>
+      <tr><td class="k">Tiêu chí thành công</td><td><strong>HTTP 2xx</strong></td><td>LME <strong>không đọc nội dung response</strong>.</td></tr>
+      <tr><td class="k">Timeout</td><td class="num-col">10 giây</td><td>Tính cho cả kết nối lẫn chờ phản hồi. Quá thời gian này LME coi là thất bại.</td></tr>
+      <tr><td class="k">Gửi lại khi lỗi</td><td class="num-col">Tối đa 3 lần,<br>cách nhau 1 phút</td><td>Chỉ gửi lại khi lỗi là <strong>timeout (kể cả 408, 504) hoặc HTTP 5xx</strong>. Lần 1 gửi ngay, hai lần sau cách nhau <strong>1 phút</strong> — tổng vòng đời một event khoảng 2 phút. Các lỗi khác không gửi lại, ghi lỗi ngay. Với lỗi được gửi lại, chỉ khi <strong>cả 3 lần đều thất bại</strong> mới ghi 1 bản ghi lỗi để người dùng xem. Một sự cố = một dòng lỗi.</td></tr>
+      <tr><td class="k">Thứ tự event</td><td><strong>Không đảm bảo</strong></td><td>LME ưu tiên tốc độ, không xếp hàng theo từng friend. Hai thao tác liên tiếp trên cùng một friend có thể tới theo thứ tự khác lúc phát sinh — bên nhận cần tự xử lý.</td></tr>
+      <tr><td class="k">Gửi trùng</td><td><strong>Có thể xảy ra</strong></td><td>Khi request đã tới nơi nhưng phản hồi bị mất, LME vẫn tính là thất bại và gửi lại. Mọi lần gửi lại mang <strong>cùng giá trị <code>X-Lme-Delivery-Id</code></strong> với lần đầu (mục 5) — bên nhận dùng header này để nhận ra và bỏ qua bản trùng.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s3"><div class="sec-head"><span class="num">3</span><h2>Kênh <span lang="ja">LINE公式アカウントデータ転送</span></h2></div>
+  <p class="section-lead">Chuyển tiếp lại event mà LINE Platform gửi tới LME, không xử lý hay biến đổi nội dung.</p>
+
+  <div class="api-card">
+    <div class="api-head"><span class="mtd post">POST</span><span class="api-path">URL đích của kênh LINE</span><h3>Chuyển tiếp event LINE</h3></div>
+    <div class="api-body">
+      <h4>Đặc điểm</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th style="width:24%">Hạng mục</th><th>Nội dung</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Nội dung gửi</td><td><strong>Nguyên văn request body mà LINE Platform gửi tới LME</strong>, giữ nguyên không thêm bớt.</td></tr>
+          <tr><td class="k">Event media</td><td>Ảnh, video, audio <strong>có</strong> được chuyển tiếp. Nhưng payload chỉ chứa <strong>ID của nội dung</strong>, không chứa file. Bên nhận muốn lấy file phải tự gọi LINE Content API bằng token của chính mình.</td></tr>
+          <tr><td class="k">Tài khoản hết hạn</td><td>Tài khoản LINE chính thức đã bị xoá, hoặc hết hạn quá 7 ngày, sẽ ngừng được chuyển tiếp. Cấu hình vẫn được giữ nguyên, khôi phục tài khoản là dùng lại được.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Sample Input</h4>
+      <pre class="prebox"><code>{
+  "destination": "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "events": [
+    {
+      "type": "message",
+      "replyToken": "xxxxxxxxxxxxxxxx",
+      "source": { "type": "user", "userId": "Uxxxxxxxx" },
+      "timestamp": 1789000000000,
+      "message": { "id": "987654321", "type": "text", "text": "こんにちは" }
+    }
+  ]
+}</code></pre>
+
+      <h4>Sample Output</h4>
+      <pre class="prebox"><code>HTTP/1.1 200 OK</code></pre>
+      <p class="note">Chỉ cần HTTP 2xx. Nội dung body của response không được đọc tới.</p>
+    </div>
+  </div>
+
+  <div class="box danger" style="margin-top:16px"><span class="tag">Cảnh báo bảo mật — cần đọc trước khi vận hành</span>
+    <p>Kênh này <strong>không kèm chữ ký</strong>, nên bên nhận <strong>không có cách xác thực</strong> request thật sự đến từ LME. Bất kỳ ai biết URL đều có thể gửi dữ liệu giả vào endpoint.</p>
+    <p>Khuyến nghị bên nhận tự bảo vệ: giới hạn theo dải IP, dùng URL khó đoán, hoặc thêm một tham số bí mật trên đường dẫn.</p>
+  </div>
+</section>
+
+<section id="s4"><div class="sec-head"><span class="num">4</span><h2>Kênh <span lang="ja">L Messageデータ転送</span></h2></div>
+  <p class="section-lead">Chuyển tiếp event của LME khi friend được thực hiện gắn/gỡ bỏ tag hoặc đăng ký/update/xóa friend info.</p>
+
+  <div class="api-card">
+    <div class="api-head"><span class="mtd post">POST</span><span class="api-path">URL đích của kênh LME</span><h3>Notify từ LME ①: tag / friend_info</h3></div>
+    <div class="api-body">
+      <p>LME gửi một request chứa mảng <code>events[]</code>. Mỗi item là một thao tác đã phát sinh, gồm nội dung thao tác kèm 2 field định danh friend.</p>
+
+      <h4>Input parameter</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th style="width:24%">Field</th><th style="width:13%">Type</th><th style="width:12%">Bắt buộc</th><th style="width:11%">Áp dụng</th><th>Mô tả</th></tr></thead>
+        <tbody>
+          <tr><td><code>events[]</code></td><td>array&lt;object&gt;</td><td>Có</td><td>Chung</td><td>Mảng event LME notify sang hệ thống bên ngoài.</td></tr>
+          <tr><td><code>events[].lmessage_friend_id</code></td><td>integer</td><td>Có</td><td>Chung</td><td>L Message Friend ID của friend bị thao tác.</td></tr>
+          <tr><td><code>events[].line_friend_id</code></td><td>string</td><td>Có</td><td>Chung</td><td>LINE Friend ID của friend bị thao tác. Trường hợp hiếm — friend đã bị xoá khỏi LME trước khi event được gửi đi — giá trị này có thể là chuỗi rỗng; khi đó bên nhận đối chiếu bằng <code>lmessage_friend_id</code>.</td></tr>
+          <tr><td><code>events[].type</code></td><td>string</td><td>Có</td><td>Chung</td><td>Loại thao tác. Phase 1:<div class="val-list"><code class="act">tag</code><code class="act">friend_info</code></div></td></tr>
+          <tr><td><code>events[].action</code></td><td>string</td><td>Có</td><td>Chung</td><td>tag: <code class="act">add</code> <code class="act">remove</code><br>friend_info: <code class="act">set</code> <code class="act">clear</code></td></tr>
+          <tr><td><code>events[].tag_id</code></td><td>integer</td><td>Có điều kiện</td><td>tag</td><td>Tag ID được thao tác.</td></tr>
+          <tr><td><code>events[].field_id</code></td><td>integer</td><td>Có điều kiện</td><td>friend_info</td><td>Friend info field ID được thao tác. Built-in field dùng ID âm (xem bảng bên dưới), custom field dùng ID dương.</td></tr>
+          <tr><td><code>events[].value</code></td><td>string</td><td>Có điều kiện</td><td>friend_info</td><td>Giá trị mới của field sau thao tác. <strong>Không có mặt</strong> khi action là <code class="act">clear</code>.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Built-in field (<code>field_id</code> âm)</h4>
+      <div class="tbl-wrap"><table style="min-width:520px">
+        <thead><tr><th style="width:18%">field_id</th><th style="width:36%">Tên field trên LME</th><th>Ý nghĩa</th></tr></thead>
+        <tbody>
+          <tr><td class="num-col">-1</td><td lang="ja">システム表示名</td><td>Tên hiển thị trên hệ thống LME</td></tr>
+          <tr><td class="num-col">-2</td><td lang="ja">携帯電話</td><td>Số điện thoại di động</td></tr>
+          <tr><td class="num-col">-3</td><td lang="ja">メールアドレス</td><td>Địa chỉ email</td></tr>
+          <tr><td class="num-col">-4</td><td lang="ja">生年月日</td><td>Ngày sinh</td></tr>
+          <tr><td class="num-col">-6</td><td lang="ja">都道府県</td><td>Tỉnh / thành phố</td></tr>
+          <tr><td class="num-col">-7</td><td lang="ja">郵便番号</td><td>Mã bưu điện</td></tr>
+          <tr><td class="num-col">-8</td><td lang="ja">市区町村名</td><td>Quận / huyện / thị xã</td></tr>
+          <tr><td class="num-col">-9</td><td lang="ja">町名/番地</td><td>Tên phường / số nhà</td></tr>
+          <tr><td class="num-col">-10</td><td lang="ja">建物名・部屋番号</td><td>Tên toà nhà / số phòng</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Sample Input</h4>
+      <pre class="prebox"><code>{
+  "events": [
+    {
+      "lmessage_friend_id": 12345,
+      "line_friend_id": "Uxxxxxxxx",
+      "type": "tag",
+      "action": "add",
+      "tag_id": 101
+    },
+    {
+      "lmessage_friend_id": 12345,
+      "line_friend_id": "Uxxxxxxxx",
+      "type": "friend_info",
+      "action": "set",
+      "field_id": -1,
+      "value": "山田太郎"
+    },
+    {
+      "lmessage_friend_id": 12345,
+      "line_friend_id": "Uxxxxxxxx",
+      "type": "friend_info",
+      "action": "clear",
+      "field_id": 5001
+    }
+  ]
+}</code></pre>
+
+      <h4>Sample Output</h4>
+      <pre class="prebox"><code>HTTP/1.1 200 OK</code></pre>
+    </div>
+  </div>
+
+  <h3 style="margin-top:22px">Gom nhiều thao tác vào một request</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th style="width:26%">Hạng mục</th><th>Quy định</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Số phần tử tối đa</td><td class="num-col">1.000 phần tử <code>events[]</code> cho một request; vượt thì chia thành nhiều request</td></tr>
+      <tr><td class="k">Phạm vi một request</td><td>Một request luôn thuộc <strong>một tài khoản LINE chính thức duy nhất</strong> — không trộn dữ liệu của nhiều tài khoản</td></tr>
+      <tr><td class="k">Số lượng thực tế</td><td>Tuỳ mật độ thao tác; một request có thể chỉ chứa 1 phần tử. Bên nhận cần xử lý được cả hai trường hợp</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s5"><div class="sec-head"><span class="num">5</span><h2>Xác thực request</h2></div>
+  <p class="section-lead">Header xác thực chỉ có ở kênh <span lang="ja">L Messageデータ転送</span>. Kênh LINE không có.</p>
+
+  <h3 style="margin-top:22px">Header LME gửi kèm</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th style="width:22%">Header</th><th style="width:16%">Kênh</th><th>Nội dung</th></tr></thead>
+    <tbody>
+      <tr><td><code>X-Lme-Signature</code></td><td>Chỉ kênh LME</td><td>Giá trị secret của tài khoản LINE chính thức đó, dạng <code>whsec_…</code>. So sánh chuỗi là đủ.</td></tr>
+      <tr><td><code>X-Lme-Delivery-Id</code></td><td>Cả 2 kênh</td><td>Mã định danh <strong>một request</strong>, dạng UUID (ví dụ <code>3f2a8c10-9d4b-4e21-8a77-1c5e9b0d6f34</code>). <strong>Giữ nguyên qua cả 3 lần gửi</strong> của cùng một nội dung, và khác nhau giữa các nội dung khác nhau. Đây là khoá để bên nhận chống trùng: đã xử lý một giá trị rồi thì lần sau gặp lại có thể bỏ qua ngay mà vẫn trả 2xx.</td></tr>
+      <tr><td><code>X-Lme-Timestamp</code></td><td>Cả 2 kênh</td><td>Thời điểm LME gửi request, dạng <strong>epoch mili giây</strong> (ví dụ <code>1789000000000</code>) — cùng đơn vị với <code>timestamp</code> trong payload webhook của LINE. Mỗi lần gửi lại là một giá trị mới, không phải giờ của lần gửi đầu.</td></tr>
+      <tr><td><code>Content-Type</code></td><td>Cả 2 kênh</td><td><code>application/json; charset=utf-8</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="margin-top:22px">Vòng đời của secret</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th style="width:26%">Hạng mục</th><th>Nội dung</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Nguồn giá trị</td><td>Là <span lang="ja">「署名シークレット」</span> của tài khoản LINE chính thức đó. Người dùng xem, sao chép và tái tạo secret này trên màn <span lang="ja">「Webhook転送」</span>.</td></tr>
+      <tr><td class="k">Định dạng</td><td>Chuỗi bắt đầu bằng tiền tố <code>whsec_</code>.</td></tr>
+      <tr><td class="k">Khi tái tạo secret</td><td>Trên màn quản trị, secret cũ <strong>hết hiệu lực ngay lập tức</strong>, không có thời gian ân hạn. Nhưng luồng chuyển tiếp đọc cấu hình theo chu kỳ 1 phút (mục 1), nên <strong>trong khoảng tới 1 phút sau khi tái tạo, LME vẫn gửi kèm secret CŨ</strong>.<br><br><strong>Khuyến nghị:</strong> khi tái tạo secret, bên nhận nên <strong>chấp nhận cả secret cũ lẫn secret mới trong khoảng 2 phút</strong> rồi mới bỏ secret cũ. Nếu chuyển sang secret mới ngay lập tức, các request trong khoảng chờ sẽ bị từ chối và rơi vào danh sách lỗi dù không bên nào làm sai.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s6"><div class="sec-head"><span class="num">6</span><h2>Khi gửi thất bại</h2></div>
+  <p class="section-lead">Người dùng xem danh sách lỗi ngay trên màn <span lang="ja">「Webhook転送」</span>, tách riêng theo từng kênh.</p>
+
+  <div class="flow" style="grid-template-columns:repeat(3,1fr)">
+    <div class="step"><b>LẦN 1</b><span>Gửi ngay khi event phát sinh. Thất bại do timeout hoặc 5xx thì chờ <strong>1 phút</strong> rồi gửi lại; lỗi khác thì ghi lỗi ngay.</span></div>
+    <div class="step"><b>LẦN 2–3</b><span>Gửi lại tối đa 2 lần nữa, <strong>mỗi lần cách nhau 1 phút</strong>, cùng nội dung và cùng <code>X-Lme-Delivery-Id</code>. Thành công ở bất kỳ lần nào thì dừng, không ghi lỗi.</span></div>
+    <div class="step danger"><b>SAU 3 LẦN</b><span>Cả 3 lần đều timeout hoặc 5xx (khoảng 2 phút kể từ lần đầu) → ghi <strong>1 bản ghi lỗi</strong> để người dùng xem.</span></div>
+  </div>
+
+  <h3 style="margin-top:22px">Nội dung lỗi hiển thị cho người dùng</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th style="width:30%">Tình huống</th><th style="width:18%">Mã trả về</th><th>Hiển thị trên màn LME</th></tr></thead>
+    <tbody>
+      <tr><td>Không mở được kết nối, hoặc DNS lỗi</td><td class="num-col">—</td><td lang="ja">接続できませんでした</td></tr>
+      <tr><td>Quá thời gian chờ — LME chờ quá 10 giây, <strong>hoặc</strong> endpoint tự trả về mã báo hết thời gian chờ</td><td class="num-col">—, 408, 504</td><td lang="ja">タイムアウト（10秒）</td></tr>
+      <tr><td>Endpoint từ chối xác thực</td><td class="num-col">401, 403</td><td lang="ja">認証エラー</td></tr>
+      <tr><td>Không tìm thấy đường dẫn</td><td class="num-col">404</td><td lang="ja">転送先が見つかりません</td></tr>
+      <tr><td>Endpoint tạm thời không phục vụ</td><td class="num-col">503</td><td lang="ja">転送先が一時的に応答できません</td></tr>
+      <tr><td>Lỗi phía endpoint</td><td class="num-col">5xx khác</td><td lang="ja">転送先でエラーが発生しました</td></tr>
+      <tr><td>Các mã trả về khác</td><td class="num-col">mã thật</td><td><span class="pill p-wait">Chưa chốt chuỗi hiển thị</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Lưu ý về chuỗi <span lang="ja">「タイムアウト（10秒）」</span>: khi endpoint trả về 408 hoặc 504, con số "10 giây" trong chuỗi không phản ánh đúng tình huống (phía LME nhận được phản hồi rất nhanh, chính endpoint mới là bên báo hết thời gian chờ). Nếu bên nhận thấy điều này gây nhầm lẫn, có thể tách thành 2 chuỗi khác nhau tuỳ theo cột mã lỗi có giá trị hay không.</p>
+</section>
+
+<section id="s7"><div class="sec-head"><span class="num">7</span><h2>Yêu cầu với endpoint bên nhận</h2></div>
+  <ul class="rule-list">
+    <li class="soft"><b>Trả HTTP 2xx trong vòng 10 giây.</b> Quá thời gian này bị tính là thất bại.</li>
+    <li class="soft"><b>Xử lý được nhận trùng</b> — dùng <code>X-Lme-Delivery-Id</code> (mục 5).</li>
+    <li class="soft"><b>Không phụ thuộc thứ tự nhận</b> — dùng <code>X-Lme-Timestamp</code> (mục 5) nếu cần.</li>
+  </ul>
+</section>
+
+<section id="s8"><div class="sec-head"><span class="num">8</span><h2>Lịch sử cập nhật</h2></div>
+  <p class="section-lead">Bản mới nhất luôn ở trên cùng. Khi trao đổi về tài liệu này, vui lòng nêu rõ số bản để tránh nhầm giữa các lần cập nhật.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th style="width:10%">Bản</th><th style="width:20%">Thời điểm (JST)</th><th>Nội dung thay đổi</th></tr></thead>
+    <tbody>
+      <tr><td class="k num-col">1.0.0</td><td class="num-col">16/09/2026 19:35</td><td>Bản đầu tiên.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer><div class="wrap" style="padding:0">
+  <p><strong>Phạm vi tài liệu:</strong> mô tả dữ liệu LME gửi ra và yêu cầu đối với endpoint bên nhận.</p>
+  <p>Mọi thay đổi về cấu trúc payload sau khi tài liệu này được xác nhận sẽ được thông báo lại trước khi áp dụng.</p>
+</div></footer>
+
+</div></main>
+</body>
+</html>

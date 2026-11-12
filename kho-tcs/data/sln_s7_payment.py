@@ -23,6 +23,7 @@ S7 = [
        "1. Mở tab 決済連携 → bật「決済機能の利用」→ lưu\n2. Đọc thông báo",
        "Bot plan free",
        "- Lỗi「決済機能のご利用には有料プランへのアップグレードが必要です。」\n- Không bật được 決済",
+       group="UI",
        note="Nguồn: Liên kết bill tiền r7. Spec BR-05."),
 
     tc("決済連携 — cài đặt", "PAY-LIMIT-001", "Abnormal",
@@ -34,6 +35,7 @@ S7 = [
        "- `checkLinkPayment` = true → hiện hướng dẫn liên kết Stripe/UnivaPay\n"
        "- Đóng popup rồi bật lại: hiện lại popup hướng dẫn\n"
        "- Nhà cung cấp chưa liên kết KHÔNG hiện trong dropdown lựa chọn",
+       group="Data",
        note="Nguồn: Liên kết bill tiền r10, r86-r87. Spec BR-05, EP-17."),
 
     tc("決済連携 — cài đặt", "PAY-STATE-001", "Normal",
@@ -46,6 +48,7 @@ S7 = [
        "- Lưu thành công, các giá trị ghi đúng vào `calendar_salon`\n"
        "- Sau khi lưu lần đầu: KHÔNG đổi được nhà cung cấp nữa\n"
        "- Môi trường và phương thức thanh toán: vẫn đổi được",
+       group="Data",
        note="Nguồn: Spec feature-spec.md §2.5 + Liên kết bill tiền r4-r17. EP-18."),
 
     tc("決済連携 — cài đặt", "UI-001", "Normal",
@@ -80,6 +83,7 @@ S7 = [
        "- LINE user đặt lịch bình thường, KHÔNG qua bước nhập thẻ\n"
        "- VẪN hiển thị số tiền của course và staff (nếu cài đặt hiển thị giá)\n"
        "- Booking không phát sinh thanh toán, cột 決済 hiện「決済なし」",
+       group="Data",
        note="Nguồn: Liên kết bill tiền r5-r6."),
 
     tc("決済連携 — cài đặt", "PAY-STATE-001", "Abnormal",
@@ -91,6 +95,7 @@ S7 = [
        "Đã hủy liên kết nhà cung cấp",
        "- Bỏ qua bước nhập thẻ, LINE user đi thẳng đến bước xác nhận đặt lịch\n"
        "- Booking tạo thành công, không phát sinh thanh toán",
+       group="UI",
        note="Nguồn: Liên kết bill tiền r16-r17."),
 
     tc("決済連携 — cài đặt", "PAY-AMOUNT-001", "Boundary",
@@ -105,6 +110,7 @@ S7 = [
        "- B1: KHÔNG hiện màn bill, đi thẳng bước xác nhận\n- B2: bill 5,000\n- B3: bill 1,000\n"
        "- B4: bill 6,000\n- B5: bill 5,000 (staff 指定なし không có phụ phí)\n"
        "- B6: bill 1,000\n- B7: KHÔNG bill",
+       group="UI",
        note="Nguồn: Liên kết bill tiền r21-r27, r45-r51 (có phép tính tay — RULE-05)."),
 
     tc("決済連携 — cài đặt", "PAY-AMOUNT-001", "Normal",
@@ -116,10 +122,11 @@ S7 = [
        "4. Với mỗi trường hợp, kiểm tra `payment_system` và `payment_status` của booking",
        "8 tổ hợp",
        "- Tất cả: booking THÀNH CÔNG, KHÔNG bill tiền\n"
-       "- `payment_status` = 2 (決済なし), `payment_system` không ghi nhà cung cấp",
+       "- `payment_status` = 2 (決済なし), `payment_system` = NULL",
+       group="Data",
        spec="Đã hỏi leader",
-       note="Nguồn: Liên kết bill tiền r90-r97. ⚠ Corpus để dấu hỏi「payment_system = NULL?」→ "
-            "giá trị DB chưa được xác nhận, xem MT-36."),
+       note="Leader chốt MT-36 (2026-10-12): OFF bill tiền của calendar → payment_system = NULL. "
+            "Nguồn: Liên kết bill tiền r90-r97."),
 
     # ══════════════ 42. 決済 — thẻ & 3D Secure ══════════════
     tc("決済 — thẻ & 3D Secure", "PAY-STATE-001", "Normal",
@@ -133,6 +140,7 @@ S7 = [
        "- Thanh toán thành công, booking tạo với `payment_amount` = 5000\n"
        "- Detail booking hiện số thẻ「XXXXXXXX1234」, hạn thẻ, hệ thống thanh toán = Stripe\n"
        "- Dashboard Stripe (test) có giao dịch tương ứng\n- LINE user nhận tin nhắn hoàn tất",
+       group="Data",
        note="Nguồn: Liên kết bill tiền r22-r24, r90-r136. RULE-07 (3 tầng: DB + màn hình + Stripe)."),
 
     tc("決済 — thẻ & 3D Secure", "PAY-STATE-001", "Abnormal",
@@ -143,6 +151,7 @@ S7 = [
        "Thẻ thật",
        "- Lỗi「Your card was declined. Your request was in test mode, but used a non test (live) card. …」\n"
        "- KHÔNG tạo booking",
+       group="UI",
        note="Nguồn: Liên kết bill tiền r28."),
 
     tc("決済 — thẻ & 3D Secure", "FUNC-003", "Boundary",
@@ -190,6 +199,7 @@ S7 = [
        "- Nhánh xác thực thành công: booking tạo, thanh toán thành công\n"
        "- Nhánh hủy/thất bại: KHÔNG tạo booking (hoặc booking không được thanh toán), "
        "hiển thị lỗi rõ ràng, không để lại dữ liệu nửa vời",
+       group="Data",
        note="Nguồn: Liên kết bill tiền r90-r136 (khối「Test bill tiền stripe môi trường test "
             "(stripe có 3d secure)」)."),
 
@@ -203,6 +213,7 @@ S7 = [
        "- Sau khi user đặt: `payment_status` = 0 (未決済), chưa trừ tiền\n"
        "- Sau khi admin duyệt: `payment_status` = 1 (決済成功), giao dịch xuất hiện trên dashboard\n"
        "- Admin từ chối: KHÔNG bill tiền",
+       group="Data",
        note="Nguồn: Quản lý calendar r1362-r1365 + Setting calendar r1575-r1576."),
 
     tc("決済 — thẻ & 3D Secure", "PAY-STATE-001", "Abnormal",
@@ -213,6 +224,7 @@ S7 = [
        "4. Admin từ chối booking đó → quan sát",
        "Chưa liên kết nhà cung cấp",
        "- Cả 4 trường hợp: booking THÀNH CÔNG, không phát sinh thanh toán, không lỗi màn",
+       group="UI",
        note="Nguồn: Liên kết bill tiền r82-r85."),
 
     tc("決済 — thẻ & 3D Secure", "PAY-STATE-001", "Abnormal",
@@ -222,10 +234,12 @@ S7 = [
        "2. Với booking đã đặt TRƯỚC đó có thông tin thẻ, admin duyệt → kiểm tra thanh toán",
        "Nhà cung cấp lệch với liên kết",
        "- Booking mới: màn nhập thẻ KHÔNG hiển thị được phần nhập thẻ\n"
-       "- Booking cũ có thông tin thẻ: vẫn bill được (cần xác nhận rõ hành vi mong muốn)",
+       "- Booking cũ có thông tin thẻ: admin duyệt → VẪN trừ tiền thành công qua nhà cung cấp cũ (đã hủy liên kết)",
+       group="UI",
        spec="Đã hỏi leader",
-       note="Nguồn: Liên kết bill tiền r86-r89. ⚠ Corpus để dấu hỏi「vẫn bill tiền do có thông tin card ?」"
-            "→ cần Leader chốt, xem MT-37."),
+       note="Leader chốt MT-37 (2026-10-12): vẫn trừ tiền thành công qua nhà cung cấp đã hủy; tiền vào tài "
+            "khoản bot không còn quản lý. ⚠ RỦI RO TIỀN — Leader cần quyết có raise ticket không. "
+            "Nguồn: Liên kết bill tiền r86-r89."),
 
     tc("決済 — thẻ & 3D Secure", "PAY-AMOUNT-001", "Normal",
        "Bill tiền ở calendar loại 個人 — số tiền chỉ tính theo course",
@@ -238,6 +252,7 @@ S7 = [
        "- Course có giá: bill đúng giá course (KHÔNG có phụ phí staff)\n"
        "- Course không giá: không bill, đi thẳng bước xác nhận\n"
        "- Lịch sử thay đổi cài đặt hoạt động giống calendar loại スタッフ",
+       group="Data",
        note="Nguồn: Liên kết bill tiền r174-r305."),
 
     tc("決済 — thẻ & 3D Secure", "ENV-003", "Normal",
@@ -252,6 +267,7 @@ S7 = [
        "- Thanh toán thành công thật sự, tiền được trừ đúng số\n"
        "- `payment_status` = 1, dashboard nhà cung cấp có giao dịch\n"
        "- Google Sheet ghi「決済済み」",
+       group="Data",
        env="PRODUCTION",
        note="Nguồn: Liên kết bill tiền r31-r37, r62-r65, r173, r305. RULE-08: bill tiền BẮT BUỘC "
             "test production."),
@@ -265,6 +281,7 @@ S7 = [
        "UnivaPay có/không webhook",
        "- Thời gian chờ giảm rõ rệt so với trước, không treo màn\n"
        "- Booking và trạng thái thanh toán vẫn đúng ở cả 2 cấu hình webhook",
+       group="UI",
        env="PRODUCTION",
        note="Nguồn: Info r48 (SpecImprove #34895, 03/2026) + Booking phía line user r1424-r1425. "
             "RULE-08."),
@@ -295,6 +312,7 @@ S7 = [
        "カード決済が行われます。」và「※予約時にカード情報を入力された方は、リクエストが承認された時に、"
        "カード決済が行われます。」\n"
        "- B3: GIỮ NGUYÊN 2 text trên\n- Calendar 個人 cho kết quả tương tự",
+       group="UI",
        note="Nguồn: Booking phía line user r1259-r1270 (Feature #31268, 27/01/2026)."),
 
     tc("決済 — thẻ & 3D Secure", "PAY-BATCH-001", "Normal",
@@ -308,6 +326,7 @@ S7 = [
        "- Hệ thống kiểm tra lại trạng thái thanh toán MỚI NHẤT trước khi bill từng booking\n"
        "- Booking đã hủy/hoàn tiền KHÔNG bị bill lại\n"
        "- Số giao dịch trên dashboard khớp đúng số booking được duyệt (không bill thừa)",
+       group="Data",
        env="PRODUCTION",
        note="Spec §2.2a (`changeStatusBooking` — 「nếu có thanh toán liên quan → kiểm tra paymentStatus」). "
             "⚠ Corpus KHÔNG có TC cho nhánh re-check khi duyệt hàng loạt → TC bổ sung theo spec. RULE-08."),
@@ -323,9 +342,10 @@ S7 = [
        "- Dữ liệu cũ KHÔNG bị xóa\n- Không tạo thêm được (báo lỗi giới hạn plan)\n"
        "- Chức năng 決済 bị chặn theo gói free\n"
        "- Hành vi phía LINE user với các calendar vượt giới hạn phải rõ ràng, không lỗi màn trắng",
+       group="UI",
        spec="Đã hỏi leader",
        note="Spec BR-01/BR-02 chỉ mô tả giới hạn khi TẠO MỚI, KHÔNG mô tả hành vi khi HẠ GÓI. "
-            "⚠ Corpus KHÔNG có TC cho nhánh này → TC bổ sung, cần Leader chốt (xem MT-02)."),
+            "⚠ Corpus KHÔNG có TC cho nhánh này → TC bổ sung; MT-02 KHÔNG trả lời nhánh hạ gói → cần Leader chốt."),
 
     # ══════════════ 43. 現地決済 ══════════════
     tc("現地決済", "PAY-STATE-001", "Normal",
@@ -336,8 +356,9 @@ S7 = [
        "payment_time = 1 và 2",
        "- payment_time = 2: hiện 2 lựa chọn「thanh toán trước」và「thanh toán tại chỗ」\n"
        "- payment_time = 1: chỉ có luồng nhập thẻ, không có lựa chọn tại chỗ",
+       group="Data",
        note="Nguồn: Quản lý calendar r2796 + Spec Field #52. "
-            "⚠ Spec §9.1 mục 1 ghi 現地決済 KHÔNG có constants trong source → MT-12."),
+            "Leader chốt MT-12 (2026-10-12): theo TC là đúng → cần đóng Gap spec §9.1 mục 1."),
 
     tc("現地決済", "PAY-STATE-001", "Normal",
        "Chọn thanh toán TRƯỚC khi có 2 lựa chọn → luồng thẻ như bình thường",
@@ -349,6 +370,7 @@ S7 = [
        "- Detail booking: hiện số tiền + trạng thái「テスト決済」+ thông tin thẻ; "
        "KHÔNG hiển thị lịch sử cập nhật trạng thái\n"
        "- Google Sheet cột 決済:「テスト決済」\n- LINE user thấy trạng thái「テスト決済」",
+       group="UI",
        note="Nguồn: Quản lý calendar r2797, r2803."),
 
     tc("現地決済", "PAY-STATE-001", "Normal",
@@ -363,6 +385,7 @@ S7 = [
        "chưa có lịch sử cập nhật\n"
        "- Google Sheet: số tiền + trạng thái 現地決済\n"
        "- DB: `payment_time` = 2, `payment_status` = 0",
+       group="Data",
        note="Nguồn: Quản lý calendar r2798, r2804, r2824."),
 
     tc("現地決済", "PAY-STATE-001", "Normal",
@@ -378,9 +401,10 @@ S7 = [
        "- Chưa thanh toán: hiện「現地決済：未決済」, `payment_status` = 0\n"
        "- Sau khi cập nhật: HIỆN lịch sử cập nhật trạng thái\n"
        "- Google Sheet và màn phía LINE user cập nhật theo",
-       note="Nguồn: Quản lý calendar r2799-r2801, r2805-r2806, r2825. "
-            "⚠ Corpus đánh NG cho cột Google Sheet ở 2 nhánh (r2800, r2801, r2806) → cần verify lại "
-            "giá trị ghi vào Sheet, xem MT-38."),
+       group="Data",
+       note="Leader chốt MT-38 (2026-10-12): admin cập nhật 現地決済 → Google Sheet cập nhật cột 決済ステータス. "
+            "Nguồn: Quản lý calendar r2799-r2801, r2805-r2806, r2825. ⚠ Corpus đánh NG cột Google Sheet "
+            "(r2800, r2801, r2806) → nếu còn là DỰ KIẾN FAIL, cần raise bug."),
 
     tc("現地決済", "PAY-STATE-001", "Normal",
        "Duyệt booking 現地決済 KHÔNG làm đổi trạng thái thanh toán",
@@ -388,20 +412,22 @@ S7 = [
        "1. Admin duyệt booking\n2. Kiểm tra trạng thái thanh toán trước và sau khi duyệt",
        "Booking request + 現地決済",
        "- Sau khi duyệt: các trạng thái thanh toán VẪN giữ nguyên (không tự chuyển sang đã thanh toán)",
+       group="UI",
        note="Nguồn: Quản lý calendar r2807."),
 
     tc("現地決済", "PAY-AMOUNT-001", "Normal",
-       "Admin book / random staff: lấy giá tại thời điểm booking cho 指定なし",
+       "Random staff: chỉ tính phí course, KHÔNG tính phụ phí của staff được gán",
        PAY + "\n- Đã bật 決済 và bật random staff (option 2 hoặc 3)",
        "1. LINE user đặt lịch chọn 指定なし → hệ thống random vào S1 (phụ phí 1,000)\n"
        "2. Kiểm tra `amount` / `payment_amount` của booking\n"
        "3. Lặp lại với admin đặt lịch chọn 指定なし",
        "Random staff bật, S1 có phụ phí",
-       "- Số tiền lấy tại THỜI ĐIỂM BOOKING cho 指定なし (không cộng phụ phí của staff được random sau)\n"
-       "- Trường `amount` của `calendar_salon_line_booking` ghi đúng giá trị tại thời điểm đặt",
-       note="Nguồn: Quản lý calendar r2791-r2792, r2808-r2809. ⚠ Đây là điểm dễ hiểu nhầm: khách bị "
-            "tính tiền theo 指定なし dù cuối cùng được gán staff có phụ phí — cần Leader xác nhận có "
-            "đúng ý đồ nghiệp vụ không, xem MT-39."),
+       "- Số tiền = phí course (nếu có), KHÔNG cộng phụ phí 1,000 của S1 dù booking được gán S1\n"
+       "- Trường `amount` của `calendar_salon_line_booking` = phí course\n"
+       "- Admin đặt chọn 指定なし: cùng kết quả",
+       group="Data",
+       note="Leader chốt MT-39 (2026-10-12): random staff không tính phí staff, chỉ tính phí course (nếu có). "
+            "Nguồn: Quản lý calendar r2791-r2792, r2808-r2809."),
 
     tc("現地決済", "PAY-CONFIRM-001", "Normal",
        "Admin book khi bật 現地決済 — alert cảnh báo không tính phí",
@@ -413,5 +439,6 @@ S7 = [
        "- Có giá: hiện alert cảnh báo「…有料コースの場合でも、お客様に料金は請求されませんが…」\n"
        "- Sau khi lưu: detail hiện số tiền + trạng thái「決済なし」, không có lịch sử cập nhật\n"
        "- Không có giá: KHÔNG hiện alert, booking thành công",
+       group="UI",
        note="Nguồn: Quản lý calendar r2785-r2786, r2789-r2790, r2793-r2794."),
 ]

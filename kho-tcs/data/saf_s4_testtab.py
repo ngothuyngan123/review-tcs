@@ -43,10 +43,9 @@ S4 = [
        "- Sơ đồ có 2 bước:\n"
        "  1「LINE公式アカウントをブロック&ブロック解除」\n"
        "  2「設定したアクションが稼働すれば テスト成功」",
-       note="⚠️ MÂU THUẪN MT-04: tab master r329-r331 (trang unblock) và r193-r195 (trang old) ghi "
-            "tiêu đề khối là「新規友だち用アクションのテスト方法」— tức 3 trang dùng CHUNG tiêu đề của "
-            "trang 新規. Còn ui-spec.md:190 (quan sát 05/2026) ghi「ブロック解除時用アクションの"
-            "テスト方法」. Nếu TC gốc đúng thì đây là BUG hiển thị sai tiêu đề. CHỜ LEADER CHỐT.",
+       note="✅ Leader chốt MT-04 (2026-10-23): mỗi trang có tiêu đề テスト方法 RIÊNG — trang này là "
+            "「ブロック解除時用アクションのテスト方法」(theo ui-spec.md:190). Khối corpus r329-r331 ghi "
+            "tiêu đề 新規友だち用 cho cả 3 trang chỉ là lỗi copy-paste khi soạn bảng, KHÔNG phải bug.",
        spec="Đã hỏi leader"),
 
     tc("Tab テスト方法", "UI-001", "Normal",
@@ -61,24 +60,27 @@ S4 = [
        "- Nội dung hướng dẫn: block rồi bỏ block LINE OA trên app LINE (theo tab "
        "「Improve setting add fr 1.0」r18: 「LINE上でLINE公式アカウントをブロック→ブロック解除を"
        "行ってください。(ブロック→ブロック解除操作は10秒間ほど間をおいて行なってください)」)",
-       note="⚠️ MÂU THUẪN MT-04 (xem TC trên) — tab master r193 ghi tiêu đề là 新規友だち用. "
-            "Expected ở đây viết theo hành vi ĐÚNG suy từ ui-spec + tab 1.0 → DỰ KIẾN CÓ THỂ FAIL, "
-            "nếu FAIL cần raise bug. CHỜ LEADER CHỐT.",
+       note="✅ Leader chốt MT-04 (2026-10-23): trang 既存友だち用 có tiêu đề riêng "
+            "「既存友だち用アクションのテスト方法」. Khối corpus r193 ghi 新規友だち用 là lỗi copy-paste, "
+            "KHÔNG phải bug.",
        spec="Đã hỏi leader"),
 
     tc("Tab テスト方法", "REG-URL-001", "Normal",
-       "Link テスト方法を動画で確認 — mở đúng video hướng dẫn trên YouTube",
-       UNB,
-       "1. Mở tab「テスト方法」\n"
-       "2. Click link「テスト方法を動画で確認」\n"
-       "3. Quan sát tab mới mở ra",
-       "Trang unblock",
-       "- Mở YouTube đúng video id 9TTugIBdQGs\n"
-       "- Video phát được (không lỗi private/không tồn tại)\n"
-       "- Link nhảy tới đúng mốc thời gian được cấu hình (tham số t)",
-       note="Nguồn: r373 (ghi rõ link https://www.youtube.com/watch?si=...&t=56&v=9TTugIBdQGs) + "
-            "ui-spec.md:196. ⚠️ Tham số mốc thời gian ở 2 nguồn LỆCH nhau: r373 ghi t=56, "
-            "ui-spec.md:196 ghi t=354 — cần Leader chốt mốc đúng (MT-15).",
+       "Link テスト方法を動画で確認 — mở đúng video, đúng mốc thời gian theo từng trang",
+       "- Đăng nhập Admin của 1 bot đã liên kết LINE OA\n"
+       "- Chuẩn bị mở tab「テスト方法」của trang 新規友だち用 và 既存友だち用",
+       "1. Trang 新規友だち用 → tab「テスト方法」→ click link「テスト方法を動画で確認」, đọc URL tab mới\n"
+       "2. Trang 既存友だち用 → tab「テスト方法」→ click link, đọc URL tab mới\n"
+       "3. Kiểm tra video phát được",
+       "2 trang: new · old",
+       "- Cùng video id 9TTugIBdQGs, phát được (không private/không tồn tại)\n"
+       "- Trang 新規友だち用: link nhảy tới mốc t=56s "
+       "(https://www.youtube.com/watch?v=9TTugIBdQGs&t=56s)\n"
+       "- Trang 既存友だち用: link nhảy tới mốc t=232s "
+       "(https://www.youtube.com/watch?v=9TTugIBdQGs&t=232s)",
+       note="✅ Leader chốt MT-15 (2026-10-23): mốc thời gian theo từng trang — NEW t=56s · OLD t=232s. "
+            "Nguồn r373 (t=56) / ui-spec.md:196 (t=354) đã được thay bằng quyết định. ⚠️ Mốc của trang "
+            "ブロック解除時用 chưa được Leader nêu — ghi lại khi test (xem TC kế).",
        spec="Đã hỏi leader"),
 
     tc("Tab テスト方法", "UI-001", "Abnormal",

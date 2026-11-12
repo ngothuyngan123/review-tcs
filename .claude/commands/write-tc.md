@@ -1,5 +1,5 @@
 ---
-description: Sinh draft 04-tc-list.md từ bug + dev-impact + spec, bám đúng template + 80 quan điểm test LME (2 tầng quan điểm/catalog) + 13 RULE + 5 quy tắc vàng. Đối chiếu TC cũ (Studio/Sheet/file 04) + kho-tcs để không viết trùng. Cho QA member dùng trước khi submit cho Leader.
+description: Sinh draft 04-tc-list.md từ bug + dev-impact + spec, bám đúng template + 81 quan điểm test LME (2 tầng quan điểm/catalog) + 13 RULE + 5 quy tắc vàng. Đối chiếu TC cũ (Studio/Sheet/file 04) + kho-tcs để không viết trùng. Cho QA member dùng trước khi submit cho Leader.
 argument-hint: <folder review>
 model: claude-opus-5-5[1m]
 ---
@@ -116,23 +116,24 @@ Sau khi lấy được TC cũ, **trích lọc** các TC **liên quan scope task 
 
 Ở chế độ `APPEND`, trích ra từ file đích (giữ trong working memory):
 1. **Toàn bộ TC đã có** → đây là tập chống trùng bắt buộc ở Bước 3f + Bước 6 (so theo **4 yếu tố**, không so chuỗi).
-2. **Số thứ tự lớn nhất của từng ID (`ID` ở format 14 cột, `TC No.` / `TC ID` ở format cũ) theo mã quan điểm** → TC mới đánh số **tiếp nối**, không đánh lại từ `01`. VD file đã có `TC-REGSHARED001-01` … `-06` → TC mới bắt đầu `TC-REGSHARED001-07`.
+2. **Số thứ tự lớn nhất của từng ID (`ID` ở format 15 / 14 cột, `TC No.` / `TC ID` ở format cũ) theo mã quan điểm** → TC mới đánh số **tiếp nối**, không đánh lại từ `01`. VD file đã có `TC-REGSHARED001-01` … `-06` → TC mới bắt đầu `TC-REGSHARED001-07`.
 3. **Format bảng đang dùng** → TC append **bám đúng format đang có của file**, KHÔNG convert file cũ sang format mới:
-   - **14 cột** (chuẩn từ 2026-10-07 — header bắt đầu `| ID | Nhóm | Mã quan điểm |`)
+   - **15 cột** (chuẩn từ 2026-10-14 — header bắt đầu `| ID | Nhóm | Mã quan điểm |`, có cột `Surface` ngay sau `Phạm vi ENV`)
+   - **14 cột** (2026-10-07 → 2026-10-13 — như 15 cột nhưng **chưa có `Surface`**; APPEND vẫn bám 14 cột, KHÔNG tự chèn thêm cột — `/sync-review-tc` tự suy `surfaces` khi push)
    - **16 cột canonical** (2026-07-16 → 2026-10-06 — header bắt đầu `| TC No. | Mã quan điểm liên kết |`; snapshot Studio do `scripts/parse_studio_tcs.py` sinh cũng dùng format này)
    - **10 cột cũ** (trước 2026-07-16 — header bắt đầu `| TC ID | Title |`)
 4. Dòng đầu file có sẵn `<!-- sync-target: ... -->` / `<!-- sync-tcs: ... -->` / `<!-- source: ... -->` chưa → quyết định ở Bước 7 có chèn `sync-target` hay không.
 
-In ra trước khi sang Bước 2: `Chế độ ghi: CREATE (14 cột) | APPEND (<n> TC đã có, format <14 cột | 16 cột | 10 cột cũ>)`.
+In ra trước khi sang Bước 2: `Chế độ ghi: CREATE (15 cột) | APPEND (<n> TC đã có, format <15 cột | 14 cột | 16 cột | 10 cột cũ>)`.
 
 
 ### BƯỚC 2 — CHỌN QUAN ĐIỂM TEST (tầng 1) + MỞ CATALOG (tầng 2)
 
-**80 quan điểm / 18 nhóm + 13 RULE**. Quy trình **2 tầng, bắt buộc đủ 2 bước** (bỏ bước 2 là chỗ bug lọt):
+**81 quan điểm / 18 nhóm + 13 RULE**. Quy trình **2 tầng, bắt buộc đủ 2 bước** (bỏ bước 2 là chỗ bug lọt):
 
 > ⚡ **Đọc INDEX, KHÔNG nạp toàn văn 2 file gốc** (574 + 375 dòng ≈ 37k token):
-> 1. [framework/checklist-lme.index.md](../../framework/checklist-lme.index.md) — 80 dòng `Mã · Ưu tiên · Catalog · Nhóm · Trigger · Dòng`. Đủ để duyệt ◯/× ở **2a**.
-> 2. `sed -n '58,90p' framework/checklist-lme.md` — 13 RULE, đọc đủ.
+> 1. [framework/checklist-lme.index.md](../../framework/checklist-lme.index.md) — 81 dòng `Mã · Ưu tiên · Catalog · Nhóm · Trigger · Dòng`. Đủ để duyệt ◯/× ở **2a**.
+> 2. `sed -n '58,89p' framework/checklist-lme.md` — 13 RULE, đọc đủ.
 > 3. Chỉ với các mã đã đánh **◯**: `sed -n '<Dòng>p' framework/checklist-lme.md` để lấy `Kiểm tra` + `Evidence`.
 > 4. [framework/catalog-lme.index.md](../../framework/catalog-lme.index.md) §2 — tra ngược `quan điểm ◯ → mục catalog phải mở` + số dòng, rồi `sed` đúng vùng đó ở **2b**.
 >
@@ -182,6 +183,17 @@ Bộ TC phải thỏa **đồng thời** 2 nguồn yêu cầu:
 
 **3d — RULE-07 (verify 3 tầng):** mọi TC CRUD → Expected phải khớp **3 nơi**: DB + màn hình + output/thông báo. Với UPDATE/DELETE: có TC tạo bản ghi **trùng tên ở 2 tài khoản** để kiểm chứng `WHERE` scope (`DATA-DB-001`).
 
+**3d-bis — `LIFF-ENTRY-001` ◯ → bung ma trận ĐIỂM‑VÀO (không gộp thành 1–2 TC):** khi task phát sinh / chạm URL phía LINE user (form · item · event · salon · lesson · conversion · QR · popup), mỗi ô dưới đây phải có TC riêng hoặc 1 lý do loại có căn cứ:
+
+| Trục | Giá trị bắt buộc |
+|---|---|
+| **Điểm vào** | ① in-app LINE · ② **trình duyệt ngoài** (URL LIFF `liff.line.me/...` mở Chrome/Safari) · ③ button trong tin nhắn · ④ PC |
+| **Trạng thái kết bạn** | CHƯA bạn → redirect kết bạn · ĐÃ bạn → vào thẳng (kể cả bot LIFF khác kênh LINE Login) · đã chặn → redirect |
+| **Loại link** | `s.lmes.jp` (mới) · `step3.lmes.jp` (cũ); booking thêm **URL LIFF vs link `u_code`** |
+
+- ⛔ Ô ② **trình duyệt ngoài KHÔNG được coi là đã cover bởi TC API dùng `u_code`** — mở URL LIFF bằng browser ngoài là nhánh auth khác (thiếu/sai `id_token` → mất userId). Phải có TC riêng (case `Abnormal`).
+- `LIFF-ENTRY-001` ưu tiên **Cao** → RULE-01 ở 3a áp cho **từng điểm vào trọng yếu** (tối thiểu ① + ②), không phải chỉ 1 TC in-app. _(Bài học #42437: AI chỉ viết ô ① in-app Normal, bỏ ô ② → human phải thêm tay sau.)_
+
 #### 3e — Reuse TC cũ (chỉ khi Bước 1.4b lấy được TC cũ)
 
 **Nguyên tắc**: TC cũ giữ nguyên 100% — AI KHÔNG sửa, KHÔNG override, KHÔNG ghi đè. Chỉ dùng TC cũ làm reference để tránh viết lặp.
@@ -216,12 +228,12 @@ Mục tiêu: bộ TC mới ở file 04 chỉ chứa **delta** (bug + impact mớ
    | **Conflict expected** — TC sắp viết có `Kết quả mong đợi` **mâu thuẫn** TC kho không? | **KHÔNG tự chọn bên.** Vẫn viết TC theo cách fix ở file 03, nhưng `Trạng thái đánh giá spec` = `Spec không ghi`, `Ghi chú` ghi `⚠️ conflict với <ID kho>: "<expected kho>"`, và đưa vào cảnh báo Bước 7 + note đầu file 04 để Leader/Dev chốt. |
    | **Đã có sẵn** — TC kho đã cover đúng ô yêu cầu này chưa? | Có → **KHÔNG viết TC mới trùng**; track nội bộ "đã có ở kho `<ID kho>`" và liệt kê ở Bước 7. |
 
-   ⚠️ Kho dùng **12 cột riêng** (`ID` = `TC-<PREFIX>-<nn>`), file 04 dùng 14 cột = 12 cột kho + `Chạy` + `Phạm vi ENV`, nhưng `ID` kho là số tuần tự → chỉ **dẫn chiếu ID + tên case**, KHÔNG copy nguyên dòng kho vào file 04.
+   ⚠️ Kho dùng **12 cột riêng** (`ID` = `TC-<PREFIX>-<nn>`), file 04 dùng 15 cột = 12 cột kho + `Chạy` + `Phạm vi ENV` + `Surface`, nhưng `ID` kho là số tuần tự → chỉ **dẫn chiếu ID + tên case**, KHÔNG copy nguyên dòng kho vào file 04.
 
 ### BƯỚC 4 — SINH TC THEO TEMPLATE
-Output theo format `templates/04-tc-list.template.md` — **14 cột, GIỐNG HỆT bảng §7 "TCs đề xuất bổ sung" của `/review-tc`** (Leader chốt 2026-10-07, thay 16 cột canonical cũ). TC do `/write-tc` viết và TC do `/review-tc` đề xuất dùng chung 1 format → copy qua lại / push lên Studio không cần ánh xạ cột:
+Output theo format `templates/04-tc-list.template.md` — **15 cột, GIỐNG HỆT bảng §7 "TCs đề xuất bổ sung" của `/review-tc`** (Leader chốt 2026-10-07, thay 16 cột canonical cũ; thêm cột `Surface` 2026-10-14). TC do `/write-tc` viết và TC do `/review-tc` đề xuất dùng chung 1 format → copy qua lại / push lên Studio không cần ánh xạ cột:
 
-| ID | Nhóm | Mã quan điểm | Màn hình/chức năng | Loại case | Chạy | Phạm vi ENV | Tên case | Tiền điều kiện | Các bước thực hiện | Dữ liệu nhập | Kết quả mong đợi | Kết quả thực thi | Ghi chú |
+| ID | Nhóm | Mã quan điểm | Màn hình/chức năng | Loại case | Chạy | Phạm vi ENV | Surface | Tên case | Tiền điều kiện | Các bước thực hiện | Dữ liệu nhập | Kết quả mong đợi | Kết quả thực thi | Ghi chú |
 
 **Quy tắc từng cột = đúng mục "Quy tắc cột" §7 của [templates/05-review-report.template.md](../../templates/05-review-report.template.md)** — đọc ở đó, đây là nguồn duy nhất, KHÔNG chép lại để tránh 2 nơi lệch nhau. Tóm tắt các điểm hay sai:
 
@@ -233,6 +245,7 @@ Output theo format `templates/04-tc-list.template.md` — **14 cột, GIỐNG H�
 - **`Loại case`**: **CHỈ** `Normal` / `Abnormal` / `Boundary`. **KHÔNG có Regression** — TC verify tính năng cũ không hỏng xếp `Normal` / `Abnormal` + ghi chữ `regression` ở `Ghi chú`.
 - **`Chạy`**: `auto` / `manual` → Studio `exec_mode`, **mặc định `auto`** (kể cả nhóm `UI` và bước "bạn bè thao tác trên LINE"). `manual` **chỉ** khi scope chỉ có `prd` · thiết bị thật · mail thật · mắt người phán đoán → ghi `manual vì <lý do>` ở `Ghi chú`.
 - **`Phạm vi ENV`**: env code Studio, chỉ 3 tổ hợp — `dev, local, prd, staging` (**mặc định**) · `prd` (chỉ khi phải kiểm trên tài khoản / dữ liệu khách hàng thật → `chỉ prd vì <lý do>`) · `dev, local, staging` (abnormal ảnh hưởng server → `không chạy prd vì <lý do>`). **RULE-08** (media · domain · job · loadbalance · bill tiền) → scope **phải chứa `prd`**.
+- **`Surface`**: `Surface` = mặt tiếp xúc, **bắt buộc**, chỉ 7 giá trị: `web` (UI admin trên browser thật) · `mcp` (gọi qua MCP server/client) · `api` (API nội bộ, session HTTP) · `public-api` (Public API `/v1`) · `job` (job / batch chạy nền) · `line-friend` (bạn bè thao tác từ app LINE / LIFF) · `mobile-app` (app mobile LME). Nhiều mặt ngăn `, `, **giá trị đầu = mặt chính** (nơi phán quyết pass/fail); mặt phụ chỉ khai khi có bước thật dùng tới. `Surface` ≠ `Nhóm` (Nhóm = cách kiểm chứng). Quy tắc đầy đủ + bảng quy đổi khi push Studio: §7 template report. VD khách đặt lịch trên LIFF rồi admin đối chiếu lưới → `line-friend, web`; job remind gửi tin → `job, line-friend`; gọi tool MCP → `mcp`; gửi request tay tới `/ajax/…` → `api`.
 - **`Tên case`**: mô tả MỤC ĐÍCH cụ thể + **chứa keyword** để Leader suy được impact (tên function / DB table / màn hình). VD `generateLinkInviteStaff: bot standard 10/10 → fail` → Leader nhận ra ngay map F1. Không prefix `[<nhóm>]`.
 - **`Tiền điều kiện`**: account, data seed, feature flag, timezone — **đầy đủ**, người khác đọc dựng được env. Mỗi ý 1 dòng bắt đầu bằng `- `, ngăn bằng `<br>`.
 - ⚠️ **Mỗi TC phải tự đầy đủ** — TC lên Studio / Sheet đứng riêng từng dòng, TC khác và bảng tổng quan không đi theo:
@@ -242,7 +255,7 @@ Output theo format `templates/04-tc-list.template.md` — **14 cột, GIỐNG H�
   - Tham chiếu chéo (TC kho, TC cũ) chỉ để ở `Ghi chú`.
 - **`Các bước thực hiện`**: **mỗi bước 1 dòng**, đánh số `1. ` `2. `, ngăn bằng `<br>`; không gộp nhiều thao tác / nhiều màn vào 1 bước.
 - **`Dữ liệu nhập`**: giá trị input cụ thể + **phép tính tay** nếu TC có số đếm/tỷ lệ (VD `5 friend, 3 người mở` / `Phép tính tay: 3/5 = 60%`). Không "data dummy".
-- **`Kết quả mong đợi`**: **mỗi kết quả 1 dòng** bắt đầu bằng `- `, ngăn bằng `<br>`; **đo lường được** (giá trị cụ thể, không "hiển thị đúng"). Áp **RULE-06** (đi tới output cuối chuỗi) + **RULE-07** (khớp DB + màn hình + output). TC nhóm `API` → **bắt buộc mã HTTP cụ thể** theo **RULE-13** (200 · 400 · 401 · 403/404 · 422 · 429 · 500 · 502); code Dev trả lệch quy ước → giữ expected theo quy ước, ghi mã thực tế ở `Ghi chú`.
+- **`Kết quả mong đợi`**: **mỗi kết quả 1 dòng** bắt đầu bằng `- `, ngăn bằng `<br>`; **đo lường được** (giá trị cụ thể, không "hiển thị đúng"). Áp **RULE-06** (đi tới output cuối chuỗi) + **RULE-07** (khớp DB + màn hình + output). TC nhóm `API` → **bắt buộc mã HTTP cụ thể** theo **RULE-13** (200 · 400 hoặc 422 · 401 · 403/404 · 429 · 500 · 502); code Dev trả lệch quy ước → giữ expected theo quy ước, ghi mã thực tế ở `Ghi chú`.
 - **Nhãn tiếng Việt trước thuật ngữ màn hình tiếng Nhật** ở `Tên case` · `Tiền điều kiện` · `Các bước` · `Dữ liệu nhập` · `Kết quả mong đợi` (VD `Detail hợp đồng 契約詳細`).
 - **`Kết quả thực thi`**: **để trống** trong draft — người test / Studio tự điền.
 - **`Ghi chú`**: ngăn bằng ` · `, theo thứ tự:
@@ -289,7 +302,8 @@ Trước khi ghi file, tự track mapping nội bộ (impact + quan điểm → 
   - [ ] TC mới KHÔNG trùng **TC cũ** đã cover (nguồn ở Bước 1.4b)
   - [ ] TC mới KHÔNG trùng **TC kho** `kho-tcs/` (Bước 3f) — trùng thì bỏ, track "đã có ở kho `<ID kho>`"
 - [ ] **(chế độ `APPEND`)** Không `ID` nào của TC mới trùng ID đã có trong file đích; số thứ tự tiếp nối đúng theo từng mã quan điểm
-- [ ] **(chế độ `APPEND`)** TC mới bám **đúng format bảng đang có** của file đích (14 cột / 16 cột / 10 cột cũ), không trộn 2 format
+- [ ] **(chế độ `APPEND`)** TC mới bám **đúng format bảng đang có** của file đích (15 cột / 14 cột / 16 cột / 10 cột cũ), không trộn 2 format
+- [ ] **(format 15 cột)** Mọi TC có `Surface` thuộc 7 giá trị, giá trị đầu là mặt đặt phán quyết; mặt phụ nào cũng có bước thật trong `Các bước` (không tính dữ liệu dựng ở `Tiền điều kiện`)
 - [ ] KHÔNG có TC nào "override" / "sửa" / "ghi đè" TC cũ hoặc TC kho — đều là read-only
 - [ ] TC có `Kết quả mong đợi` **mâu thuẫn TC kho** đã ghi `⚠️ conflict với <ID kho>` ở `Ghi chú` + đưa vào cảnh báo Bước 7 (không tự chọn bên)
 

@@ -458,6 +458,21 @@ Filter theo course_ids và staff_ids nếu bật `is_use_filter`.
 **API SAVE:** EP-38 `POST /ajax/calendar-salon/save-setting-limit-booking`  
 **DB:** `calendar_salon_setting_limit_booking` — `limit` (0=unlimited, 1=limited), `limited_quantity`, `setting_staffs_limit` (JSON per-staff)
 
+##### 4 tùy chọn 受付上限 — cách đếm chỗ (Leader cung cấp 2026-10-20)
+
+> Nguồn: Leader (mô tả nghiệp vụ chính thức, 2026-10-20). Bổ sung phần feature-spec còn thiếu — trước đó chỉ có `limit` 0/1.
+> `店舗全体の同時受付上限` có 3 giá trị chọn ở UI; riêng giá trị 「合計」 tách 2 chế độ `シフトの合算` → thành 4 tổ hợp 1.1 / 1.2 / 2 / 3.
+> Calendar tạo MỚI mặc định **1.1**; calendar cũ mặc định **1.2** (kho FA-020 MT-22).
+
+| Tùy chọn | UI | Cách đếm chỗ |
+|---|---|---|
+| **1.1** | `上限をその時間に受付可能なスタッフ数の合計にする` + `1つの予約を1人のスタッフのみで対応する（シフトの合算をしない）` | Ăn theo **limit từng staff** đã setting. Với staff không chỉ định (指定なし): phải đảm bảo khung giờ đã chọn có **1 staff làm trọn vẹn** course. VD: 2 staff, mỗi staff limit 1; staff A ca 10–11h, staff B ca 11–12h → chọn course 2 tiếng + 指定なし thì khung 10–12h **không book được** (không staff nào rảnh trọn 2 tiếng). |
+| **1.2** | `上限をその時間に受付可能なスタッフ数の合計にする` + `1つの予約を2人以上のスタッフで交代して対応する（シフトの合算をする）` | Ăn theo **limit từng staff**. Với 指定なし: nếu có các staff **tiếp sức nhau** phủ trọn thì khung vẫn book được. VD trên: khung 10–12h **book được** vì staff A xong thì staff B làm tiếp. |
+| **2** | `上限を設定しない（同時間帯に何人でも受付可能）` | **Logic giống 1.1** (ăn theo limit từng staff, 1 staff làm trọn, không tiếp sức), chỉ khác cửa hàng **không có trần tổng**. |
+| **3** | `上限を設定する` | Trần **chung toàn calendar** (nhập số). Phải thỏa **CẢ** limit staff **VÀ** limit calendar: limit staff thỏa mà limit calendar không thỏa → không book được; limit calendar thỏa mà limit staff không thỏa → cũng không book được. |
+
+> ⚠️ Mô tả này nói về cách **đếm chỗ theo option**, KHÔNG nói về cách đếm đơn 指定なし theo course. Quy tắc "đơn 指定なし thuộc course mà không staff nào (đang có ca) làm được thì không chiếm suất" là nội dung bug fix #43379 (áp cho 1.1 / 1.2 / 2; option 3 chưa áp — xem #43447).
+
 #### 2.4.5 Các cài đặt khác
 
 | Mục | Endpoint GET | Endpoint SAVE | DB |

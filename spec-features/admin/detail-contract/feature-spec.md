@@ -66,7 +66,7 @@ Tính năng quản lý hợp đồng và thanh toán cho phép Admin (chủ qu�
 | 2 | Filter checkbox (「契約中」/「解約済み」) | Check/uncheck | EP-02 (contract_active, contract_cancel params) | Lọc theo bot_contracts.status | `bot_contracts` | Cập nhật bảng danh sách |
 | 3 | Tìm kiếm LOA | Nhập text | EP-02 (input_search param) | LIKE search trên bots.line_id hoặc bots.view_name | `bots` | Lọc danh sách |
 | 4 | Drag & drop sắp xếp | Kéo thả dòng | EP-03 `saveContractPosition` | Validation: required array. UPDATE bot_contracts.position cho từng item | `bot_contracts` | Lưu thứ tự mới |
-| 5 | Huỷ chuyển khoản | Bấm「振込キャンセル」 | EP-28 `cancelTransfer` | Gọi univapayPayment->cancelChargeWeb, rollback contract (nhiều nhánh logic phức tạp — xem Section 2.1.1) | `bot_contracts`, `bot_card_bill_friend`, `bots`, `bot_life_cycles` | Cập nhật trạng thái contract |
+| 5 | Huỷ chuyển khoản | Bấm「振込キャンセル」 — nút **chỉ** hiện cho hợp đồng mua mới lần đầu (xem 2.1.1) | EP-28 `cancelTransfer` | Gọi univapayPayment->cancelChargeWeb, rollback contract (nhiều nhánh logic phức tạp — xem Section 2.1.1) | `bot_contracts`, `bot_card_bill_friend`, `bots`, `bot_life_cycles` | Cập nhật trạng thái contract |
 
 **Phân loại dữ liệu (logic EP-02)**:
 - `overdueDataContract`: Quá hạn — card (method=1, status_payment=2, fail<5) hoặc transfer (method=2, status_payment=5|2, fail<5) VÀ expired < now
@@ -76,6 +76,20 @@ Tính năng quản lý hợp đồng và thanh toán cho phép Admin (chủ qu�
 - `data`: Còn lại (bao gồm WAITING_CANCEL)
 
 #### 2.1.1 Luồng huỷ chuyển khoản chi tiết (EP-28 cancelTransfer)
+
+**Điều kiện hiện nút 「振込キャンセル」** (Leader chốt 2026-10-16 — Specchange 03/2026):
+
+| Hợp đồng đang chờ chuyển khoản (口座発行中 / 入金待ち) sinh từ | Nút ở cột cuối |
+|---|---|
+| Mua mới スタンダード / プロ | 「振込キャンセル」 |
+| Nâng từ フリー lên スタンダード / プロ | 「振込キャンセル」 |
+| Đổi phương thức thẻ → chuyển khoản | 「契約詳細」 (không có 振込キャンセル) |
+| Gia hạn 1 năm (契約期間の延長) | 「契約詳細」 (không có 振込キャンセル) |
+| Nâng スタンダード → プロ | 「契約詳細」 (không có 振込キャンセル) |
+| 再契約 (từ 解約済み / 強制解約) | 「契約詳細」 (không có 振込キャンセル) |
+| Job bill định kỳ | 「契約詳細」 (không có 振込キャンセル) |
+
+→ Các nhánh khôi phục "Upgrade từ Standard" / "Extend contract" bên dưới (và nhánh trả hạn cũ cho 再契約 thêm ở #42058 v6) không còn điểm vào từ UI.
 
 ```
 Nhánh MAX-FRIEND (type=='max-friend'):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """FA-020 サロン・面談予約 — Các điểm MÂU THUẪN giữa kho TCs tổng hợp và spec-features.
-Trạng thái: TOÀN BỘ đang CHỜ QUYẾT ĐỊNH của Leader (chưa mục nào được chốt).
+Trạng thái: đang CHỜ QUYẾT ĐỊNH của Leader, trừ các mục đánh dấu ✅ ĐÃ CHỐT (MT-06).
 
 Nguồn TCs: 11.1 TCsLine_SalonCalendar (25 tab) + TCsLine_Limit all tính năng → tab「Limit Salon」.
 Nguồn spec: spec-features/admin/salon-booking/ (feature-spec.md · web/logic-spec.md · web/api-spec.md ·
@@ -14,7 +14,7 @@ COLS = ["ID", "Mức độ", "Trạng thái", "Chủ đề", "TCs nói gì (ngu�
 W = "⏳ CHỜ QUYẾT ĐỊNH"
 
 CONFLICTS = [
-    ["MT-01", "TRUNG BÌNH", W,
+    ["MT-01", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Plan free: 2 calendar bất kỳ loại hay 1 mỗi loại?",
      "「Calendar list」r23-r30: bot free đã có 1 calendar 個人 → màn chọn loại TỰ NHẢY sang loại "
      "スタッフ; nếu cố chọn 個人 rồi next thì báo lỗi upgrade plan. Bộ đếm: filter 全て = n/2, "
@@ -24,10 +24,10 @@ CONFLICTS = [
      "Spec TỰ MÂU THUẪN giữa §1.4 và BR-01. Nếu member đọc §1.4 sẽ nghĩ tạo 2 calendar 個人 là hợp lệ "
      "→ báo PASS khi hệ thống chặn, hoặc báo FAIL khi hệ thống cho tạo. TCs khẳng định BR-01 đúng.",
      "[Giới hạn theo plan] Plan free: tối đa 1 個人 + 1 スタッフ · Bộ đếm 登録カレンダー数",
-     "",
+     "Mỗi loại calendar được phép add 1:\n1 個人 và 1 スタッフ ",
      "Sửa `feature-spec.md` §1.4 cho khớp BR-01 (free = 1 個人 + 1 スタッフ), hoặc ngược lại."],
 
-    ["MT-02", "CAO", W,
+    ["MT-02", "CAO", "✅ ĐÃ CHỐT",
      "Bot plan cũ (flag_contract_new = 0) có bị giới hạn số calendar / course / staff không?",
      "Có **2 khối TC nói ngược nhau trong CÙNG tab「Calendar list」**:\n"
      "· r39-r40:「plan pro — **không giới hạn số calendar**; tạo calendar thứ 11 → **cho phép**」\n"
@@ -46,11 +46,12 @@ CONFLICTS = [
      "bỏ qua case biên 200 hoàn toàn. Niên đại: khối「không giới hạn」cũ hơn khối 10/10 và hard limit 200.",
      "[Giới hạn theo plan] Plan pro / standard cũ: tối đa 10 個人 + 10 スタッフ · "
      "Hard limit 200 course / 200 staff / 100 câu hỏi",
-     "",
+     "Bot plan free cũ: Giới hạn mỗi loại calendar 1\nBot plan standard cũ: Giới hạn mỗi loại calendar 10",
      "Chốt bảng giới hạn cuối cùng cho từng plan × `flag_contract_new`; bổ sung vào BR-01/BR-02 "
-     "và ghi rõ trường hợp plan cũ."],
+     "và ghi rõ trường hợp plan cũ.\n"
+     "Leader bổ sung (chat 2026-10-12): plan PRO giới hạn 10 calendar mỗi loại. CHƯA chốt: giới hạn course/staff của bot cũ; hành vi khi hạ gói xuống free."],
 
-    ["MT-03", "CAO", W,
+    ["MT-03", "CAO", "✅ ĐÃ CHỐT",
      "Xóa ca làm việc có xóa các booking liên quan không?",
      "· 「Quản lý calendar」r711-r716 (khối CŨ, 2024): xóa ca có booking ở status "
      "deny/cancel/admin-book → hiện confirm, **xóa ca VÀ xóa luôn booking liên quan** "
@@ -67,12 +68,12 @@ CONFLICTS = [
      "khối mới nói ĐÃ BỎ logic xóa booking nhưng khối cũ vẫn nằm trong bộ TC đang dùng.",
      "[Booking đã xóa] Booking bị xóa do xóa ca làm việc · "
      "[Dữ liệu cũ & hồi quy] Bug #29394: xóa ca làm việc KHÔNG được xóa booking",
-     "",
+     "Xóa ca làm việc sẽ xóa toàn bộ booking trong ca làm việc đó\n(Trước khi xóa phải validate không còn booking approve, request trong ca làm việc, chỉ được xóa khi list booking trong ca làm việc đã cancel hoặc deny)",
      "Chốt hành vi hiện tại; nếu đã bỏ logic xóa booking thì **loại khối TC r711-r716** khỏi bộ chạy "
      "và bổ sung BR mới vào `feature-spec.md` (kèm ghi chú status 13「受付枠削除による予約削除」còn dùng "
      "cho trường hợp nào)."],
 
-    ["MT-04", "CAO", W,
+    ["MT-04", "CAO", "✅ ĐÃ CHỐT",
      "Rule ghi đè / hợp nhất ca làm việc: gộp, ghi đè hay chặn?",
      "Corpus có **4 rule chồng lên nhau theo thời gian**:\n"
      "· SpecChange #28381 (19/02/2025):「add lịch lv từ **merge time ⇒ ghi đè**」\n"
@@ -92,12 +93,12 @@ CONFLICTS = [
      "gộp, hoặc báo lỗi. Rule còn KHÁC NHAU giữa add mới / edit / import CSV.",
      "[Ca làm việc — thêm & ghi đè] Bug #32568 2 khung liền nhau · Ghi đè xóa ca cũ · "
      "[Ca làm việc — sửa & xóa] Rút ngắn/kéo dài 1 trong 2 ca · [Ca làm việc — CSV] Import ghi đè",
-     "",
+     "- Logic hiện tại là nếu tạo lịch làm việc liền nhau thì sẽ báo lỗi: シフトの時間が連続する場合は、合算して登録してください（例：13:00~14:30 14:30~15:00の場合、13:00~15:00に合算してください）\n\n- Nếu tạo lịch làm việc không liền nhau thì sẽ ghi đè lịch làm việc hiện tại với trường hợp không có booking nào approve và request ở khung giờ mới. Nếu có booking thì báo lỗi:\n上書き（短縮）するシフトの中に「ステータス：予約確定」の予約が1つ以上残っています。シフトを上書き（短縮）する場合、短縮されるシフトに対しての予約が全て「ステータス：キャンセル」になっている必要があります。\n",
      "Chốt 1 bảng rule duy nhất: (add mới | edit | import CSV) × (liền nhau | chồng lấn | rời nhau) "
      "× (có | không có booking 予約確定). Bổ sung vào §2.2 và BR mới; ghi rõ 24:00 và 00:00 quy về "
      "cùng 1 giá trị."],
 
-    ["MT-05", "TRUNG BÌNH", W,
+    ["MT-05", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Tên course vượt độ dài: báo lỗi, tự cắt, hay cho 100 ký tự?",
      "· 「Calendar list」r195-r196 (wizard tạo calendar): 50 ký tự OK, **51 ký tự → BÁO LỖI**\n"
      "· 「Quản lý course&staff」r238-r239 (màn コース作成・編集): 50 ký tự OK, "
@@ -112,11 +113,12 @@ CONFLICTS = [
      "Tự cắt âm thầm còn nguy hiểm hơn báo lỗi vì KH mất chữ mà không biết.",
      "[Tạo calendar — wizard] Wizard tạo course validate tên · "
      "[コース — tạo/sửa/xóa] Validate tên course TỰ CẮT",
-     "",
+     "Tên course コース名 hiển thị phía line user thì max 50, quá 50 ký tự thì tự động cắt\n\nTên course システム管理名 hiển thị trên hệ thống thì max 10 ký tự, quá 10 ký tự thì tự động cắt",
      "Chốt độ dài tối đa thật (50 hay 100) và hành vi thống nhất (báo lỗi hay tự cắt) cho CẢ 2 lối vào; "
-     "sửa Field Matrix #32 và #1 cho khớp."],
+     "sửa Field Matrix #32 và #1 cho khớp.\n"
+     "Leader bổ sung (chat 2026-10-12): xác nhận システム管理名 của course max 10 ký tự. CHƯA chốt: tên CALENDAR (popup tạo) quá độ dài thì tự cắt hay báo lỗi."],
 
-    ["MT-06", "TRUNG BÌNH", W,
+    ["MT-06", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Ca qua ngày khi ngày kế tiếp đã đặt là 休業日: cho phép hay chặn?",
      "· 「Calendar list」r176, r279:「Lịch T7 CN setting là ngày nghỉ, add lịch T6 qua ngày → "
      "**Add success** nhưng chỉ hiển thị đến hết T6; T7 vẫn là ngày nghỉ」\n"
@@ -130,10 +132,18 @@ CONFLICTS = [
      "「đang confirm」— tức là chưa từng chốt. Ảnh hưởng trực tiếp việc KH có set được ca đêm "
      "trước ngày nghỉ hay không.",
      "[Tạo calendar — wizard] Ngày T7/CN là ngày nghỉ, thêm ca qua ngày cho T6",
-     "",
-     "Chốt hành vi; nếu chọn「validate chặn」thì bổ sung message lỗi và cập nhật §2.2 + Field #21."],
+     "Leader chốt 2026-10-12: GHI ĐÈ. T7 là ngày nghỉ, admin set T6 ca 20:00 ~ 06:00 → hệ thống ghi đè "
+     "lịch của T7: T7 KHÔNG còn là ngày nghỉ, có ca làm việc 00:00 ~ 06:00. Không báo lỗi, không cắt ca.\n"
+     "② Ca 00:00 ~ 06:00 của T7 nhận booking từ LINE user như ca thường.\n"
+     "③ Sửa / xóa ca T6 sau đó → T7 KHÔNG quay lại ngày nghỉ.",
+     "① Sửa TC-SLN-33 theo quyết định (đã sửa). Corpus r176/r279 (「T7 vẫn là ngày nghỉ」) và r2429/r2500 "
+     "(「báo lỗi / validate」) đều KHÔNG còn đúng.\n"
+     "② Bổ sung vào feature-spec.md §2.2 + Field #21: phần sau 0h của ca qua ngày ghi đè `is_day_off` "
+     "của ngày kế tiếp (1 → 0) và tạo ca 00:00 ~ <giờ kết thúc>.\n"
+     "③ Đã bổ sung 2 TC ở nhóm「Ca làm việc — qua ngày & biên 00:00」cho quyết định ② và ③. "
+     "Còn 1 điểm SUY LUẬN cần Leader xác nhận: sau khi sửa/xóa ca T6, T7 vẫn giữ nguyên ca 00:00 ~ 06:00."],
 
-    ["MT-07", "THẤP", W,
+    ["MT-07", "THẤP", "✅ ĐÃ CHỐT",
      "Bảng ánh xạ status của booking chưa có trong feature-spec",
      "Corpus định nghĩa rõ 8 giá trị và cách nhóm hiển thị:\n"
      "· 「Quản lý calendar」r1340-r1344: status 0,5 →「リクエスト」· 1,2 →「予約確定」· 3 →「通知受取希望」· "
@@ -148,11 +158,12 @@ CONFLICTS = [
      "từng status, dễ hiểu nhầm khi verify bộ đếm và filter.",
      "[Detail booking & lịch sử] Nhãn trạng thái ở tab lịch sử · Mã status trong bảng lịch sử · "
      "[Modal filter booking & shift] Filter theo 予約ステータス",
-     "",
+     "Check calendar_salon_line_booking.status:\nstatus = 0; // user booking doi approve\nstatus= 1; // user booking approve luon\nstatus= 2; // admin booking\nstatus= 4; // user cancel approve luon\nstatus= 5; // user request cancel\nstatus= 6;\nstatus= 7;",
      "Sửa tham chiếu §3.2 trong feature-spec; đưa bảng enum 8 status + 13 history status vào "
-     "feature-spec hoặc trỏ đúng sang db-mapping."],
+     "feature-spec hoặc trỏ đúng sang db-mapping.\n"
+     "Leader bổ sung (chat 2026-10-12): salon không có notify full slot nên status = 3 KHÔNG tồn tại. Status 6 = 否認済, 7 = キャンセル giữ theo corpus. Spec db-mapping cần bỏ status 3."],
 
-    ["MT-08", "TRUNG BÌNH", W,
+    ["MT-08", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Cài đặt hiển thị tên khách chưa áp dụng đúng ở modal admin thêm booking",
      "「Quản lý calendar」r168-r175: với 3/4 tuỳ chọn hiển thị tên "
      "(システム表示名/LINE名 · chỉ LINE名 · chỉ システム表示名), cột kết quả ghi "
@@ -165,11 +176,11 @@ CONFLICTS = [
      "Nếu member chạy lại sẽ báo FAIL — cần biết đây là bug chưa fix hay là hành vi cố ý "
      "(modal admin luôn hiện LINE name để admin nhận diện khách).",
      "[Calendar theo ngày] Modal 表示変更（LINE名/システム表示名）",
-     "",
+     "Hiện tại: Modal add booking luôn hiển thị Line name/System name\nKhông ăn theo cài đặt  của Modal 表示変更",
      "Xác nhận còn NG không; nếu là hành vi cố ý thì ghi ngoại lệ vào Field #11, nếu là bug thì "
      "raise ticket."],
 
-    ["MT-09", "TRUNG BÌNH", W,
+    ["MT-09", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Ngày KHÔNG có ca: lưới tuần hiện「không thể book」, lưới tháng hiện「có thể book」",
      "「Quản lý calendar」:\n"
      "· r548 (lưới TUẦN):「ko có thời gian làm việc → hiển thị icon **ko thể book**」\n"
@@ -184,10 +195,10 @@ CONFLICTS = [
      "bấm vào thì không. Corpus cũng tự đánh dấu NG cho lưới tháng ở nhánh thứ tự ưu tiên lý do.",
      "[Calendar theo tuần] Icon có thể/không thể book · [Calendar theo tháng] Icon theo trạng thái ca · "
      "[Modal lý do không đặt được] Thứ tự ưu tiên lý do",
-     "",
+     "Chế độ xem ngày/tuần/tháng cần thống nhất. Nếu không có staff nào có lịch làm việc thì đều hiển thị icon không thể book",
      "Chốt quy tắc icon thống nhất cho 3 lưới; bổ sung vào §2.2b và ui-spec."],
 
-    ["MT-10", "CAO", W,
+    ["MT-10", "CAO", "✅ ĐÃ CHỐT",
      "Thứ tự ưu tiên action: course/staff hay action chung của booking?",
      "「Quản lý calendar」r883-r887 và r1115-r1118 mô tả quy tắc 4 nhánh:\n"
      "· course + staff set message và **CÓ sử dụng** → gửi action của course/staff\n"
@@ -204,11 +215,11 @@ CONFLICTS = [
      "không có ở bất kỳ đâu trong spec — nếu dev refactor sẽ mất mà không ai phát hiện.",
      "[リクエスト一括操作] Duyệt hàng loạt khi course/staff có action riêng · "
      "[LINE user — nhập form & xác nhận] Course/staff có action riêng · Luồng REQUEST",
-     "",
+     "Khi course hoặc staff có setting action riêng thì sẽ ưu tiên thực hiện action riêng của course/staff Khi course hoặc staff không setting action thì mới thực hiện action chung",
      "Bổ sung BR mới vào `feature-spec.md`: bảng ưu tiên action (4 nhánh × các mốc booking), "
      "ghi rõ mốc nào KHÔNG áp dụng action course/staff."],
 
-    ["MT-11", "TRUNG BÌNH", W,
+    ["MT-11", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Validate số điện thoại 11 chữ số: 10 chữ số pass hay fail?",
      "「Quản lý calendar」r1053: mô tả validate 電話番号（11桁ハイフンなし）:\n"
      "「Nhập vào số 10 chữ số → Báo lỗi 携帯電話11桁の数値を入力してください。 "
@@ -219,11 +230,11 @@ CONFLICTS = [
      "Ngay trong 1 ô Expected có 2 kết luận trái ngược. Số cố định của Nhật có 10 chữ số nên đây là "
      "case KH gặp thật. Không chốt thì member không biết PASS hay FAIL khi nhập 10 số.",
      "[Admin thêm booking thủ công] Validate 短文回答 theo 4 kiểu ràng buộc",
-     "",
+     "Nhập 10 chữ số vẫn cho pass => 10 hoặc 11 chữ số đều pass",
      "Chốt: 10 chữ số pass hay fail; đồng bộ với hành vi ở Lesson calendar và ở màn friend info; "
      "bổ sung bảng validate vào spec."],
 
-    ["MT-12", "CAO", W,
+    ["MT-12", "CAO", "✅ ĐÃ CHỐT",
      "現地決済 (thanh toán tại chỗ): thiếu hoàn toàn trong spec",
      "Corpus mô tả đầy đủ một tính năng con:\n"
      "· 「Quản lý calendar」r2781-r2809: bật「chọn được cả thanh toán trước và tại chỗ」; "
@@ -240,11 +251,11 @@ CONFLICTS = [
      "`payment_time` + `payment_status` chứ KHÔNG phải thêm giá trị 4/5 vào `payment_status` — "
      "tức giả định trong spec (+4,5) nhiều khả năng SAI.",
      "[現地決済] toàn bộ nhóm · [Modal filter booking & shift] Filter thêm 2 trạng thái 現地決済",
-     "",
+     "Theo TC là đúng",
      "Đóng Gap §9.1 mục 1: ghi rõ 現地決済 = `payment_time` = 2, trạng thái phân biệt bằng "
      "`payment_status` 0/1; bỏ giả định「+4,5」ở Field #15; bổ sung mục 現地決済 vào §2.5."],
 
-    ["MT-13", "CAO", W,
+    ["MT-13", "CAO", "✅ ĐÃ CHỐT",
      "Admin đặt lịch bỏ qua TOÀN BỘ validate — không có trong spec",
      "「Quản lý calendar」r1020 (ghi ngay ở tiêu đề khối):「ADMIN BOOK THÌ SẼ KO CẦN VALIDATE - "
      "GIỜ ĐÓ STAFF CÓ LÀM VIỆC KO - STAFF CÓ THỰC HIỆN COURSE ĐÓ KO」.\n"
@@ -260,11 +271,11 @@ CONFLICTS = [
      "Đồng thời điểm「admin book bỏ validate NHƯNG vẫn tính vào limit」rất dễ bị hiểu ngược.",
      "[Admin thêm booking thủ công] Admin book KHÔNG bị chặn bởi mọi ràng buộc · "
      "[受付上限 — 店舗・スタッフ] Admin book cưỡng chế vẫn được tính vào limit",
-     "",
+     "Admin book chỉ check 2 điều kiện báo lỗi: \n+ Book vào ngày nghỉ: 指定された日時には休業日が設定されています。休業日に予約を追加することはできませんので、休業日設定を削除してください。 \n+ Book vào blocktime sync từ google: 指定の時間帯はブロックされています。予約時間を変更してください。 \n\n=> Các điều kiện: limit staff, course off, staff off nếu xảy ra thì admin vẫn có thể book được Những booking do admin book thì vẫn được tính vào limit",
      "Bổ sung BR mới:「Admin booking bỏ qua toàn bộ validate đặt lịch nhưng vẫn được tính vào "
      "受付上限」; ghi rõ vào §2.2 và EP-10."],
 
-    ["MT-14", "THẤP", W,
+    ["MT-14", "THẤP", "✅ ĐÃ CHỐT",
      "Booking đã xóa chỉ hiển thị trong 90 ngày — không có trong spec",
      "「Quản lý calendar」r2293:「Check những booking đã bị xóa quá **90 ngày** ⇒ sẽ không hiển thị "
      "ở màn hình lịch sử xóa. Hiện tại đang tính từ ngày quá khứ — VD hôm nay 17/7/2024 thì những "
@@ -274,10 +285,10 @@ CONFLICTS = [
      "KH có thể cần tra cứu booking đã xóa quá 90 ngày (khiếu nại, đối soát). Không ghi trong spec "
      "thì không ai biết dữ liệu bị ẩn hay bị xóa hẳn.",
      "[Booking đã xóa] Booking xóa quá 90 ngày không còn hiển thị",
-     "",
+     "Sau 90 ngày kể từ ngày xóa, những booking này sẽ bị xóa khỏi database, và không hiển thị trên màn hình quản lý booking đã xóa của admin nữa",
      "Bổ sung rule retention vào EP-53 + §2.2; xác nhận dữ liệu chỉ bị ẨN hay bị xóa vật lý."],
 
-    ["MT-15", "THẤP", W,
+    ["MT-15", "THẤP", "✅ ĐÃ CHỐT",
      "Giới hạn số ngày chọn cùng lúc khi thêm ca — chưa có giá trị cụ thể",
      "#38520 r39:「Giới hạn số lượng: chọn nhiều ngày cùng lúc và import CSV ở mức **biên / biên+1** "
      "→ ở đúng biên lưu thành công; vượt biên chặn rõ ràng, không lưu một phần」— "
@@ -287,23 +298,10 @@ CONFLICTS = [
      "TC không chạy được vì thiếu con số. Nếu thực tế KHÔNG có giới hạn thì cần biết để test "
      "hiệu năng ở mức lớn (chọn cả năm) thay vì tìm biên không tồn tại.",
      "[Ca làm việc — thêm & ghi đè] Chọn nhiều ngày ở mức biên và biên+1",
-     "",
+     "Hiện tại chưa setting giới hạn",
      "Xác định giá trị biên thực tế (hoặc xác nhận không có giới hạn) và bổ sung vào EP-19/EP-34."],
 
-    ["MT-16", "TRUNG BÌNH", W,
-     "Ca qua ngày ở BIÊN ĐẦU mùa vụ hiển thị lệch giữa admin và LINE user",
-     "「Quản lý calendar」r2492:「setting mùa vụ 10/8-20/8, add lịch lv qua ngày 9/8 ⇒ đầu ngày 10/8 "
-     "vẫn hiển thị icon đặt được **NG**」— cột kết quả ghi「admin: QL ngày **OK** · "
-     "user: tuần/tháng **NG**」.\n"
-     "r2493 (biên cuối) thì cả admin và user đều OK.",
-     "Spec KHÔNG mô tả tính năng 期間限定 (mùa vụ) ở mức business rule; §2.4 không có mục này.",
-     "Admin thấy đặt được, LINE user thấy không (hoặc ngược lại) ở đúng ngày đầu mùa vụ. "
-     "TC gốc đã đánh NG nhưng không kèm ticket — cần biết đã fix chưa.",
-     "[Ca làm việc — qua ngày & biên 00:00] Ca qua ngày × setting mùa vụ ở 2 biên",
-     "",
-     "Verify lại trên môi trường hiện tại; bổ sung mục 期間限定 (mùa vụ) vào spec §2.4 kèm rule biên."],
-
-    ["MT-17", "TRUNG BÌNH", W,
+    ["MT-17", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Import CSV ca làm việc KHÔNG validate tên cột",
      "「Quản lý calendar」r989:「Cột trong file không để đúng name column → "
      "**sai tên cột vẫn cho vào, dev đang lấy theo thứ tự cột**」.",
@@ -312,11 +310,11 @@ CONFLICTS = [
      "KH tự sửa file (đổi tên cột, đảo cột) sẽ tạo ca sai giờ mà hệ thống không cảnh báo — "
      "dữ liệu hỏng âm thầm. Đây là rủi ro dữ liệu, không chỉ là thiếu tiện nghi.",
      "[Ca làm việc — CSV] Import CSV KHÔNG validate tên cột",
-     "",
+     "Logic hiện tại: Import CSV KHÔNG validate tên cột",
      "Quyết định có bổ sung validate header không; nếu giữ nguyên thì ghi rõ cảnh báo trong "
      "màn import và trong EP-34."],
 
-    ["MT-18", "TRUNG BÌNH", W,
+    ["MT-18", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Ma trận hiển thị giá course/staff (4 tổ hợp) không có trong spec",
      "「Quản lý course&staff」r5-r10 mô tả đủ ma trận:\n"
      "· Bật 決済: LUÔN hiện phí course, bất kể cờ\n"
@@ -329,10 +327,10 @@ CONFLICTS = [
      "Nhánh (1,0) và (0,1) rất phản trực giác: tắt hiển thị 1 loại phí nhưng phí TỔNG vẫn hiện ở "
      "các màn khác — KH tưởng đã ẩn giá nhưng thực tế vẫn lộ. Spec thiếu cả 1 field.",
      "[コース — list & menu] Ma trận hiển thị giá course/staff theo 決済 và 2 cờ display_*_cost",
-     "",
+     "Theo TC là đúng",
      "Bổ sung `display_staff_cost` vào Field Matrix và ghi ma trận 4 tổ hợp thành BR mới."],
 
-    ["MT-19", "TRUNG BÌNH", W,
+    ["MT-19", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Copy staff có copy ca làm việc không? Xóa staff còn booking thì xử lý thế nào?",
      "· 「Quản lý course&staff」r456-r466 (Check copy staff): corpus KHÔNG ghi rõ ca làm việc "
      "có được copy hay không\n"
@@ -346,11 +344,11 @@ CONFLICTS = [
      "đã xóa ở mọi nơi tham chiếu」mà TC nêu. Nếu xóa cứng staff còn booking thì các màn tham chiếu "
      "`staff_id` sẽ hỏng.",
      "[スタッフ — list & tạo/sửa/xóa] Copy staff · Xóa staff còn booking chưa cancel",
-     "",
+     "Copy staff không copy ca làm việc\nXóa staff còn booking thì báo lỗi: 「ステータス：予約確定、リクエスト」の予約が残っています。このスタッフを削除する場合、このスタッフを予約しているすべての予約が「ステータス：キャンセル」になっている必要があります。 ",
      "Chốt: (a) copy staff có kèm ca làm việc không; (b) xóa staff còn booking 予約確定 — chặn hay "
      "cho xóa; bổ sung BR và sửa mô tả EP-30."],
 
-    ["MT-20", "CAO", W,
+    ["MT-20", "CAO", "✅ ĐÃ CHỐT",
      "Tính năng スタッフ自動割り当て (random staff) không có trong spec",
      "「Quản lý calendar」r2503-r2880 (Feature #27976, 01/2025) mô tả đầy đủ:\n"
      "· 3 tuỳ chọn: (1) không tự phân công · (2) random tự do · (3) theo thứ tự ưu tiên\n"
@@ -365,11 +363,11 @@ CONFLICTS = [
      "Đây là một trong những tính năng phức tạp nhất của salon (≥ 350 TC lá trong corpus, ≥ 5 ticket) "
      "nhưng gần như vô hình trong spec. Bất kỳ ai đọc spec để estimate hay để review sẽ bỏ sót hoàn toàn.",
      "[スタッフ自動割り当て] toàn bộ nhóm (11 TC)",
-     "",
+     "Bổ sung 1 mục mới vào `feature-spec.md` §2.4 cho スタッフ自動割り当て: 3 tuỳ chọn, field DB, điều kiện staff khả dụng, thứ tự ưu tiên, lịch sử; bổ sung Field Matrix.",
      "Bổ sung 1 mục mới vào `feature-spec.md` §2.4 cho スタッフ自動割り当て: 3 tuỳ chọn, field DB, "
      "điều kiện staff khả dụng, thứ tự ưu tiên, lịch sử; bổ sung Field Matrix."],
 
-    ["MT-21", "TRUNG BÌNH", W,
+    ["MT-21", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "受付上限 option 3 đặt LỚN HƠN tổng limit các staff thì tính thế nào?",
      "「Quản lý calendar」r2863-r2878 (SpecChange #32679):「option random 2 - option limit 3 = **4** "
      "(3 staff, mỗi staff limit = 1)」— corpus có khối test nhưng KHÔNG ghi rõ kết quả mong đợi "
@@ -379,11 +377,11 @@ CONFLICTS = [
      "Nếu hệ thống cho đặt đến 4 trong khi chỉ có 3 staff mỗi người 1 chỗ thì booking thứ 4 chắc chắn "
      "không có ai phục vụ. Đây là lỗi nghiệp vụ ảnh hưởng KH cuối.",
      "[スタッフ自動割り当て] SpecChange #32679 ma trận random option × limit option",
-     "",
+     "Nếu limit staff thỏa mãn nhưng limit calendar không thỏa mãn thì cũng không được phép book. Nếu limit calendar thỏa mãn nhưng limit staff không thỏa mãn thì cũng không được phép book.",
      "Chốt: hệ thống lấy min(limit cửa hàng, tổng limit staff khả dụng) hay lấy đúng số đã nhập; "
      "bổ sung vào §2.4.4."],
 
-    ["MT-22", "CAO", W,
+    ["MT-22", "CAO", "✅ ĐÃ CHỐT",
      "受付上限 có 4 tuỳ chọn nhưng spec chỉ mô tả 2 giá trị",
      "Corpus mô tả 4 tuỳ chọn:\n"
      "· option 1 — đếm theo số staff, tách **1.1** (1 staff xuyên suốt 1 booking) và **1.2** "
@@ -400,11 +398,11 @@ CONFLICTS = [
      "nhánh 1.1/1.2 → không thể dùng spec để review hay estimate.",
      "[受付上限 — 店舗・スタッフ] 4 tuỳ chọn và giá trị mặc định · Option 1.1 vs 1.2 · "
      "Tuỳ chọn 上限をその時間に受付可能なスタッフ数の合計にする",
-     "",
+     "Viết lại §2.4.4: liệt kê đủ 4 tuỳ chọn, giá trị DB tương ứng, quy tắc mặc định theo ngày tạo calendar, và rule đếm của từng option (kèm thay đổi V4_2 về booking ngoài giờ).",
      "Viết lại §2.4.4: liệt kê đủ 4 tuỳ chọn, giá trị DB tương ứng, quy tắc mặc định theo ngày tạo "
      "calendar, và rule đếm của từng option (kèm thay đổi V4_2 về booking ngoài giờ)."],
 
-    ["MT-23", "THẤP", W,
+    ["MT-23", "THẤP", "✅ ĐÃ CHỐT",
      "Lý do hiển thị khi khung giờ bị chặn bởi block time Google",
      "「Quản lý calendar」r289 (Bug #26908, 14/10/2024): "
      "「Setting limit = 1, ở khung giờ trong ảnh đang hiển thị lý do **Đã limit** ⇒ Sửa để coi lịch "
@@ -414,10 +412,10 @@ CONFLICTS = [
      "trọng để admin hiểu vì sao không đặt được.",
      "[受付上限 — 店舗・スタッフ] Bug #26908 block time Google · "
      "[Modal lý do không đặt được] Thứ tự ưu tiên lý do",
-     "",
+     "Block time của google trên GUI đang hiển thị 1 design khác có text là スケジュール連携, ngoài block time google thì các lịch làm việc khác mà không booking được thì sẽ hiển thị icon không book được, khi click thì sẽ hiển thị lý do không book được",
      "Bổ sung danh sách đầy đủ các lý do + text JP + thứ tự ưu tiên vào spec (§2.2b hoặc ui-spec)."],
 
-    ["MT-24", "THẤP", W,
+    ["MT-24", "THẤP", "✅ ĐÃ CHỐT",
      "Slot cuối ngày: event Google có bị trừ thời gian nghỉ trước, booking LME thì không?",
      "「Booking phía line user」:\n"
      "· r1297 (booking LME, chỉ set nghỉ TRƯỚC):「slot cuối cùng = time end cửa hàng - time của "
@@ -431,10 +429,10 @@ CONFLICTS = [
      "nhau. Không chốt thì member không biết slot cuối ngày mong đợi là mấy giờ.",
      "[前後の空き時間] Slot đầu/cuối ngày KHÔNG bị trừ thời gian nghỉ · "
      "Event sync từ Google được xử lý y hệt booking LME",
-     "",
+     "Slot đầu/cuối ngày KHÔNG bị trừ thời gian nghỉ · Event sync từ Google được xử lý y hệt booking LME",
      "Chốt 1 công thức duy nhất cho slot đầu/cuối ngày; bổ sung công thức vào §2.4.3."],
 
-    ["MT-25", "THẤP", W,
+    ["MT-25", "THẤP", "✅ ĐÃ CHỐT",
      "Ô số ngày của 予約締切: nhập 0 nhưng lưu thành 1?",
      "「Setting calendar」r211:「Validate số ngày từ 0 ~ 180 — Nhập vào **0** → Save success ⇒ "
      "Kiểm tra db: `deadline_before_booking_day` = **1**」.\n"
@@ -444,11 +442,11 @@ CONFLICTS = [
      "Nhập 0 mà lưu 1 nghĩa là hạn hủy/hạn nhận lệch đi 1 ngày so với KH cài — ảnh hưởng trực tiếp "
      "việc KH có đặt/hủy được hay không.",
      "[予約の開始・締切] Validate số ngày dừng nhận (0~180)",
-     "",
+     "Ô số ngày của 予約締切: nhập 0 thì calendar_salon_setting_send_messages.deadline_before_booking_day = 0",
      "Verify lại giá trị lưu trong DB khi nhập 0; nếu là bug thì raise ticket, nếu cố ý thì ghi rõ "
      "vào Field #40."],
 
-    ["MT-26", "TRUNG BÌNH", W,
+    ["MT-26", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Text lỗi khi khách đạt giới hạn số lần đặt — 2 chuỗi khác nhau",
      "「Setting calendar」:\n"
      "· r238:「báo lỗi: **この予約の受付制限中ですので、予約できません。**」\n"
@@ -462,10 +460,10 @@ CONFLICTS = [
      "(chọn slot vs bấm xác nhận). Member không biết chuỗi nào là đúng hiện tại.",
      "[1人あたりの予約上限] Text báo lỗi khi đạt giới hạn · "
      "[Đồng thời & verify API] Verify lại dữ liệu ở bước xác nhận",
-     "",
+     "Calendar chưa có setting text_limit_book_each_customer thì sẽ báo lỗi \"1人あたりの予約受付上限に達しています\"\n\nCalendar có setting text_limit_book_each_customer rồi thì hiển thị msg đã setting",
      "Chốt text mặc định hiện tại cho từng luồng (chọn slot / bấm xác nhận); ghi vào §2.4.1."],
 
-    ["MT-27", "TRUNG BÌNH", W,
+    ["MT-27", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Câu hỏi kiểu 日時 CÓ giờ + chọn 自動で友だち情報を生成 — xử lý ra sao?",
      "· 「Quản lý calendar」r1090:「Friend info có cả time ⇒ **Case này sẽ ko thể gán vào friend info "
      "nào trong hệ thống cả**」\n"
@@ -477,11 +475,11 @@ CONFLICTS = [
      "2 nguồn nói khác nhau về cùng 1 cấu hình. Nếu hệ thống vẫn cho chọn nhưng không lưu được thì "
      "KH mất dữ liệu câu trả lời mà không biết.",
      "[予約時のお客様への質問項目] Support #29272 item 日時 CÓ giờ",
-     "",
+     "Câu hỏi kiểu 日時 CÓ giờ thì không cho phép setting liên kết friend info",
      "Chốt hành vi (chặn cấu hình / tự sinh friend info kiểu ngày / lưu mất phần giờ); "
      "bổ sung mục các kiểu câu hỏi vào spec §2.4."],
 
-    ["MT-28", "THẤP", W,
+    ["MT-28", "THẤP", "✅ ĐÃ CHỐT",
      "Thứ tự sắp xếp remind cùng ngày: giờ lớn hơn hay nhỏ hơn ở trên?",
      "「Setting calendar」r998 (nhóm remind TRƯỚC, các remind chỉ định NGÀY, **cùng ngày**):\n"
      "「**giờ lớn hơn hiện ở trên** Giờ nhỏ hơn hiện ở trên」— 2 câu ngược nhau trong CÙNG 1 ô Expected.",
@@ -490,10 +488,10 @@ CONFLICTS = [
      "Ô Expected tự mâu thuẫn → không kiểm chứng được. Thứ tự hiển thị remind ảnh hưởng việc admin "
      "hiểu đúng lịch gửi.",
      "[リマインド — cài đặt] SpecImprove #36037 thứ tự sắp xếp remind",
-     "",
+     "Thứ tự sắp xếp remind cùng ngày: Giờ nhỏ hơn hiện ở trên",
      "Chốt quy tắc sắp xếp cho cả 2 nhóm (trước/sau) × 2 kiểu thời gian; bổ sung vào BR-08."],
 
-    ["MT-29", "CAO", W,
+    ["MT-29", "CAO", "✅ ĐÃ CHỐT",
      "Job remind có gửi khi course / staff đang OFF không?",
      "「Setting calendar」— 2 khối kết luận NGƯỢC NHAU trong cùng 1 tab:\n"
      "· r1355:「Course đã chọn bị OFF ở MH setting course ⇒ **Thời điểm send remind mà course đang "
@@ -510,11 +508,11 @@ CONFLICTS = [
      "ẩn course. Nếu chạy theo khối cũ, member sẽ báo FAIL đúng lúc hệ thống gửi (hành vi mới đúng) "
      "— hoặc ngược lại, bỏ lọt case KH không nhận được nhắc lịch. Niên đại: khối r1382+ MỚI HƠN.",
      "[リマインド — job gửi] Job gửi remind khi course/staff bị OFF",
-     "",
+     "Khi course/staff OFF thì vẫn send các remind bình thường",
      "Chốt hành vi hiện tại; **loại hoặc sửa khối TC r1355/r1361/r1373-r1375**; bổ sung vào BR-08 "
      "câu rõ ràng về ảnh hưởng của trạng thái ON/OFF."],
 
-    ["MT-30", "TRUNG BÌNH", W,
+    ["MT-30", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "空き枠通知: gửi cho TẤT CẢ người đang chờ, ai đặt trước thì được",
      "「Setting calendar」r1433-r1437:「khi slot full mà user đăng ký chờ có slot trống thì sẽ send "
      "action này ⇒ sẽ **send cho all user có stt đang chờ**, user nào booking trước thì được」.\n"
@@ -528,11 +526,12 @@ CONFLICTS = [
      "Cơ chế「gửi cho tất cả, ai nhanh thì được」ảnh hưởng trải nghiệm KH cuối và có thể gây khiếu nại "
      "(nhận thông báo nhưng vào thì hết chỗ). Không có trong spec nên không ai review được.",
      "[空き枠通知受け取り設定] Action gửi khi có slot trống (受付再開時)",
-     "",
+     "Salon không có trạng thái đợi slot trống này => Bỏ các TC liên quan của trạng thái này đi",
      "Bổ sung mô tả đầy đủ cơ chế 空き枠通知 vào §2.4.5: điều kiện kích hoạt, phạm vi gửi, "
-     "hành vi khi tắt chức năng."],
+     "hành vi khi tắt chức năng.\n"
+     "Leader bổ sung (chat 2026-10-12): salon THẬT SỰ không có tính năng danh sách chờ → spec viết sai. Đã xoá 4 TC nhóm 空き枠通知受け取り設定 + bỏ status 3 ở các TC khác. Spec cần bỏ §2.4.5「受付上限の通知」(EP-55/56, is_notify_full_slot, calendar_salon_setting_notify_full_history)."],
 
-    ["MT-31", "THẤP", W,
+    ["MT-31", "THẤP", "✅ ĐÃ CHỐT",
      "2 màn upload ảnh dùng 2 message lỗi khác nhau cho cùng 1 lỗi định dạng",
      "「Setting calendar」:\n"
      "· r1474 (tab **トップ設定**): file không phải ảnh / ảnh .avif → "
@@ -544,10 +543,10 @@ CONFLICTS = [
      "Không nhất quán trải nghiệm. Ngoài ra chuỗi thứ nhất liệt kê 3 định dạng nhưng corpus lại ghi "
      "jpeg cũng hợp lệ → text có thể sai.",
      "[トップ・店舗情報・利用規約] Upload ảnh ở tab トップ設定 và 店舗・ビジネス情報",
-     "",
+     "Chốt msg: png, jpg, gif画像を選択してください。",
      "Chốt 1 message thống nhất và danh sách định dạng chính xác; bổ sung bảng message vào spec."],
 
-    ["MT-32", "TRUNG BÌNH", W,
+    ["MT-32", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "店舗名: 30 hay 100 ký tự?",
      "「Setting calendar」:\n"
      "· r1477:「Check setting tên cửa hàng 店舗名 ⇒ **Change spec: 100 ký tự**」\n"
@@ -558,10 +557,10 @@ CONFLICTS = [
      "TC gốc ghi「change spec 100」nhưng 3 dòng ngay sau lại test và chốt ở 30. Ngoài ra 店舗名 ghi "
      "vào CẢ `calendar_name` và `store_name` (r1481) — nếu 2 cột khác độ dài sẽ cắt dữ liệu.",
      "[トップ・店舗情報・利用規約] Validate tên cửa hàng 店舗名 và đồng bộ với calendar_name",
-     "",
+     "店舗名: 30 ký tự",
      "Chốt độ dài thật; bổ sung `store_name` vào Field Matrix; xác nhận rule đồng bộ 2 cột."],
 
-    ["MT-33", "CAO", W,
+    ["MT-33", "CAO", "✅ ĐÃ CHỐT",
      "Khách bị filter chặn: có mở được link LỊCH SỬ và link HỦY không?",
      "· 「Setting calendar」r275-r278 (Update spec **06/11/2025**):「user mở từ link lịch sử + "
      "thỏa mãn filter ⇒ Hiện trang báo lỗi… **Update spec ngày 06/11/2025: User thỏa mãn điều kiện "
@@ -576,11 +575,11 @@ CONFLICTS = [
      "được lịch. 2 khối TC nói ngược nhau; khối cho phép mới hơn.",
      "[予約ページの非表示 (filter)] Update spec 06/11/2025 khách thỏa filter vẫn vào được màn hủy · "
      "[LINE user — hủy booking] SpecChange #32646",
-     "",
+     "Nếu thỏa mãn điều kiện filter của 予約ページの非表示\r\nthì chỉ chặn link booking\n=> Link lịch sử và link cancel thì vẫn cho phép access",
      "Chốt phạm vi filter chặn (link booking / link lịch sử / link hủy); **sửa khối TC cũ r1324**; "
      "bổ sung mục 予約ページの非表示 vào spec §2.4."],
 
-    ["MT-34", "TRUNG BÌNH", W,
+    ["MT-34", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "2 staff liên kết CHUNG 1 Google Calendar thì block time tính cho ai?",
      "「Sync google calendar」r280-r320 (Bug #26653, 11/09/2024) có khối test đầy đủ nhưng "
      "**không ghi kết luận** cho câu hỏi: event tạo trực tiếp trên calendar dùng chung sẽ sinh "
@@ -594,32 +593,10 @@ CONFLICTS = [
      "Nếu hủy liên kết staff A mà xóa hết block time của calendar dùng chung thì staff B mất toàn bộ "
      "lịch bận → nhận booking trùng giờ. Đây là kịch bản KH thật (salon nhỏ dùng 1 lịch chung).",
      "[Googleカレンダー連携] Bug #26653 2 staff liên kết CHUNG 1 Google Calendar",
-     "",
+     "2 staff A và B liên kết chung 1 google calendar thì block time tính cho cả 2 staff \n+ Event được tạo trên google và sync từ google về lme => Tính cho cả 2 staff \n+ KHi 1 staff A có booking lme => Booking đó được sync lên google và tính là block time của staff B. Ngược lại khi staff B có booking lme thì booking đó sẽ được sync lên google và tính là block time của staff A",
      "Chốt hành vi cho trường hợp dùng chung; bổ sung ngoại lệ vào BR-09."],
 
-    ["MT-35", "CAO", W,
-     "Phân quyền tài khoản Staff: CHƯA từng được test",
-     "Corpus ghi nhiều lần rằng không test được:\n"
-     "· 「Quản lý calendar」r1866:「trên dev **ko add đủ router quyền staff** nên ko test dc」\n"
-     "· r3118:「trên dev acc staff **thiếu quyến salon** nên ko chekc dc」\n"
-     "· r3287:「salon acc staff trên dev **chưa add hết quyền** nên ko test」\n"
-     "· 「Sync google calendar」r520-r521:「Check account staff」— không có kết quả\n"
-     "· Tab「Staff」liệt kê ~30 màn con cần test bằng account staff nhưng cột kết quả TRỐNG HOÀN TOÀN.\n"
-     "Ngược lại #38520 r51-r52 (07/2026) đã viết TC đầy đủ cho cả 2 nhánh có/không quyền, "
-     "gồm cả chặn ở tầng API.",
-     "`feature-spec.md` §9.2 mục 9 ghi thẳng đây là Gap:「**Phân quyền Staff chi tiết** — Staff thấy "
-     "được những tab nào? Có thể tạo/sửa booking không?」\n"
-     "§1.2 Actors:「Staff — Tùy phân quyền — (chi tiết phân quyền **chưa fully-captured**)」.",
-     "Cả spec lẫn corpus đều để trống đúng một vùng: quyền truy cập. Rủi ro là staff không có quyền "
-     "vẫn gọi được API xem/sửa booking của salon — đúng kiểu lỗi phân quyền đã từng xảy ra ở các "
-     "tính năng khác (UI ẩn menu nhưng API không chặn).",
-     "[Phân quyền & môi trường] Staff KHÔNG có quyền màn 予約管理 · Staff CÓ quyền · "
-     "Rà soát phân quyền staff trên TẤT CẢ màn con · [Googleカレンダー連携] Tài khoản staff",
-     "",
-     "Chuẩn bị môi trường có account staff đủ quyền; chạy trọn bộ TC phân quyền (UI + URL + API); "
-     "đóng Gap §9.2 mục 9 bằng bảng quyền theo từng màn con."],
-
-    ["MT-36", "THẤP", W,
+    ["MT-36", "THẤP", "✅ ĐÃ CHỐT",
      "Giá trị `payment_system` khi calendar TẮT 決済 — corpus để dấu hỏi",
      "「Liên kết bill tiền」r90-r97:「Vẫn booking success, ko bill tiền. Sau khi booking thì: "
      "`calendar_salon_line_booking.payment_system` = **NULL?**」— dấu hỏi nằm trong chính "
@@ -629,10 +606,10 @@ CONFLICTS = [
      "Expected có dấu hỏi thì không kiểm chứng được. Cột này dùng để phân biệt Stripe/UnivaPay khi "
      "hoàn tiền — sai giá trị có thể gọi nhầm API hoàn tiền.",
      "[決済連携 — cài đặt] TẮT 決済 ở account → mọi tổ hợp course/staff đều không bill",
-     "",
+     "Nếu OFF setting bill tiền của calendar thì khi booking cột calendar_salon_line_booking.payment_system = NULL",
      "Xác nhận giá trị thật của `payment_system` khi không bill; bổ sung vào Field Matrix."],
 
-    ["MT-37", "TRUNG BÌNH", W,
+    ["MT-37", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Calendar chọn nhà cung cấp CHƯA liên kết nhưng booking cũ vẫn bill được?",
      "「Liên kết bill tiền」:\n"
      "· r86-r87:「liên kết univapay chọn stripe / liên kết stripe chọn univapay ⇒ ko liên kết thì "
@@ -646,10 +623,11 @@ CONFLICTS = [
      "Liên quan trực tiếp đến tiền: nếu vẫn bill qua nhà cung cấp đã hủy liên kết thì giao dịch có "
      "thể thất bại hoặc rơi vào tài khoản sai. Expected có dấu hỏi nên không ai chốt được.",
      "[決済 — thẻ & 3D Secure] Chọn nhà cung cấp CHƯA liên kết → không hiện màn nhập thẻ",
-     "",
-     "Chốt hành vi cho booking cũ khi nhà cung cấp bị hủy liên kết; bổ sung vào §2.5 và BR-05."],
+     "Vẫn trừ tiền thành công qua tài khoản nhà cung cấp đã hủy. Tiền vào tài khoản mà bot không còn quản lý.",
+     "Chốt hành vi cho booking cũ khi nhà cung cấp bị hủy liên kết; bổ sung vào §2.5 và BR-05.\n"
+     "Leader (chat 2026-10-12): KHÔNG cần raise ticket."],
 
-    ["MT-38", "TRUNG BÌNH", W,
+    ["MT-38", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Trạng thái 現地決済 ghi vào Google Sheet đang bị đánh NG",
      "「Quản lý calendar」r2800:「check sau khi update thành thanh toán thành công ⇒ … "
      "GG sheet_cột L: giá = XXX và stt **現地（決済成功） ⇒ NG**」\n"
@@ -659,11 +637,11 @@ CONFLICTS = [
      "TC gốc đã ghi nhận NG nhưng không kèm ticket. KH dùng Google Sheet để đối soát doanh thu — "
      "trạng thái sai làm sai đối soát tiền mặt tại chỗ.",
      "[現地決済] Admin cập nhật trạng thái 現地決済 từ 2 màn",
-     "",
+     "Admin cập nhật trạng thái bill tiền tại chỗ 現地決済 thì trên google sheet cũng sẽ được update cột 決済ステータス",
      "Verify lại giá trị ghi vào Google Sheet cho 2 trạng thái 現地決済; nếu còn NG thì raise ticket; "
      "bổ sung bảng cột Google Sheet vào spec."],
 
-    ["MT-39", "CAO", W,
+    ["MT-39", "CAO", "✅ ĐÃ CHỐT",
      "Random staff: khách bị tính tiền theo 指定なし dù được gán staff CÓ phụ phí",
      "「Quản lý calendar」r2791-r2792 và r2808-r2809 (CASE RANDOM option 2/3):\n"
      "「USER BOOKING / ADMIN BOOKING ⇒ **lấy giá lúc booking cho no staff** trường `amount` bảng "
@@ -676,10 +654,10 @@ CONFLICTS = [
      "tiền course. Có thể đúng ý đồ (không tính thêm khi khách không chủ động chọn staff) nhưng cũng "
      "có thể là thất thoát doanh thu của KH. Cần chốt vì đây là tiền thật.",
      "[現地決済] Admin book / random staff: lấy giá tại thời điểm booking cho 指定なし",
-     "",
+     "Random staff sẽ không tính phí của staff, chỉ tính phí của course (nếu có)",
      "Chốt ý đồ nghiệp vụ; bổ sung công thức tính `payment_amount` (gồm nhánh random) thành BR mới."],
 
-    ["MT-40", "THẤP", W,
+    ["MT-40", "THẤP", "✅ ĐÃ CHỐT",
      "Nút 今日 phía LINE user: về tuần/tháng hiện tại hay tuần/tháng có lịch gần nhất?",
      "「Main case」:\n"
      "· r278:「check user nhấn nút 今日 ⇒ hiện tuần gần nhất có lịch làm việc, giống case khi mở vào "
@@ -690,7 +668,7 @@ CONFLICTS = [
      "Ô Expected chứa cả hành vi cũ và mới → member dễ chạy theo bản cũ. Hành vi này KH nhìn thấy "
      "trực tiếp mỗi lần đặt lịch.",
      "[LINE user — chọn slot] Điều hướng tuần/tháng và nút 今日",
-     "",
+     "Nút 今日 phía LINE user: click sẽ về tuần/tháng hiện tại",
      "Xoá vế cũ khỏi TC gốc; bổ sung mô tả màn chọn slot phía LINE user vào spec §2.6."],
 
     ["MT-41", "TRUNG BÌNH", W,
@@ -711,18 +689,4 @@ CONFLICTS = [
      "",
      "Bổ sung vào §7.1.4: phạm vi giám sát (block time + vượt limit) và bộ lọc `admin_id`/status."],
 
-    ["MT-42", "THẤP", W,
-     "Thao tác ca làm việc có ghi audit log không?",
-     "#38520 r63:「Thao tác sửa / xóa ca có ghi log đủ: **ai, khi nào, thay đổi gì** (giá trị trước → "
-     "sau); truy được người thao tác khi cần」— TC yêu cầu nhưng không dẫn bảng log nào.",
-     "`feature-spec.md` §3.1 liệt kê 4 bảng audit: `calendar_salon_history_change_setting_payment`, "
-     "`calendar_salon_line_booking_history_actions`, `calendar_salon_line_booking_payment_history`, "
-     "`calendar_salon_setting_notify_full_history`.\n"
-     "**KHÔNG có bảng lịch sử nào cho `calendar_salon_time_booking` (ca làm việc)**.",
-     "Ca làm việc là dữ liệu bị sửa/xóa nhiều nhất và đã gây ít nhất 2 ticket mất dữ liệu "
-     "(#29394, #38519). Không có log thì không điều tra được ai xóa ca của KH.",
-     "[Phân quyền & môi trường] Ghi log thao tác sửa / xóa ca làm việc",
-     "",
-     "Xác nhận có bảng log cho ca làm việc không; nếu không có, cân nhắc bổ sung (và ghi rõ trong "
-     "spec là KHÔNG có để tester không tìm nhầm)."],
 ]

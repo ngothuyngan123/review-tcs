@@ -221,13 +221,13 @@ S2 = [
        "4. Mở lại trang 新規友だち用 và đếm độ dài nội dung\n"
        "5. Kết bạn bằng tài khoản LINE test và xem tin nhận được",
        "Nội dung 10.000 ký tự",
-       "- Backend trả lỗi hoặc cắt về đúng 5.000 ký tự (KHÔNG lưu nguyên 10.000)\n"
-       "- Mở lại trang: nội dung tối đa 5.000 ký tự\n"
+       "- Backend CHẶN: trả lỗi validate, KHÔNG lưu nội dung > 5.000 ký tự\n"
+       "- Mở lại trang: nội dung vẫn là bản hợp lệ cũ (không bị ghi 10.000 ký tự)\n"
        "- Không phát sinh lỗi 500 khiến gửi tin thất bại hàng loạt",
        env="PRODUCTION",
-       note="⚠️ MT-07. logic-spec.md:319-325 ghi rõ『validation chủ yếu ở frontend』, không có "
-            "FormRequest cho FA-007 → chưa rõ backend có chặn không. Corpus KHÔNG có TC này. "
-            "TC do AI bổ sung, dự kiến có thể FAIL → nếu FAIL cần raise bug. CHỜ LEADER CHỐT.",
+       note="✅ Leader chốt MT-07 (2026-10-23): backend CÓ chặn giới hạn 5.000 ký tự ở tầng API "
+            "(không chỉ frontend). Việc sửa spec: bổ sung rule validate server-side vào "
+            "logic-spec.md §Validation Rules + api-spec.md và nâng mức tin cậy lên Cao.",
        spec="Đã hỏi leader"),
 
     tc("送信するメッセージ — ô nhập & bộ đếm", "FUNC-004", "Boundary",
@@ -264,7 +264,7 @@ S2 = [
        spec="Spec không ghi"),
 
     tc("送信するメッセージ — ô nhập & bộ đếm", "FUNC-001", "Abnormal",
-       "Tự động lưu tin nhắn khi click ra ngoài ô nhập — có thật hay không?",
+       "Click ra ngoài ô nhập KHÔNG auto-save — chỉ nút 保存 mới lưu",
        NEW,
        "1. Mở trang 新規友だち用, ghi lại nội dung đang lưu\n"
        "2. Sửa nội dung ô nhập thành text mới\n"
@@ -272,14 +272,12 @@ S2 = [
        "4. F5 trang, đọc lại nội dung\n"
        "5. Lặp lại với thao tác chèn「＋ LINE名」và chèn「＋ 友だち情報」",
        "3 thao tác: gõ tin nhắn · chèn LINE名 · chèn 友だち情報 — mỗi lần đều click ra ngoài rồi F5",
-       "- Chốt được 1 trong 2 hành vi và ghi lại làm chuẩn:\n"
-       "  (a) Nếu CÓ auto-save: sau F5 nội dung mới còn nguyên ở cả 3 thao tác\n"
-       "  (b) Nếu KHÔNG auto-save: sau F5 quay về nội dung cũ, và phải có cảnh báo rời trang khi "
-       "còn thay đổi chưa lưu",
-       note="⚠️ MT-06. Nguồn: r48, r49, r50 (và r145-r147, r283-r285) — TC gốc CHỈ CÓ TIÊU ĐỀ "
-            "『check tự động save msg khi click ra ngoài』, cột kết quả mong đợi TRỐNG. Spec "
-            "(api-spec.md EP-05) chỉ mô tả lưu bằng nút 保存, không nhắc auto-save. Expected do AI "
-            "viết dạng 2 nhánh để đo được. CHỜ LEADER CHỐT hành vi đúng.",
+       "- KHÔNG auto-save: sau F5 nội dung quay về bản đã lưu cũ ở cả 3 thao tác (text mới bị mất "
+       "vì chưa bấm 保存)\n"
+       "- Chỉ khi bấm nút「保存」thì thay đổi mới được lưu",
+       note="✅ Leader chốt MT-06 (2026-10-23): KHÔNG có auto-save khi blur; phải click 保存 mới lưu. "
+            "Nguồn r48-r50 / r145-r147 / r283-r285 (cột kết quả mong đợi gốc trống). Khớp api-spec.md "
+            "EP-05 (chỉ 1 đường lưu bằng 保存).",
        spec="Đã hỏi leader"),
 
     # ═══════════ 6. Lưu tin nhắn & bản ghi template ═══════════

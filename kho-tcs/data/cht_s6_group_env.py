@@ -59,8 +59,9 @@ S6 = [
        "Nhóm G1 vs friend cá nhân",
        "- Với nhóm: 3 mục システム表示名, 友だち情報, タグ đều bị ẨN\n"
        "- Với friend cá nhân: 3 mục này hiển thị bình thường",
-       spec="Spec không ghi",
-       note="MT-14: spec chat-11 không có quy tắc nào cho nhóm. Nguồn: Group chat r15-r17"),
+       spec="Đã hỏi leader",
+       note="MT-14 (Leader chốt 2026-10-23: theo TC) — spec chat-11 cần bổ sung mục riêng cho hội thoại nhóm. "
+            "Nguồn: Group chat r15-r17"),
 
     tc("Group chat", "FUNC-001", "Normal",
        "Nhóm — bookmark, 対応ステータス, ghi chú và bộ lọc hoạt động như bạn bè cá nhân",
@@ -117,8 +118,8 @@ S6 = [
        "URL thường, cài đặt rút gọn đang BẬT",
        "- Gửi vào nhóm: URL KHÔNG bị rút gọn ở cả 2 phía\n"
        "- Khác với gửi cho friend cá nhân (bị rút gọn phía LINE)",
-       env="PRODUCTION", spec="Spec không ghi",
-       note="MT-14. Nguồn: Group chat r45"),
+       env="PRODUCTION", spec="Đã hỏi leader",
+       note="MT-14 (Leader chốt 2026-10-23: theo TC). Nguồn: Group chat r45"),
 
     tc("Group chat", "LIFF-ENTRY-001", "Normal",
        "Thành viên nhóm bấm link form / item / booking gửi trong nhóm",
@@ -170,9 +171,10 @@ S6 = [
        "- Tự động trả lời: nhóm KHÔNG được trả lời tự động\n"
        "- Rich menu: KHÔNG gán được cho nhóm\n"
        "- Lịch chạy action: KHÔNG chạy cho nhóm\n"
-       "- Scenario: ghi nhận hiện trạng và đối chiếu quyết định của Leader",
+       "- Scenario: KHÔNG áp dụng cho nhóm (theo TC)",
        env="PRODUCTION", spec="Đã hỏi leader",
-       note="MT-14: spec chat-11 KHÔNG có quy tắc nào giới hạn tính năng cho nhóm. Nguồn: Group chat r59-r63"),
+       note="MT-14 (Leader chốt 2026-10-23: theo TC) — spec cần bổ sung danh sách tính năng không áp dụng cho nhóm. "
+            "Nguồn: Group chat r59-r63"),
 
     tc("Group chat", "MSG-002", "Normal",
        "Gửi tin vào nhóm bằng profile người gửi — áp dụng đúng ở cả 2 phía",
@@ -269,30 +271,30 @@ S6 = [
 
     # ═══════════════ Bộ đếm chưa xác nhận ═══════════════
     tc("Bộ đếm chưa xác nhận", "DATA-COUNT-001", "Normal",
-       "Bạn bè gửi tin — bộ đếm tăng 1 mỗi tin, hiển thị ngay ở web và app",
-       BOT + "\n- Friend A đang ở trạng thái ĐÃ xác nhận hết tin (bộ đếm = 0)",
-       "1. Ghi lại giá trị bộ đếm của hội thoại A và badge ở menu\n"
-       "2. Cho friend A gửi 1 tin → kiểm tra bộ đếm, badge ở web và ở app mobile\n"
+       "Bạn bè gửi tin — confirm_count chuyển 0→1 rồi GIỮ 1 (không tăng theo số tin)",
+       BOT + "\n- Friend A đang ở trạng thái ĐÃ xác nhận hết tin (confirm_count = 0)",
+       "1. Ghi lại confirm_count của hội thoại A và badge ở menu\n"
+       "2. Cho friend A gửi 1 tin → kiểm tra confirm_count, badge ở web và ở app mobile\n"
        "3. Cho A gửi thêm 2 tin nữa → kiểm tra lại\n"
-       "4. Kiểm tra DB: bộ đếm của hội thoại và các trường trạng thái tin cuối",
+       "4. Kiểm tra DB: confirm_count của hội thoại và các trường trạng thái tin cuối",
        "Friend A gửi 3 tin liên tiếp",
-       "- Mỗi tin đến: bộ đếm TĂNG 1 (0 → 1 → 2 → 3)\n"
-       "- Trường đánh dấu có tin chưa xác nhận = 1\n"
-       "- Số tin chưa xác nhận hiển thị ngay ở chat 1:1 trên cả web và app mobile",
-       env="PRODUCTION",
-       note="Bằng chứng cho MT-19 (spec ghi điều kiện lọc chưa xác nhận là bộ đếm = 1). "
+       "- Tin thứ 1 đến: confirm_count = 1; has_status_0 = 1; status_last_message = 0\n"
+       "- Tin thứ 2 và thứ 3: confirm_count VẪN = 1 (MT-15: chỉ nhận 0/1, KHÔNG tăng theo số tin)\n"
+       "- Dòng A hiển thị dấu chưa xác nhận ngay ở chat 1:1 trên cả web và app mobile",
+       env="PRODUCTION", spec="Đã hỏi leader",
+       note="MT-15 + MT-19 (Leader chốt 2026-10-23): confirm_count chỉ nhận 0/1, filter 未確認 lọc theo confirm_count = 1. "
             "Nguồn: improve count comfirm_message r3-r5, r43-r45"),
 
     tc("Bộ đếm chưa xác nhận", "DATA-COUNT-001", "Normal",
-       "Nhóm LINE gửi tin — bộ đếm hoạt động như bạn bè cá nhân",
+       "Nhóm LINE gửi tin — confirm_count hoạt động như bạn bè cá nhân (0→1, giữ 1)",
        BOT + "\n- Nhóm G1 đang ở trạng thái đã xác nhận",
-       "1. Cho thành viên nhóm gửi 2 tin vào nhóm\n2. Kiểm tra bộ đếm của hội thoại nhóm ở web và app\n"
+       "1. Cho thành viên nhóm gửi 2 tin vào nhóm\n2. Kiểm tra confirm_count của hội thoại nhóm ở web và app\n"
        "3. Kiểm tra DB",
        "Nhóm G1, 2 tin đến",
-       "- Bộ đếm tăng 1 mỗi tin, hiển thị đúng ở cả web và app mobile\n"
-       "- Trường đánh dấu có tin chưa xác nhận = 1",
-       env="PRODUCTION",
-       note="Nguồn: improve count comfirm_message r6-r8, r46-r48"),
+       "- Tin đầu: confirm_count 0→1; tin thứ 2 giữ nguyên 1, hiển thị đúng ở cả web và app mobile\n"
+       "- Trường has_status_0 = 1",
+       env="PRODUCTION", spec="Đã hỏi leader",
+       note="MT-15 (Leader chốt 2026-10-23): confirm_count chỉ nhận 0/1. Nguồn: improve count comfirm_message r6-r8, r46-r48"),
 
     tc("Bộ đếm chưa xác nhận", "DATA-COUNT-001", "Normal",
        "Bấm xác nhận ở chat 1:1 — bộ đếm về 0 và xoá bản ghi tin chưa xác nhận",
@@ -314,7 +316,7 @@ S6 = [
        "1. Bấm chuyển A về chưa xác nhận trên WEB → kiểm tra DB và badge menu\n"
        "2. Lặp lại trên APP MOBILE\n3. Lặp lại với nhóm G1 trên cả web và app",
        "Friend A và nhóm G1; thao tác trên web và app",
-       "- Bộ đếm tăng lên; trường trạng thái tin cuối = 0; trường đánh dấu đã xác nhận = 0; "
+       "- confirm_count = 1; trường trạng thái tin cuối = 0; trường đánh dấu đã xác nhận = 0; "
        "trường đánh dấu chưa xác nhận = 1\n"
        "- Bảng tin chưa xác nhận CÓ bản ghi của hội thoại đó\n"
        "- Badge menu tăng tương ứng",
@@ -350,18 +352,19 @@ S6 = [
        note="Nguồn: improve count comfirm_message r19"),
 
     tc("Bộ đếm chưa xác nhận", "DATA-COUNT-001", "Normal",
-       "Chặn và bỏ chặn — bộ đếm giữ nguyên, chỉ tăng khi bạn bè nhắn tin lại",
-       BOT + "\n- Friend A có 2 tin chưa xác nhận (bộ đếm = 2)",
-       "1. Cho friend A chặn bot → kiểm tra bộ đếm\n2. Cho A bỏ chặn → kiểm tra bộ đếm\n"
-       "3. Cho A nhắn 1 tin → kiểm tra bộ đếm\n"
+       "Chặn và bỏ chặn — confirm_count giữ nguyên, chỉ lên 1 khi bạn bè nhắn tin lại",
+       BOT + "\n- Friend A có tin chưa xác nhận (confirm_count = 1)",
+       "1. Cho friend A chặn bot → kiểm tra confirm_count\n2. Cho A bỏ chặn → kiểm tra confirm_count\n"
+       "3. Cho A nhắn 1 tin → kiểm tra confirm_count\n"
        "4. Lặp lại kịch bản với BOT chặn friend (trên web rồi trên app mobile): chặn → nhắn tin → bỏ chặn → nhắn tin",
-       "Bạn bè chặn bot · bot chặn bạn bè (web và app); mỗi lần kiểm tra bộ đếm",
-       "- Chặn (cả 2 chiều): bộ đếm GIỮ NGUYÊN\n"
-       "- Bỏ chặn: bộ đếm GIỮ NGUYÊN\n"
-       "- Khi bot đang chặn bạn bè mà bạn bè nhắn tin: bộ đếm KHÔNG tăng\n"
-       "- Sau khi bỏ chặn rồi bạn bè nhắn tin: bộ đếm TĂNG 1",
-       env="PRODUCTION",
-       note="Gộp vì cùng thuộc chuỗi trạng thái chặn. Nguồn: improve count comfirm_message r20-r30, r58-r68"),
+       "Bạn bè chặn bot · bot chặn bạn bè (web và app); mỗi lần kiểm tra confirm_count",
+       "- Chặn (cả 2 chiều): confirm_count GIỮ NGUYÊN\n"
+       "- Bỏ chặn: confirm_count GIỮ NGUYÊN\n"
+       "- Khi bot đang chặn bạn bè mà bạn bè nhắn tin: confirm_count KHÔNG đổi\n"
+       "- Sau khi bỏ chặn rồi bạn bè nhắn tin: confirm_count = 1 (đang 0 → chuyển 1; đã 1 thì giữ 1 — MT-15)",
+       env="PRODUCTION", spec="Đã hỏi leader",
+       note="MT-15 (Leader chốt 2026-10-23): confirm_count chỉ nhận 0/1. Gộp vì cùng thuộc chuỗi trạng thái chặn. "
+            "Nguồn: improve count comfirm_message r20-r30, r58-r68"),
 
     tc("Bộ đếm chưa xác nhận", "DATA-COUNT-001", "Normal",
        "Bot ẩn bạn bè — xử lý như xác nhận; bạn bè nhắn lại thì bộ đếm tăng",
@@ -374,7 +377,8 @@ S6 = [
        "- Sau khi A nhắn tin: bộ đếm = 1; trạng thái tin cuối = 0; đánh dấu chưa xác nhận = 1; "
        "bảng tin chưa xác nhận có bản ghi mới",
        env="PRODUCTION", spec="Đã hỏi leader",
-       note="MT-08. Nguồn: improve count comfirm_message r31, r32, r69, r70"),
+       note="MT-08 (Leader chốt 2026-10-23): ẩn bạn bè → conversation.confirm_count tự reset về 0, hội thoại thành ĐÃ xác nhận. "
+            "Nguồn: improve count comfirm_message r31, r32, r69, r70"),
 
     tc("Bộ đếm chưa xác nhận", "DATA-COUNT-001", "Normal",
        "Mọi đường BOT gửi tin — bộ đếm chưa xác nhận KHÔNG đổi",
@@ -442,8 +446,10 @@ S6 = [
        "bảng mới và bảng cũ đều không, chỉ 2025 có",
        "- Mọi tổ hợp: lịch sử hiển thị ĐỦ tin nhắn từ tất cả các bảng, sắp xếp đúng thứ tự thời gian\n"
        "- Không mất tin, không lặp tin\n- Đúng trên cả web và app mobile",
-       env="PRODUCTION",
-       note="Gộp 6 tổ hợp vì cùng kết quả. Nguồn: Content: Hiển thị msg r1427-r1435"),
+       env="PRODUCTION", spec="Đã hỏi leader",
+       note="MT-09 (Leader chốt 2026-10-23): lịch sử chat lưu ở 1 DB riêng, tách bảng theo NĂM "
+            "(messages_2020…messages_2025, năm 2026 ở messages_v2s). Gộp 6 tổ hợp vì cùng kết quả. "
+            "Nguồn: Content: Hiển thị msg r1427-r1435"),
 
     tc("Lịch sử chat & bảng message", "PERF-LARGE-001", "Normal",
        "Lịch sử chat rất dài — tải thêm nhiều trang không lỗi",
@@ -472,8 +478,9 @@ S6 = [
        "- H2 (>20 tin): giữ lại đúng 20 tin có thời điểm tạo MỚI NHẤT ở bảng gốc, phần còn lại chuyển sang bảng lưu trữ\n"
        "- Tin trùng thời điểm tạo: giữ tin có mã lớn hơn\n- Quy tắc giống nhau ở cả 2 bước chuyển",
        env="PRODUCTION", spec="Đã hỏi leader",
-       note="MT-09: spec chat-11 liệt kê bảng theo năm nhưng KHÔNG có 2 bảng lưu trữ này. "
-            "Nguồn: Job move message r3-r10"),
+       note="MT-09 (Leader chốt 2026-10-23): kiến trúc hiện tại là bảng theo NĂM (messages_2020…2025 + messages_v2s) "
+            "ở 1 DB riêng; cơ chế chuyển tin theo TRANG (message_page_2 / message_old, tab Improve move database 09/2023) "
+            "là LEGACY — xác nhận với Dev job này còn chạy không trước khi test. Nguồn: Job move message r3-r10"),
 
     tc("Lịch sử chat & bảng message", "DATA-MIG-001", "Normal",
        "Job chuyển tin nhắn — giữ nguyên mã, thời điểm tạo, thời điểm cập nhật và dữ liệu",
@@ -526,8 +533,8 @@ S6 = [
        "「180日以上前のトーク閲覧はエルメの有料プランご契約が必要です」\n"
        "- Đúng trên cả web và app mobile\n- Bấm 有料プラン: mở màn nâng cấp gói",
        env="PRODUCTION", spec="Đã hỏi leader",
-       note="MT-03: spec chat-11 BR-07 chỉ có giới hạn 1.000 tin/tháng, KHÔNG có quy tắc 180 ngày. "
-            "Nguồn: Feature #28859 r6-r9 + Test fix bug Kh r29"),
+       note="MT-03 (Leader chốt 2026-10-23): bot gói miễn phí chỉ xem được 180 ngày lịch sử chat; nâng cấp gói trả phí "
+            "→ xem không giới hạn. Spec BR-07 cần bổ sung rule 180 ngày. Nguồn: Feature #28859 r6-r9 + Test fix bug Kh r29"),
 
     tc("Giới hạn plan & token", "PAY-PLAN-001", "Normal",
        "Nâng cấp từ gói miễn phí lên gói trả phí — mở khoá toàn bộ lịch sử",
@@ -608,21 +615,21 @@ S6 = [
 
     # ═══════════════ Phân quyền staff & môi trường ═══════════════
     tc("Phân quyền staff & môi trường", "PERM-001", "Normal",
-       "Account staff thao tác trên chat 1:1 — xác định phạm vi quyền thực tế",
-       BOT + "\n- Có account staff của bot A với vai trò 副管理人, 運用者 và サポート",
+       "Account staff CÓ quyền vào chat 1:1 — có ĐẦY ĐỦ quyền thao tác trên màn",
+       BOT + "\n- Có account staff của bot A với vai trò 副管理人, 運用者 và サポート, đều được CẤP quyền vào chat 1:1",
        "1. Với mỗi vai trò staff: đăng nhập và mở /basic/chat-v3\n"
        "2. Thực hiện lần lượt các thao tác ở cột Dữ liệu test\n"
-       "3. Ghi nhận thao tác nào làm được, thao tác nào bị chặn và cách bị chặn\n"
-       "4. Gọi TRỰC TIẾP API tương ứng (không qua giao diện) để kiểm tra tầng máy chủ có chặn không",
+       "3. Ghi nhận thao tác nào làm được, thao tác nào bị chặn\n"
+       "4. Gọi TRỰC TIẾP API tương ứng (không qua giao diện) để kiểm tra tầng máy chủ",
        "3 vai trò staff × thao tác: xem danh sách bạn bè · lọc và tìm kiếm · quick action · "
        "gửi tin (text/media/template/action) · đặt lịch gửi · quản lý profile người gửi · "
        "chỉnh sửa 対応ステータス · sửa thông tin ở cột phải (thông tin cơ bản, friend info, tag, ghi chú)",
-       "- Ghi nhận đầy đủ ma trận quyền thực tế và đối chiếu với quyết định của Leader ở MT-17\n"
-       "- Với thao tác bị chặn ở giao diện: gọi trực tiếp API cũng PHẢI bị chặn ở tầng máy chủ",
+       "- Staff đã được cấp quyền vào màn chat 1:1 → thực hiện được TẤT CẢ thao tác trên màn (không chặn theo vai trò)\n"
+       "- Tầng API cũng cho phép, khớp giao diện (chat 1:1 KHÔNG kiểm tra quyền riêng theo từng thao tác)",
        env="PRODUCTION", spec="Đã hỏi leader",
-       note="MT-17: spec chat-11 ghi「khong phat hien kiem tra quyen Staff trong code Chat 1:1」(feature-spec.md:26, "
-            "độ tin cậy Trung bình). Corpus có ~40 dòng 「Check thao tác bằng account staff」nhưng KHÔNG có kết quả "
-            "mong đợi. Kiểm tra tầng API là bắt buộc, không chỉ giao diện"),
+       note="MT-17 (Leader chốt 2026-10-23): staff có quyền access màn nào thì có FULL quyền thao tác màn đó, "
+            "chat 1:1 không ngoại lệ. Cập nhật feature-spec.md:26 + §6 Xác thực, nâng độ tin cậy lên Cao. "
+            "Nguồn: TCsLine_Improve chung → tab Phân quyền"),
 
     tc("Phân quyền staff & môi trường", "PERM-002", "Normal",
        "Màn hình không được cấp quyền — hiện chú thích và không vào được",

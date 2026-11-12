@@ -72,7 +72,17 @@ python scripts/redmine_fetch.py 36437 --no-journals
 
 # Test kết nối + API key
 python scripts/redmine_fetch.py --check
+
+# Tải attachment tài liệu về 1 thư mục (dùng cho /new-task-mcp — docs MCP)
+python scripts/redmine_fetch.py 39446 --no-journals --download-attachments "MCP/<folder>/docs"
 ```
+
+**`--download-attachments DIR`** (thêm 2026-10-14, cho task MCP):
+- Chỉ tải attachment **tài liệu**: `.md .markdown .html .htm .txt .pdf .json .yaml .yml .csv .xlsx .docx .zip` — ảnh / video / log binary bỏ qua (in ở dòng `Bo qua`).
+- `.zip` giải nén vào `DIR/<tên zip>/` — bỏ entry có `..` / đường dẫn tuyệt đối (chặn path traversal), bỏ qua zip giải nén ra > 200 MB.
+- 2 attachment trùng tên → bản mới nhất (id lớn nhất) giữ tên gốc, bản cũ thành `<attachment_id>_<tên>`.
+- Cuối stdout in thêm mục `## Attachments da tai (<n>)` liệt kê file đã lưu.
+- Vẫn **chỉ đọc** — tải bằng `GET content_url` kèm header API key.
 
 **stdout** = digest markdown, đủ để auto-fill file 01 + 03:
 
@@ -87,7 +97,7 @@ python scripts/redmine_fetch.py --check
 
 **Exit code**: `0` OK · `2` thiếu config/tham số · `3` URL sai format · `4` lỗi HTTP (401/403/404/…) · `5` không kết nối được.
 
-Endpoint gọi: `GET <base>/issues/<id>.json?include=journals,attachments,relations`, header `X-Redmine-API-Key`. **Chỉ đọc** — script không có đường ghi/sửa issue.
+Endpoint gọi: `GET <base>/issues/<id>.json?include=journals,attachments,relations` (+ `GET content_url` của từng attachment khi có `--download-attachments`), header `X-Redmine-API-Key`. **Chỉ đọc** — script không có đường ghi/sửa issue.
 
 ---
 

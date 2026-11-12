@@ -480,23 +480,22 @@ S2 = [
 
     # ═══════════════ Filter — 友だち情報 ═══════════════
     tc("Filter — 友だち情報", "FUNC-MULTI-001", "Normal",
-       "Filter 友だち情報 type SELECT ĐK1「選択肢を全て含む」⇒ chạy action khi friend có đủ các lựa chọn đã chọn",
-       FORM + FR + "\n- Có friend info type select「性別」với option 男/女\n- Friend F1 có giá trị khớp, F0 không có giá trị",
+       "Filter 友だち情報 type SELECT ĐK1「どれかが登録されている人」⇒ chạy action khi friend có ít nhất 1 lựa chọn đã chọn",
+       FORM + FR + "\n- Có friend info type select「性別」với option 男/女\n- Friend F1 có ít nhất 1 lựa chọn đã chọn, F0 chưa có giá trị",
        "1. Thêm điều kiện 友だち情報 select ĐK1, lưu\n2. F1 gửi tin → quan sát\n3. F0 gửi tin → quan sát",
-       "F1: có đủ option được chọn; F0: chưa có giá trị",
+       "F1: có ít nhất 1 lựa chọn đã chọn; F0: chưa có giá trị",
        "- F1 NHẬN được action\n- F0 KHÔNG nhận được action",
        env="PRODUCTION",
-       note="Nguồn: Sửa filter autoreply r61 — corpus chỉ ghi Expect 'OK', AI viết kết quả đo lường được. "
-            "CẦN VERIFY LẠI (08/2023)"),
+       note="Leader chốt #45187 (2026-11-06): op1 select = 「どれかが登録されている人」 (có ÍT NHẤT 1 lựa chọn đã chọn), kho cũ ghi sai nhãn 「選択肢を全て含む」 (đó là op của tag). Nguồn: Sửa filter autoreply r61"),
 
     tc("Filter — 友だち情報", "FUNC-MULTI-001", "Normal",
-       "Filter 友だち情報 type SELECT ĐK2「選択肢を全て除く」⇒ loại trừ friend có đủ các lựa chọn đã chọn",
-       FORM + FR + "\n- Friend F1 có đủ option được chọn; friend F0 không có giá trị",
+       "Filter 友だち情報 type SELECT ĐK2「どれかが登録されている人を除外」⇒ loại trừ friend có bất kỳ lựa chọn đã chọn (friend chưa nhập vẫn chạy action)",
+       FORM + FR + "\n- Friend F1 có ít nhất 1 lựa chọn đã chọn; friend F0 chưa có giá trị",
        "1. Thêm điều kiện 友だち情報 select ĐK2, lưu\n2. F1 gửi tin → quan sát\n3. F0 gửi tin → quan sát",
-       "F1: có đủ option; F0: chưa có giá trị",
+       "F1: có ít nhất 1 lựa chọn đã chọn; F0: chưa có giá trị",
        "- F1 KHÔNG nhận được action\n- F0 NHẬN được action",
        env="PRODUCTION",
-       note="Nguồn: Sửa filter autoreply r62 — CẦN VERIFY LẠI"),
+       note="Leader chốt #45187 (2026-11-06): op2 select = 「…を除外」 (loại trừ friend có BẤT KỲ lựa chọn đã chọn, gồm cả người chưa nhập ở phía chạy action), kho cũ ghi sai nhãn 「選択肢を全て除く」. Nguồn: Sửa filter autoreply r62"),
 
     tc("Filter — 友だち情報", "FUNC-MULTI-001", "Normal",
        "Filter 友だち情報 type SELECT ĐK3「値がある」: friend CÓ giá trị ⇒ chạy action; friend KHÔNG có giá trị ⇒ không chạy",

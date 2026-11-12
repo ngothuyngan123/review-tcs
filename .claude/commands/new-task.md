@@ -37,6 +37,8 @@ Nếu **arg1 trống** → DỪNG, in: "Cần ID task Redmine. Cú pháp: `/new-
    - Exit code ≠ 0 → **DỪNG**, in nguyên văn dòng `ERROR:` của script + trỏ user đến [docs/REDMINE-SETUP.md](../../docs/REDMINE-SETUP.md). KHÔNG retry vô hạn, KHÔNG fallback sang WebFetch trang Redmine, KHÔNG bịa nội dung issue.
      - `2` = thiếu `REDMINE_URL` / `REDMINE_API_KEY` trong `.env` · `3` = arg không phải id thuần cũng không phải `<base>/issues/<số>` · `4` = lỗi HTTP (401 key sai · 403 không có quyền/REST API tắt · 404 issue không tồn tại) · `5` = không kết nối được (VPN/mạng).
 
+3. **Gợi ý task MCP** — `issue.subject` khớp `\bMCP\b` (không phân biệt hoa thường) → in 1 dòng (và lặp lại ở Warnings của BƯỚC 7): "⚠️ Task có vẻ là MCP (test MCP tool) → cân nhắc `/new-task-mcp <id>` (folder trong `MCP/` + tải docs MCP)." rồi **tiếp tục bình thường**, không chặn — task chỉ gọi tới MCP như caller (vd filter dùng chung web / app / MCP) vẫn dùng `/new-task`.
+
 ---
 
 ### BƯỚC 2 — Tạo folder task

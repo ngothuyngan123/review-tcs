@@ -20,7 +20,7 @@ Claude sẽ:
 1. Đọc bug + dev-impact. Spec đọc **chỉ** ở `spec-features/<feature>` (hoặc spec ngoài nếu bạn dán link/nội dung trực tiếp) — **không** WebFetch `lme.jp/manual`
 1a. Hỏi bạn **URL Google Sheet đích** (bắt buộc, phải có `?gid=`) — nơi `/sync-tc` sẽ append TC mới
 1b. Lấy **TC cũ tham chiếu** theo **3 nguồn ưu tiên**, dừng ở nguồn đầu tiên có TC: **(1)** MCP LME TEST STUDIO → **(2)** link Google Sheet bạn cung cấp → **(3)** `04-tc-list.md` sẵn có trong folder. **TC cũ read-only** — Claude không sửa, không override
-2. Duyệt [tầng 1 — 80 quan điểm](../framework/checklist-lme.md), đánh ◯/× theo Trigger (× phải có lý do); với mỗi ◯ mở đúng [tầng 2 — catalog](../framework/catalog-lme.md)
+2. Duyệt [tầng 1 — 81 quan điểm](../framework/checklist-lme.md), đánh ◯/× theo Trigger (× phải có lý do); với mỗi ◯ mở đúng [tầng 2 — catalog](../framework/catalog-lme.md)
 3. Lập ma trận TC tối thiểu: 5 quy tắc vàng + **RULE-01** (quan điểm Cao ⇒ đủ 3 loại `Normal`/`Abnormal`/`Boundary`) + RULE-06 (output cuối chuỗi) + RULE-07 (verify 3 tầng). Reuse TC cũ nếu đã cover; KHÔNG override TC cũ
 3b. **Đối chiếu [kho-tcs/](../kho-tcs/)** của tính năng trước khi viết → bắt vùng regression, phát hiện conflict expected (không tự chọn bên, cảnh báo để Leader/Dev chốt), và không viết TC trùng TC đã có trong kho
 4. Sinh TC theo [template 04](../templates/04-tc-list.template.md) — **16 cột canonical** (bám sheet "7. Ví dụ test case"): `TC No.` = `TC-<mã quan điểm bỏ gạch>-<nn>`; bắt buộc có `Mã quan điểm liên kết`; `Loại case` chỉ 3 giá trị; không có Priority/Regression; `Tiêu đề test case` phải chứa keyword để Leader suy luận impact

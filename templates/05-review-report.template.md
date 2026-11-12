@@ -179,7 +179,7 @@
      dòng "dùng lại TC kho"). VD có 20 TC đề xuất → tiêu đề ghi: ## 7. TCs đề xuất bổ sung (20).
      Không có TC nào → ## 7. TCs đề xuất bổ sung (0) + 1 dòng giải thích vì sao không cần bổ sung. -->
 
-> Bảng dùng **12 cột của kho TCs** ([kho-tcs/README.md](../../kho-tcs/README.md)) — cùng format với output `/collect-tcs` — **cộng 2 cột `Chạy` / `Phạm vi ENV`** để map thẳng sang MCP LME TEST STUDIO. Tổng **14 cột**, **KHÔNG** phải 16 cột canonical của file 04.
+> Bảng dùng **12 cột của kho TCs** ([kho-tcs/README.md](../../kho-tcs/README.md)) — cùng format với output `/collect-tcs` — **cộng 3 cột `Chạy` / `Phạm vi ENV` / `Surface`** để map thẳng sang MCP LME TEST STUDIO. Tổng **15 cột** (từ 2026-10-14; report 14 cột cũ chưa có `Surface` vẫn push được — `/sync-review-tc` tự suy), **KHÔNG** phải 16 cột canonical của file 04.
 > `/sync-review-tc` đọc bảng này rồi push về đúng nguồn TC gốc (Studio qua `testcase_create`, hoặc Sheet qua cột anchor "Main Function").
 > **3 nguồn sinh TC** — mã ghi ở đầu cột `Ghi chú`:
 > - **`G<x>`** = dòng `GAP` / `RISK` ở §1 — **bắt buộc** có TC (2 ngoại lệ: dùng lại TC kho / GAP giả đã loại bằng bằng chứng).
@@ -199,17 +199,18 @@
 | Căn cứ TC regression `R<x>` | `<dòng rủi ro hồi quy của Studio / <ID kho> / caller cụ thể>` — hoặc `Không có TC R` |
 | Xác nhận chống trùng | Đã đối chiếu `<n>` TC ở BƯỚC 0 + kho — **không TC đề xuất nào trùng** |
 
-| ID | Nhóm | Mã quan điểm | Màn hình/chức năng | Loại case | Chạy | Phạm vi ENV | Tên case | Tiền điều kiện | Các bước thực hiện | Dữ liệu nhập | Kết quả mong đợi | Kết quả thực thi | Ghi chú |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| TC-XXX000-01 | UI | | | Normal | auto | dev, local, prd, staging | | | | | | | Lấp `<G1 / Q1>` · Đánh giá spec: Spec ghi rõ · Evidence: `<loại>` |
-| TC-XXX000-02 | API | | | Normal | manual | prd | | | | | | | Lấp `<G2>` · chỉ prd vì kiểm trên tài khoản khách hàng thật · manual vì môi trường production · Evidence: `<loại>` |
-| TC-XXX000-03 | API | | | Abnormal | auto | dev, local, staging | | | | | | | Lấp `<G3>` · không chạy prd vì case abnormal ảnh hưởng server · Evidence: `<loại>` |
-| TC-XXX000-04 | UI | | | Normal | auto | dev, local, prd, staging | | | | | | | Lấp `<R1>` · regression · dẫn từ `<ID kho / dòng dev_impact>` · Evidence: `<loại>` |
+| ID | Nhóm | Mã quan điểm | Màn hình/chức năng | Loại case | Chạy | Phạm vi ENV | Surface | Tên case | Tiền điều kiện | Các bước thực hiện | Dữ liệu nhập | Kết quả mong đợi | Kết quả thực thi | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TC-XXX000-01 | UI | | | Normal | auto | dev, local, prd, staging | web | | | | | | | Lấp `<G1 / Q1>` · Đánh giá spec: Spec ghi rõ · Evidence: `<loại>` |
+| TC-XXX000-02 | API | | | Normal | manual | prd | api | | | | | | | Lấp `<G2>` · chỉ prd vì kiểm trên tài khoản khách hàng thật · manual vì môi trường production · Evidence: `<loại>` |
+| TC-XXX000-03 | API | | | Abnormal | auto | dev, local, staging | public-api | | | | | | | Lấp `<G3>` · không chạy prd vì case abnormal ảnh hưởng server · Evidence: `<loại>` |
+| TC-XXX000-04 | UI | | | Normal | auto | dev, local, prd, staging | line-friend, web | | | | | | | Lấp `<R1>` · regression · dẫn từ `<ID kho / dòng dev_impact>` · Evidence: `<loại>` |
 
 > **Quy tắc cột** — xem [kho-tcs/README.md](../../kho-tcs/README.md) §Format 12 cột. Tóm tắt:
 > - `ID` = `TC-<mã quan điểm bỏ gạch>-<nn>`, VD `TC-PERM002-01`. **Không trùng** ID trong bộ TC gốc và trong kho. ⚠️ KHÔNG dùng prefix tuần tự của kho (`TC-TAG-267`) — build kho đánh số lại mỗi lần chạy.
 > - `Nhóm` = `UI` / `API` / `Data` / `Job`, suy từ mã quan điểm theo `GROUP_MAP` ở [kho-tcs/data/_common.py](../../kho-tcs/data/_common.py) (khớp tiền tố dài nhất trước; không khớp → `UI`). TC kiểm **job nền chạy / bị chặn** → `Job` (Studio `tc_group = job`), kể cả khi bước là thao tác màn hình / LINE app để kích hoạt hoặc quan sát; chỉ giữ `UI` khi phán quyết đầu tiên nằm ở màn quản trị. ⚠️ **Cách kiểm chứng thắng `GROUP_MAP`**: TC có bước **gửi request trực tiếp tới endpoint** (gọi tay POST/GET, sửa tham số, curl/Postman) → `API`, bất kể mã quan điểm (VD `DATA-DB-001` gửi POST → `API`, không phải `Data`). Ngược lại TC **chỉ thao tác trên màn hình** (kể cả chặn request bằng DevTools rồi quan sát UI) → **không** xếp `API` dù `GROUP_MAP` suy ra `API` — dùng `UI` (hoặc `Data` nếu phán quyết là query DB, `Job` nếu kiểm job nền). Trước khi push, đối chiếu phân bố `tc_group` với bộ TC gốc của Studio cùng task.
 > - `Màn hình/chức năng` = **`<Tên VN/EN> <Tên JP>: <nội dung test ngắn gọn>`** (Leader chốt 2026-10-07). Thuật ngữ JP trong phần nội dung kèm bản dịch VN/EN đứng trước. VD `Broadcast 一斉配信: Gửi thật theo điều kiện trạng thái scenario 「ステップ購読状況」` · `Friend list 友だちリスト: Filter friend info 友だち情報 kiểu text テキスト`. Màn không có tên JP (VD MCP) → `MCP (API filter_friends): <nội dung>`.
+>   - **Task test MCP tool** (Leader chốt 2026-10-14): **dòng đầu** = tên MCP tool mà TC đang test, cách bằng ` / ` nếu nhiều tool, rồi `<br>` + nội dung theo format trên. VD `create_form_survey / update_form_survey<br>MCP tạo/sửa form 回答フォーム: Account staff có quyền フォーム`. Chỉ ghi tool **thực hiện thao tác cần kiểm** — tool chỉ dùng đọc lại kết quả (`get_form_detail`, `list_forms`) không tính, trừ khi TC test chính tool đọc đó. TC chỉ thao tác web / form công khai trên dữ liệu dựng qua MCP → ghi tool đã dựng dữ liệu. Mặt tiếp xúc ghi ở cột `Surface` (= `mcp`); dòng tên tool vẫn bắt buộc để Leader trace tool.
 > - `Tên case` = mô tả thuần, **không** prefix `[<nhóm>]`, nhưng phải chứa keyword để Leader suy được impact.
 > - **Mỗi TC phải tự đầy đủ** (Leader chốt 2026-10-07) — TC được push lên Studio / Sheet **từng dòng riêng lẻ**, bảng tổng quan / TC khác / NEW-xx của report **không đi theo**:
 >   - `Tiền điều kiện` **chép đủ** dữ liệu TC dùng (từng bạn bè ở trạng thái nào, giá trị friend info, QR, tag…). **CẤM** viết `Như TC-FUNC001-01`, `Bộ dữ liệu như NEW-17`, `xem bảng đầu §7`. Nhiều TC dùng chung 1 bộ dữ liệu → chép lại vào từng TC (chỉ phần TC đó cần).
@@ -223,17 +224,35 @@
 > - `Loại case` **chỉ** `Normal` / `Abnormal` / `Boundary` — không có Regression (ghi chữ `regression` ở `Ghi chú`), không có cột Priority.
 > - `Chạy` **chỉ** `auto` / `manual` → Studio `exec_mode`. **Mặc định `auto`** — bám quy tắc chọn `exec_mode` của Studio (`skill_doc_get`: "⛔ ĐỪNG mặc định manual"):
 >   - `auto` khi runner Studio kiểm chứng tự động được ở local bằng **bất kỳ tầng nào**: browser tự động (kể cả TC nhóm `UI`), gọi API, dispatch job / mô phỏng callback LINE, unit/integration, kiểm tra tĩnh source. **Nhóm `UI` ≠ `manual`.** Bước "bạn bè thao tác trên LINE" (gửi tin, trả lời trích dẫn, bấm nút, kết bạn) **không** phải lý do `manual` — runner mô phỏng được callback.
->   - `manual` **CHỈ** khi bắt buộc 1 trong 4: **(1)** `Phạm vi ENV` **chỉ có** `prd` (production / dữ liệu khách hàng thật) — scope 4 env có kèm `prd` thì **không** phải lý do `manual`; **(2)** thiết bị thật — app admin mobile, kết quả phải nhìn trên app LINE thật (RULE-06), camera quét QR; **(3)** email / mail thật trong hộp thư; **(4)** mắt người phán đoán — so ảnh trước/sau, font, màu, bố cục.
->   - TC `manual` **bắt buộc** ghi lý do ở `Ghi chú`: `manual vì <1 trong 4 lý do>`. Không nêu được lý do thuộc 4 nhóm trên → để `auto`.
-> - `Phạm vi ENV` = **ghi thẳng env code của Studio** (`env_list`: `dev` · `local` · `prd` · `staging`), ngăn bằng `, ` — **giống hệt giá trị push lên `env_scope`**, KHÔNG có bước quy đổi. Chỉ dùng 3 tổ hợp:
+>   - `manual` **CHỈ** khi bắt buộc 1 trong 5: **(1)** `Phạm vi ENV` **chỉ có** `prd` (production / dữ liệu khách hàng thật) — scope 4 env có kèm `prd` thì **không** phải lý do `manual`; **(2)** thiết bị thật — app admin mobile, kết quả phải nhìn trên app LINE thật (RULE-06), camera quét QR; **(3)** email / mail thật trong hộp thư; **(4)** mắt người phán đoán — so ảnh trước/sau, font, màu, bố cục; **(5)** chỉ task MCP: TC **E2E prompt** chạy trên client LLM thật (ChatGPT / Claude), kết quả phi tất định — `MCP-E2E-*`, [framework/mcp-rules.md](../../framework/mcp-rules.md) MCP-RULE-08.
+>   - TC `manual` **bắt buộc** ghi lý do ở `Ghi chú`: `manual vì <1 trong 5 lý do>`. Không nêu được lý do thuộc 5 nhóm trên → để `auto`.
+> - `Phạm vi ENV` = **ghi thẳng env code của Studio** (`env_list`: `dev` · `local` · `prd` · `staging`), ngăn bằng `, ` — **giống hệt giá trị push lên `env_scope`**, KHÔNG có bước quy đổi. Chỉ dùng 4 tổ hợp:
 >   - `dev, local, prd, staging` — **MẶC ĐỊNH**.
 >   - `prd` — **chỉ** khi case phải kiểm trên **tài khoản / dữ liệu khách hàng thật**. Ghi lý do ở `Ghi chú`: `chỉ prd vì <lý do>`.
 >   - `dev, local, staging` — case **abnormal có thể ảnh hưởng server** (làm chậm / treo / quá tải / bẩn dữ liệu dùng chung) → **không được test trên prd**. Ghi `không chạy prd vì <lý do>` ở `Ghi chú`.
+>   - `staging, prd` — case **chỉ nghiệm thu được sau một lần deploy / release thật + cache trình duyệt bản cũ** mà local/dev **không tái hiện được** (không có bước release / không có cache bản cũ thật): version asset sau deploy, lệch bản JS/CSS, bump version — tiêu biểu `DEPLOY-ASSET-001`, `DEPLOY-LIVE-001`. Ghi `chỉ staging+prd vì cần deploy thật` ở `Ghi chú`. (Vẫn chứa `prd` nên thỏa RULE-08.)
 >   - **RULE-08** (media · domain · job · loadbalance · bill tiền): "không được kết luận từ staging" = scope **phải chứa `prd`**, KHÔNG có nghĩa chỉ chạy prd → mặc định 4 env đã đáp ứng. TC RULE-08 **không được** dùng tổ hợp `dev, local, staging`; nếu case đó vừa dính RULE-08 vừa ảnh hưởng server → giữ 4 env + ghi cảnh báo ở `Ghi chú`, Leader quyết.
+> - `Surface` = **mặt tiếp xúc** — TC nói chuyện với cái gì (Leader chốt 2026-10-14). **Bắt buộc, không bỏ trống.** Chỉ 7 giá trị:
+>
+>   | Giá trị | Dùng khi |
+>   |---|---|
+>   | `web` | Thao tác UI admin trên **browser thật** (màn quản trị LME, form / trang công khai mở bằng browser) |
+>   | `mcp` | Gọi tool qua **MCP server / client** (connector LME MCP) |
+>   | `api` | Gọi thẳng **API nội bộ** có session HTTP — endpoint `/ajax/…`, `/basic/…`, API app `/api/…` bằng cookie / token đăng nhập (Copy as fetch, curl, Postman) |
+>   | `public-api` | Gọi **Public API** công bố cho bên thứ 3 (`/v1/…` + API key) |
+>   | `job` | Phán quyết nằm ở **job / batch chạy nền** (remind, phân bổ staff, bill định kỳ, đồng bộ Google, command recover…) |
+>   | `line-friend` | **Bạn bè thao tác từ app LINE**: trang khách LIFF (đặt lịch, form, mua hàng, 予約履歴), gửi tin / bấm rich menu / kết bạn, nhận tin trên LINE |
+>   | `mobile-app` | Admin thao tác trên **app mobile LME** (Elme) |
+>
+>   - Nhiều mặt → ngăn bằng `, `, **giá trị đầu = mặt chính** (nơi đặt phán quyết pass/fail), sau đó là mặt phụ (dựng tiền điều kiện có bước thật / kiểm chéo). VD `line-friend, web` (khách đặt trên LIFF rồi admin đối chiếu 予約カレンダー) · `job, line-friend` (job remind gửi, kiểm tin trên LINE) · `mobile-app, line-friend` · `mcp, web`.
+>   - Chỉ khai mặt phụ khi có **bước trong `Các bước thực hiện`** dùng tới nó — khai thừa làm Studio đẻ thêm 1 phiên chạy. Dữ liệu dựng sẵn ở `Tiền điều kiện` (admin tạo sẵn bằng 「予約追加」, dựng qua MCP…) **không** tính là mặt phụ.
+>   - `Surface` **≠** `Nhóm`: `Nhóm` nói **cách kiểm chứng** (UI / API / Data / Job), `Surface` nói **mặt tiếp xúc**. Cặp hay gặp: `UI` ↔ `web` / `line-friend` / `mobile-app` · `API` ↔ `api` / `public-api` / `mcp` · `Job` ↔ `job` · `Data` ↔ mặt đã kích hoạt hành vi được query.
+>   - Task test MCP tool: mọi TC gọi tool → `mcp` đứng đầu (vẫn giữ dòng tên tool ở `Màn hình/chức năng`); TC chỉ kiểm màn web trên dữ liệu MCP dựng sẵn → `web`.
+>   - **Push Studio**: Studio hiện **chỉ nhận** `web` · `public-api` · `mcp` (`skill_doc_get`: "ĐỪNG viết `api` vào surfaces") → `/sync-review-tc` quy đổi: `web` / `api` / `job` / `line-friend` / `mobile-app` → `web` · `mcp` → `mcp` · `public-api` → `public-api`; gộp giá trị trùng, mặt đầu tiên = `role: primary`, còn lại `role: dependency`. Bản 7 giá trị chỉ nằm ở file local — nên bước cần người / thiết bị (app LINE thật, app mobile thật, camera) **vẫn phải viết rõ** ở `Các bước` / `Tiền điều kiện`.
 > - `Kết quả thực thi` **để trống** — người test tự điền (khác file 04 ghi `Chưa test`).
 > - `Ghi chú` gộp, ngăn bằng ` · `: **bắt buộc** `Lấp G<x> / Q<x> / R<x>` (TC `R<x>` thêm `regression` + căn cứ) · `Đánh giá spec: ...` · `Evidence: <loại>` (RULE-02) · `regression` · `dẫn từ <ID kho>`. **Không** ghi `Môi trường: ...` ở đây nữa — đã có cột `Phạm vi ENV`.
->   ⚠️ `Ghi chú` là cột **chỉ dùng trong file 05 này** — `/sync-review-tc` **KHÔNG** đẩy nó lên Studio hay Google Sheet. Thông tin nào cần có mặt trên test tool thì phải nằm ở cột riêng (`Phạm vi ENV`, `Chạy`, `Mã quan điểm`, ...), đừng nhét vào `Ghi chú`.
-> - Copy sang `04-tc-list.md`: file 04 viết từ 2026-10-07 dùng **chung 14 cột này** → copy nguyên dòng, chỉ đổi đầu `Ghi chú` từ `Lấp G/Q/R` sang impact cover (`BUG` / `F<n>` / `D<n>` / `T<n>`). File 04 cũ 16 cột → ánh xạ: `ID`→`TC No.` · `Tên case`→`Tiêu đề test case` · `Mã quan điểm`→`Mã quan điểm liên kết` · `Tiền điều kiện`→`Điều kiện tiền đề` · `Dữ liệu nhập`→`Dữ liệu test/input` · `Phạm vi ENV`→`Môi trường test`; tách `Đánh giá spec` ra `Trạng thái đánh giá spec`; `Kết quả thực thi` = `Chưa test`; `Nhóm`/`Màn hình/chức năng`/`Chạy` giữ trong `Ghi chú`.
+>   ⚠️ `Ghi chú` là cột **chỉ dùng trong file 05 này** — `/sync-review-tc` **KHÔNG** đẩy nó lên Studio hay Google Sheet. Thông tin nào cần có mặt trên test tool thì phải nằm ở cột riêng (`Phạm vi ENV`, `Surface`, `Chạy`, `Mã quan điểm`, ...), đừng nhét vào `Ghi chú`.
+> - Copy sang `04-tc-list.md`: file 04 viết từ 2026-10-14 dùng **chung 15 cột này** (file 04 14 cột viết 2026-10-07 → 2026-10-13 thêm cột `Surface` khi copy vào) → copy nguyên dòng, chỉ đổi đầu `Ghi chú` từ `Lấp G/Q/R` sang impact cover (`BUG` / `F<n>` / `D<n>` / `T<n>`). File 04 cũ 16 cột → ánh xạ: `ID`→`TC No.` · `Tên case`→`Tiêu đề test case` · `Mã quan điểm`→`Mã quan điểm liên kết` · `Tiền điều kiện`→`Điều kiện tiền đề` · `Dữ liệu nhập`→`Dữ liệu test/input` · `Phạm vi ENV`→`Môi trường test`; tách `Đánh giá spec` ra `Trạng thái đánh giá spec`; `Kết quả thực thi` = `Chưa test`; `Nhóm`/`Màn hình/chức năng`/`Chạy`/`Surface` giữ trong `Ghi chú`.
 
 ---
 

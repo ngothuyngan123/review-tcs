@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """FA-011 — Các điểm MÂU THUẪN.
 
-Trạng thái: 22/23 mục ĐÃ CHỐT.
+Trạng thái: 24/25 mục ĐÃ CHỐT.
   • 2026-08-19 — Leader chốt MT-00 → MT-19 (trừ MT-09).
   • 2026-08-22 — Leader chốt MT-20, MT-21, MT-22 (3 mục phát hiện khi đối chiếu với spec mới bổ sung).
+  • 2026-10-13 — Leader chốt MT-23, MT-24 (phát hiện khi review TC MCP tạo form #39446).
   • CÒN LẠI: **MT-09 chưa có quyết định** — ô QUYẾT ĐỊNH vẫn để trống.
 """
 
@@ -387,4 +388,30 @@ CONFLICTS = [
      "⑤ config `MAX_SYNC_GOOGLE_SHEET_THREAD`, mặc định 5 luồng khi thiếu config\n"
      "⑥ xóa mô tả cũ 'job AddResultFormAnswerToGoogleSpreadSheet bị comment out' ở BR-08 và §9\n"
      "⑦ ĐÓNG Gap #11 của feature-spec.md."],
+
+    ["MT-23", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
+     "MỚI (review #39446, 2026-10-13) — 管理名 của form có được trùng không",
+     "r508: 'Cho phép tạo form TRÙNG 管理名' → lưu thành công, list có 2 form cùng tên.\n"
+     "Studio task #361 NEW-4 (MCP create_form_survey): tạo 2 lần cùng tên đều thành công.",
+     "feature-spec.md §SCR-FA11-02 chỉ ghi 管理名 bắt buộc, tối đa 50 ký tự — KHÔNG nói unique.\n"
+     "Docs MCP 04-form-survey.md §4 cũng không nói unique.",
+     "Leader yêu cầu khi review #39446 'Tên quản lý không được trùng' — ngược hẳn TC kho và TC Studio.",
+     "[Tạo form] Tạo form TRÙNG 管理名 với form đã có trong bot",
+     "Không được phép tạo trùng tên quản lý của form.",
+     "✅ Đã sửa TC kho: đảo kết quả thành báo lỗi, không tạo form (Abnormal).\n"
+     "BẮT BUỘC: ① sửa expected NEW-4 trên Studio task #361 → HTTP 422 · ② bổ sung rule unique 管理名 vào "
+     "feature-spec.md SCR-FA11-02 + docs MCP §4 · ③ CẦN LEADER XÁC NHẬN: phạm vi unique (trong 1 bot?) và modal "
+     "コピーの作成 đang mặc định 管理名 = tên form gốc → copy giữ nguyên tên có bị chặn không."],
+
+    ["MT-24", "CAO", "✅ ĐÃ CHỐT",
+     "MỚI (review #39446, 2026-10-13) — bot Free CŨ có bị giới hạn 3 form không",
+     "r93-r98: 'Hành vi giống nhau ở cả flag_contract_new = 0 và = 1' (Free cũ lẫn Free mới đều chặn form thứ 4).\n"
+     "Studio task #361 NEW-5: 'Bot Free cũ đã có 3 form — vẫn tạo được form thứ 4'.",
+     "feature-spec.md BR-01: 'Free plan chỉ được tối đa 3 form active' — không phân biệt Free cũ/mới.",
+     "TC kho và TC Studio nói ngược nhau về bot Free cũ; spec không phân biệt.",
+     "[Tạo form] Giới hạn số form theo plan · [Giới hạn & hiệu năng] 8 mục giới hạn áp CHUNG cho mọi bot",
+     "Bot free cũ được tạo không giới hạn.",
+     "✅ Đã sửa TC kho: tách 3 bot — Free mới chặn form thứ 4, Free cũ và Standard không giới hạn; cập nhật "
+     "note TC giới hạn folder và TC 8 mục giới hạn.\n"
+     "BẮT BUỘC SỬA SPEC: BR-01 ghi rõ chỉ Free MỚI (flag_contract_new=1) bị giới hạn 3 form; vượt giới hạn qua MCP trả 422."],
 ]

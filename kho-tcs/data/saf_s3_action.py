@@ -34,13 +34,16 @@ S3 = [
        "2. Đọc nguyên văn nhãn của từng nút tắt trong khối「よく使われる項目」\n"
        "3. Đếm số nút",
        "Trang add_new",
-       "- Có ĐÚNG 5 nút tắt\n"
-       "- Ghi lại nguyên văn nhãn của cả 5 nút để đối chiếu với 2 nguồn đang lệch nhau (xem Ghi chú)",
-       note="⚠️ MÂU THUẪN MT-14: tab master (05/2025) r65-r84 liệt kê 5 nút là テンプレート · タグ · "
-            "友だち情報 · ステップ配信 · その他; còn ui-spec.md:78-83 (quan sát 05/2026) liệt kê "
-            "「ステップ配信を開始・停止する」·「リッチメニューを表示する」·「テンプレートを送信する」·"
-            "「タグを付け・外しする」·「その他のアクションをみる」— tức KHÁC nhau ở nút thứ 3 "
-            "(友だち情報 ↔ リッチメニュー) và khác cả cách đặt nhãn. CHỜ LEADER CHỐT danh sách đúng."),
+       "- Có ĐÚNG 5 nút tắt, nguyên văn nhãn:\n"
+       "  1「ステップ配信を開始・停止する」\n"
+       "  2「リッチメニューを表示する」\n"
+       "  3「テンプレートを送信する」\n"
+       "  4「タグを付け・外しする」\n"
+       "  5「その他のアクションをみる」",
+       note="✅ Leader chốt MT-14 (2026-10-23): 5 nút tắt đúng theo spec/ui-spec.md:78-83 (nút thứ 2 "
+            "là リッチメニューを表示する, KHÔNG phải 友だち情報). Danh sách corpus cũ (テンプレート · タグ · "
+            "友だち情報 · ステップ配信 · その他 — r65-r84, 05/2025) bị loại, coi như đợt đổi giao diện "
+            "sau đã thay. Đóng Gap #2 feature-spec.md §9."),
 
     tc("Đăng ký action — 5 nút tắt", "UI-001", "Normal",
        "Hover từng nút tắt — đậm nút và đổi con trỏ thành hình bàn tay",
@@ -55,59 +58,60 @@ S3 = [
             "r173, r177, r181 (trang 既存 ghi『Đậm button』) — gộp cả 2 mô tả."),
 
     tc("Đăng ký action — 5 nút tắt", "FUNC-001", "Normal",
-       "Click nút tắt テンプレート — mở modal action và focus sẵn vào tab テンプレート",
+       "Click nút tắt テンプレートを送信する — mở modal action và focus sẵn vào tab テンプレート",
        NEW,
        "1. Mở trang 新規友だち用\n"
-       "2. Click nút tắt「テンプレート」\n"
+       "2. Click nút tắt「テンプレートを送信する」\n"
        "3. Quan sát modal アクション vừa mở",
        "Trang add_new",
        "- Modal「アクション」mở ra\n"
        "- Tab「テンプレート」đang được chọn sẵn (không phải tab đầu tiên mặc định)",
-       note="Nguồn: r66, r166, r301. Đóng Gap #2 của feature-spec.md §9 (『Behavior chính xác của "
-            "5 shortcut buttons chưa được xác nhận bằng click trực tiếp』)."),
+       note="Nguồn: r66, r166, r301. Nhãn nút theo MT-14 (2026-10-23). Đóng Gap #2 của feature-spec.md "
+            "§9 (『Behavior chính xác của 5 shortcut buttons chưa được xác nhận bằng click trực tiếp』)."),
 
     tc("Đăng ký action — 5 nút tắt", "FUNC-001", "Normal",
-       "Click nút tắt タグ — mở modal action và focus sẵn vào tab タグ",
+       "Click nút tắt タグを付け・外しする — mở modal action và focus sẵn vào tab タグ",
        NEW,
        "1. Mở trang 新規友だち用\n"
-       "2. Click nút tắt「タグ」\n"
+       "2. Click nút tắt「タグを付け・外しする」\n"
        "3. Quan sát modal",
        "Trang add_new",
        "- Modal「アクション」mở ra, tab「タグ」đang được chọn sẵn",
-       note="Nguồn: r70, r170, r305."),
+       note="Nguồn: r70, r170, r305. Nhãn nút theo MT-14 (2026-10-23)."),
 
     tc("Đăng ký action — 5 nút tắt", "FUNC-001", "Normal",
-       "Click nút tắt 友だち情報 — mở modal action và focus sẵn vào tab 友だち情報",
+       "Click nút tắt リッチメニューを表示する — mở modal action và focus sẵn vào tab リッチメニュー",
        NEW,
        "1. Mở trang 新規友だち用\n"
-       "2. Click nút tắt「友だち情報」\n"
+       "2. Click nút tắt「リッチメニューを表示する」\n"
        "3. Quan sát modal",
        "Trang add_new",
-       "- Modal「アクション」mở ra, tab「友だち情報」đang được chọn sẵn",
-       note="Nguồn: r74, r174, r309. ⚠️ Liên quan MT-14 — ui-spec.md:78-83 KHÔNG có nút tắt "
-            "友だち情報 mà có「リッチメニューを表示する」. Nếu Leader chốt theo spec thì TC này đổi "
-            "thành nút リッチメニュー."),
+       "- Modal「アクション」mở ra, tab「リッチメニュー」đang được chọn sẵn",
+       note="✅ Leader chốt MT-14 (2026-10-23): nút tắt thứ 2 là リッチメニューを表示する (KHÔNG phải "
+            "友だち情報 như corpus r74/r174/r309). TC đổi đối tượng test sang nút リッチメニュー.",
+       spec="Đã hỏi leader"),
 
     tc("Đăng ký action — 5 nút tắt", "FUNC-001", "Normal",
-       "Click nút tắt ステップ配信 — mở modal action và focus sẵn vào tab ステップ",
+       "Click nút tắt ステップ配信を開始・停止する — mở modal action và focus sẵn vào tab ステップ",
        NEW,
        "1. Mở trang 新規友だち用\n"
-       "2. Click nút tắt「ステップ配信」\n"
+       "2. Click nút tắt「ステップ配信を開始・停止する」\n"
        "3. Quan sát modal",
        "Trang add_new",
        "- Modal「アクション」mở ra, tab「ステップ」đang được chọn sẵn",
-       note="Nguồn: r78, r178, r313."),
+       note="Nguồn: r78, r178, r313. Nhãn nút theo MT-14 (2026-10-23)."),
 
     tc("Đăng ký action — 5 nút tắt", "FUNC-001", "Normal",
-       "Click nút tắt その他 — mở modal action nhưng KHÔNG focus vào tab nào",
+       "Click nút tắt その他のアクションをみる — mở modal action nhưng KHÔNG focus vào tab nào",
        NEW,
        "1. Mở trang 新規友だち用\n"
-       "2. Click nút tắt「その他」\n"
+       "2. Click nút tắt「その他のアクションをみる」\n"
        "3. Quan sát modal",
        "Trang add_new",
        "- Modal「アクション」mở ra\n"
        "- KHÔNG có tab nào được chọn sẵn (khác 4 nút tắt còn lại)",
-       note="Nguồn: r82, r182, r317. Kết quả KHÁC 4 nút kia → tách TC riêng."),
+       note="Nguồn: r82, r182, r317. Nhãn nút theo MT-14 (2026-10-23). Kết quả KHÁC 4 nút kia → "
+            "tách TC riêng."),
 
     tc("Đăng ký action — 5 nút tắt", "FUNC-001", "Normal",
        "Cài 1 action qua nút tắt — action hiện ngay dưới nút アクション追加・編集",
@@ -129,13 +133,14 @@ S3 = [
        "2. Cài lần lượt 5 action khác loại (template, tag, friend info, scenario, text)\n"
        "3. Bấm 保存, F5 và quan sát danh sách action",
        "5 action: テンプレート → タグ → 友だち情報 → ステップ → テキスト",
-       "- Danh sách hiển thị ĐỦ 5 action, KHÔNG bị cắt còn 3\n"
+       "- Danh sách hiển thị ĐỦ 5 action (KHÔNG bị cắt còn 3)\n"
        "- Thứ tự hiển thị đúng thứ tự đã cài\n"
+       "- Trong khung hiển thị có thanh SCROLL để xem toàn bộ action đã cài\n"
        "- Sau F5 danh sách không đổi",
-       note="Nguồn: r68, r72, r76, r80, r84 (『Setting N action → Hiển thị CÁC action đã setting』). "
-            "⚠️ MÂU THUẪN MT-12 với tab「Improve setting add fr 1.0」(04/2023) r7-r8 ghi『chỉ hiển "
-            "thị tối đa 3 action đầu + text その他 x 件 編集』. Đợt improve 2.0 (05/2025) mới hơn → "
-            "chọn theo 2.0; tab 1.0 đã bị thay thế."),
+       note="✅ Leader chốt MT-12 (2026-10-23): hiển thị đủ N action, đúng thứ tự, có thanh scroll "
+            "để xem hết — KHÔNG giới hạn 3. Nguồn r68-r84 (bản 2.0, 05/2025). Khối tab "
+            "「Improve setting add fr 1.0」(04/2023) r7-r8『chỉ hiển thị tối đa 3 + その他 x 件 編集』"
+            "bị loại (đợt improve 2.0 thay thế)."),
 
     # ═══════════ 8. Đăng ký action — modal & danh sách ═══════════
     tc("Đăng ký action — modal & danh sách", "FUNC-001", "Normal",
@@ -233,8 +238,9 @@ S3 = [
        "thầm mất action",
        env="PRODUCTION",
        note="TC do AI bổ sung theo FUNC-004 (RULE-01: quan điểm ưu tiên Cao cần đủ Normal + "
-            "Abnormal + Boundary). Corpus chỉ có『Setting N action』chung chung, không nêu ngưỡng. "
-            "CẦN LEADER CHỐT có giới hạn số action hay không.",
+            "Abnormal + Boundary). ✅ Leader chốt MT-12 (2026-10-23): khung hiển thị đủ N action + "
+            "có thanh scroll (không giới hạn hiển thị 3). Riêng việc CÓ hay KHÔNG giới hạn SỐ LƯỢNG "
+            "action cài được thì Leader chưa nêu → vẫn đo ở bước 5 trên production.",
        spec="Đã hỏi leader"),
 
     tc("Đăng ký action — modal & danh sách", "MSG-001", "Normal",
@@ -294,19 +300,26 @@ S3 = [
        note="Nguồn: r98 (『check khi xóa landing → không hiển thị landing đó ở modal filter』)."),
 
     tc("Đăng ký action — modal & danh sách", "DATA-REF-001", "Abnormal",
-       "Landing trong filter đã bị xóa và landing đó đã đạt số lần action — action không chạy nữa",
-       "- Action trên trang 新規友だち用 có filter theo landing L\n"
+       "Xóa QR đang dùng làm điều kiện filter — filter bỏ riêng điều kiện QR, action chạy theo "
+       "điều kiện còn lại",
+       "- Action trên trang 新規友だち用 có filter gồm điều kiện theo QR landing L (và có thể kèm "
+       "điều kiện khác)\n"
        "- Landing L đã ở trạng thái đã chạy action đủ số lần cho phép\n"
        "- Landing L sau đó bị xóa",
-       "1. Chuẩn bị đúng tiền điều kiện\n"
-       "2. Dùng tài khoản LINE test kết bạn qua đường dẫn tương ứng\n"
-       "3. Kiểm tra action của trang 新規友だち用 có chạy không",
-       "Landing L đã bị xóa và đã đạt giới hạn số lần action",
-       "- Action KHÔNG chạy nữa (vì landing trong filter đã bị xóa)",
+       "1. Ghi lại các điều kiện trong filter của action (có điều kiện QR = L)\n"
+       "2. Sang màn QRコードアクション xóa landing L\n"
+       "3. Mở lại modal filter của action → kiểm tra các điều kiện còn lại\n"
+       "4. Dùng tài khoản LINE test kết bạn qua đường dẫn tương ứng\n"
+       "5. Kiểm tra action của trang 新規友だち用 có chạy không",
+       "Landing L bị xóa; filter của action có chứa điều kiện QR = L",
+       "- Filter KHÔNG còn điều kiện QR nữa (chỉ bỏ RIÊNG điều kiện QR, không bỏ cả filter)\n"
+       "- Action đánh giá theo các điều kiện CÒN LẠI của filter; không bị chặn chỉ vì QR đã bị xóa "
+       "hay đã đạt số lần action của QR cũ",
        env="PRODUCTION",
-       note="Nguồn: r99 — ⚠️ Kết quả thực thi ở tab nguồn là **NG** (chưa fix tại thời điểm test). "
-            "Giữ TC nguyên trạng: DỰ KIẾN FAIL → nếu vẫn FAIL phải raise bug. CHỜ LEADER CHỐT "
-            "(MT-13)."),
+       note="✅ Leader chốt MT-13 (2026-10-23): khi QR dùng làm điều kiện filter bị xóa thì filter bỏ "
+            "riêng điều kiện QR đó. Nguồn r99 ghi NG『action không chạy nữa vì landing trong filter "
+            "bị xóa』KHÔNG còn là expected — đổi theo quyết định. ⚠️ Kiểm lại trên production; nếu còn "
+            "hành vi NG cũ (action bị chặn) thì raise bug."),
 
     # ═══════════ 9. Nút 保存 & bảo vệ đổi bot ═══════════
     tc("Nút 保存 & bảo vệ đổi bot", "FUNC-001", "Normal",

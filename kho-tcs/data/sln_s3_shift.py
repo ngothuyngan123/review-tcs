@@ -91,10 +91,11 @@ S3 = [
        "2. Nhập 08:00-12:00, 13:00-18:00, 19:00-22:00 → lưu\n"
        "3. Kiểm tra lưới calendar và DB",
        "Các khung như mô tả",
-       "- B1: tạo thành ca liên tục 07:00-18:00\n"
+       "- B1: báo lỗi「シフトの時間が連続する場合は、合算して登録してください（例：13:00~14:30 14:30~15:00の場合、"
+       "13:00~15:00に合算してください）」, không tạo ca\n"
        "- B2: tạo 3 ca riêng biệt đúng như đã nhập",
-       note="Nguồn: Quản lý calendar r1428-r1429. ⚠ Sau Bug #32568 (10/2025) hành vi với 2 khung LIỀN NHAU "
-            "đã đổi thành BÁO LỖI yêu cầu gộp — xem TC nhóm này và MT-04."),
+       note="Leader chốt MT-04 (2026-10-12): 2 khung LIỀN NHAU báo lỗi yêu cầu gộp (Bug #32568). "
+            "Nguồn: Quản lý calendar r1428-r1429 (corpus cũ ghi B1 tự gộp — đã lỗi thời)."),
 
     tc("Ca làm việc — thêm & ghi đè", "FUNC-DATE-001", "Abnormal",
        "Bug #32568: 2 khung giờ LIỀN NHAU phải báo lỗi yêu cầu gộp",
@@ -180,10 +181,10 @@ S3 = [
 
     tc("Ca làm việc — thêm & ghi đè", "FUNC-DATE-001", "Normal",
        "Đặt ngày nghỉ vào ngày có booking ở trạng thái KHÔNG chặn",
-       CAL + "\n- Ngày 12/07 chỉ có booking: đợi thông báo (status 3) · bị deny (6) · "
+       CAL + "\n- Ngày 12/07 chỉ có booking: bị deny (6) · "
              "user đã cancel (4) · admin cancel (7) · admin book (2)",
        "1. Mở modal edit ca ngày 12/07 → tick 休業日 → lưu\n2. Kiểm tra lưới calendar",
-       "5 booking như mô tả",
+       "4 booking như mô tả",
        "- Lưu thành công, ngày 12/07 chuyển thành ngày nghỉ",
        note="Nguồn: Quản lý calendar r1451-r1455."),
 
@@ -249,6 +250,7 @@ S3 = [
        "Ca 10:00-18:00 ngày 11/07",
        "- Chỉ 1 ca được tạo (DB có đúng 1 row)\n- Lưới không hiển thị 2 ca chồng nhau\n"
        "- Nút bị disable sau click đầu hoặc request thứ 2 bị chặn",
+       group="Data",
        note="Nguồn: #38520 r42."),
 
     tc("Ca làm việc — thêm & ghi đè", "SEC-001", "Abnormal",
@@ -263,15 +265,18 @@ S3 = [
        note="Nguồn: #38520 r38. EP-19."),
 
     tc("Ca làm việc — thêm & ghi đè", "PERF-LARGE-001", "Boundary",
-       "Chọn nhiều ngày ở mức biên và biên+1 của giới hạn số lượng",
+       "Chọn số ngày lớn (không có giới hạn) — lưu đủ, không timeout, không lưu một phần",
        SHIFT,
-       "1. Chọn số ngày = đúng giá trị biên cho phép → lưu\n"
-       "2. Chọn số ngày = biên + 1 → lưu\n3. Kiểm tra DB sau mỗi lần",
-       "Số ngày ở mức biên (xác định từ spec/impl trước khi test)",
-       "- Ở đúng biên: lưu thành công, đủ số ca\n"
-       "- Vượt biên: chặn rõ ràng bằng thông báo lỗi, KHÔNG lưu một phần (không có ca lẻ trong DB)",
+       "1. Chọn toàn bộ ngày trong 1 năm (~365 ngày) cho 2 staff, mỗi ngày 2 khung giờ → lưu\n"
+       "2. Đo thời gian phản hồi\n3. Kiểm tra DB",
+       "365 ngày × 2 staff × 2 khung",
+       "- Lưu thành công, không báo lỗi giới hạn\n"
+       "- Không timeout / lỗi 500\n"
+       "- Số bản ghi DB = 365 × 2 × 2, không thiếu ngày nào; nếu lỗi giữa chừng thì KHÔNG có ca lẻ",
+       group="UI",
        spec="Đã hỏi leader",
-       note="Nguồn: #38520 r39. ⚠ Giá trị biên cụ thể chưa có trong spec — cần Leader xác nhận, xem MT-15."),
+       note="Leader chốt MT-15 (2026-10-12): hiện chưa setting giới hạn số ngày → đổi TC biên thành test "
+            "khối lượng lớn. Nguồn: #38520 r39."),
 
     tc("Ca làm việc — thêm & ghi đè", "UI-INPUT-001", "Normal",
        "Ô 出勤時間 nhận paste bằng cả hotkey và chuột phải, tự trim khoảng trắng",
@@ -320,23 +325,27 @@ S3 = [
 
     tc("Ca làm việc — sửa & xóa", "FUNC-DATE-001", "Normal",
        "Sửa giờ ca khi booking ở trạng thái KHÔNG chặn",
-       CAL + "\n- Ca của S1 ngày 12/07 có booking: admin book (2) · đợi thông báo (3) · deny (6) · "
+       CAL + "\n- Ca của S1 ngày 12/07 có booking: admin book (2) · deny (6) · "
              "user cancel (4) · admin cancel (7)",
        "1. Sửa giờ ca thành hợp lệ → lưu\n2. Kiểm tra ca và các booking",
-       "5 booking như mô tả",
+       "4 booking như mô tả",
        "- Lưu thành công\n- Các booking vẫn giữ nguyên, không bị xóa",
        note="Nguồn: Quản lý calendar r1458, r1462-r1465."),
 
     tc("Ca làm việc — sửa & xóa", "DATA-REF-001", "Abnormal",
-       "Xóa ca còn booking 予約確定 → chặn với message xóa ca",
-       CAL + "\n- Ca S1 ngày 11/07 19:00-24:00 có booking「予約確定」20:00-21:00",
-       "1. Ở tab シフト tick ca đó → bấm「一括シフト削除」\n2. Đọc message\n"
-       "3. Kiểm tra DB `calendar_salon_time_booking`",
-       "Ca có booking 予約確定",
+       "Xóa ca còn booking 予約確定 / リクエスト → chặn với message xóa ca",
+       CAL + "\n- Ca S1 ngày 11/07 19:00-24:00 có booking「予約確定」20:00-21:00\n"
+             "- Ca S1 ngày 12/07 19:00-24:00 có booking「リクエスト」(status 0) 20:00-21:00",
+       "1. Ở tab シフト tick ca 11/07 → bấm「一括シフト削除」\n2. Đọc message\n"
+       "3. Lặp lại với ca 12/07\n4. Kiểm tra DB `calendar_salon_time_booking`",
+       "Ca có booking 予約確定 · ca có booking リクエスト",
        "- Lỗi「削除するシフトの中に「ステータス：予約確定」の予約が1つ以上残っています。シフトを削除する場合、"
        "選択したシフトに対する全ての予約が「ステータス：キャンセル」になっている必要があります。」\n"
+       "- Ca 12/07 (booking リクエスト): cũng bị chặn, không xóa\n"
        "- Ca KHÔNG bị xóa, bản ghi vẫn còn trong DB",
-       note="Nguồn: Quản lý calendar r717-r722 + #38520 r6, r83."),
+       note="Leader chốt MT-03 (2026-10-12): chỉ xóa được ca khi mọi booking đã cancel/deny — booking "
+            "approve và request đều chặn. Nguồn: Quản lý calendar r717-r722 + #38520 r6, r83. "
+            "⚠ Text message cho trường hợp リクエスト chưa có trong corpus — verify text thực tế."),
 
     tc("Ca làm việc — sửa & xóa", "DATA-REF-001", "Normal",
        "Xóa ca chưa có booking → confirm rồi xóa thành công",
@@ -367,6 +376,7 @@ S3 = [
        "1. Double-click nút「一括シフト削除」→ xác nhận\n2. Quan sát nút sau khi xóa xong",
        "1 ca",
        "- Chỉ tính 1 lần (không xóa 2 lần / không lỗi)\n- Sau khi xóa: nút bị disable",
+       group="UI",
        note="Nguồn: Quản lý calendar r739-r740."),
 
     tc("Ca làm việc — sửa & xóa", "DATA-REF-001", "Boundary",
@@ -432,6 +442,7 @@ S3 = [
        "1 ca, 2 tab",
        "- Tab B KHÔNG ghi dữ liệu cũ vào ca đã xóa: hiển thị lỗi/thông báo hợp lý hoặc tự reload\n"
        "- Không có lỗi JS/console\n- DB nhất quán: không có bản ghi ca mồ côi",
+       group="Data",
        note="Nguồn: #38520 r35."),
 
     tc("Ca làm việc — sửa & xóa", "CONC-003", "Abnormal",
@@ -441,6 +452,7 @@ S3 = [
        "3. Admin A bấm xóa ca",
        "Booking mới tạo trong lúc màn edit đang mở",
        "- KHÔNG cho xóa (server check lại tại thời điểm submit)\n- Ca và booking đều giữ nguyên",
+       group="UI",
        note="Nguồn: Quản lý calendar r1496, r1518, r1541, r1563."),
 
     tc("Ca làm việc — sửa & xóa", "STATE-001", "Abnormal",
@@ -483,8 +495,11 @@ S3 = [
        "2 ca như mô tả",
        "- B1: Ca1 = 10:00-12:00, Ca2 giữ nguyên, DB đúng 2 bản ghi\n"
        "- B2: Ca1 = 10:00-14:00, Ca2 giữ nguyên, 2 ca độc lập\n"
-       "- B3: xử lý theo rule overlap (ghi đè / gộp / chặn) — KHÔNG tạo 2 ca chồng nhau âm thầm",
-       note="Nguồn: #38520 r91-r93. ⚠ B3 hành vi chưa chốt rõ ràng trong corpus — xem MT-04."),
+       "- B3: áp dụng rule ghi đè — phần bị cắt KHÔNG có booking 予約確定/リクエスト → lưu thành công, "
+       "không tồn tại 2 ca chồng nhau; CÓ booking → lỗi「上書き（短縮）するシフトの中に「ステータス：予約確定」の"
+       "予約が1つ以上残っています。…」",
+       note="Leader chốt MT-04 (2026-10-12): ca không liền nhau thì ghi đè ca hiện tại nếu không có booking "
+            "approve/request bị ảnh hưởng, có thì báo lỗi. Nguồn: #38520 r91-r93."),
 
     tc("Ca làm việc — sửa & xóa", "SYNC-APP-001", "Normal",
        "Xóa ca ở modal edit trên app mobile — theo trạng thái booking",
@@ -497,6 +512,7 @@ S3 = [
        "Ca ở 4 trạng thái booking",
        "- B1, B2: xóa thành công\n- B3: báo lỗi, không xóa\n"
        "- Calendar private cho kết quả giống calendar staff",
+       group="UI",
        note="Nguồn: Quản lý calendar r2155-r2163."),
 
     tc("Ca làm việc — sửa & xóa", "SYNC-APP-001", "Abnormal",
@@ -505,6 +521,7 @@ S3 = [
        "1. Xóa ca 08:00-12:00 → quan sát\n2. Sửa giờ ca → quan sát",
        "Booking 07:30-08:30",
        "- Cả 2 thao tác đều bị CHẶN, báo lỗi\n- Ca và booking giữ nguyên",
+       group="UI",
        note="Nguồn: Quản lý calendar r1564-r1565 (Bug Tester #33314)."),
 
     # ══════════════ 18. Ca làm việc — qua ngày & biên 00:00 ══════════════
@@ -654,7 +671,8 @@ S3 = [
        "- Biên cuối: đầu ngày 21/8 hiển thị icon KHÔNG đặt được\n"
        "- Kiểm tra đồng bộ ở cả lưới tuần/tháng phía LINE user",
        note="Nguồn: Quản lý calendar r2492-r2493. ⚠ Corpus đánh NG cho lưới tuần/tháng phía LINE user ở "
-            "biên đầu → cần verify lại, xem MT-16."),
+            "biên đầu → NG CHƯA VERIFY, không kèm ticket: chạy lại trên môi trường hiện tại, còn NG thì raise bug. "
+            "Spec chưa có mục 期間限定 (mùa vụ)."),
 
     tc("Ca làm việc — qua ngày & biên 00:00", "FUNC-DATE-001", "Boundary",
        "Ca qua ngày + thời gian nghỉ trước/sau: slot phía LINE user bị cắt đúng",
@@ -666,12 +684,46 @@ S3 = [
        "- Khoảng 21:30-01:30 bị disable (booking + vùng nghỉ)",
        note="Nguồn: Quản lý calendar r2494."),
 
+    tc("Ca làm việc — qua ngày & biên 00:00", "FUNC-DATE-001", "Normal",
+       "Ca 00:00~06:00 của ngày nghỉ bị ca qua ngày ghi đè → LINE user đặt được như ca thường",
+       CAL + "\n- Ban đầu T7 17/10/2026 của S1 là ngày nghỉ\n"
+             "- Admin set ca S1 T6 16/10/2026 = 20:00~06:00 → T7 17/10 đã bị ghi đè thành ca 00:00~06:00\n"
+             "- S1 chưa có booking nào ngày 16/10 và 17/10",
+       "1. LINE user F01 mở LIFF đặt lịch, chọn course「カットA」, staff S1\n"
+       "2. Chọn ngày 17/10/2026, quan sát danh sách khung giờ\n"
+       "3. Chọn khung 01:00 và hoàn tất đặt lịch\n"
+       "4. Admin mở màn quản lý booking ngày 17/10",
+       "Course 60 phút · khung 01:00 ngày 17/10",
+       "- Bước 2: ngày 17/10 KHÔNG hiển thị là ngày nghỉ; có khung giờ từ 00:00, khung bắt đầu cuối cùng "
+       "là 05:00 (course 60 phút kết thúc đúng 06:00)\n"
+       "- Bước 3: đặt lịch thành công giống ca thường, không báo lỗi ngày nghỉ\n"
+       "- Bước 4: booking F01 ngày 17/10 01:00~02:00 của S1 hiển thị ở màn admin",
+       spec="Spec không ghi",
+       note="Leader chốt MT-06 (2026-10-12): phần sau 0h của ca qua ngày nhận booking như ca thường. "
+            "Spec chưa ghi → SPEC CẦN BỔ SUNG."),
+
+    tc("Ca làm việc — qua ngày & biên 00:00", "FUNC-DATE-001", "Boundary",
+       "Sửa / xóa ca qua ngày của T6 sau khi đã ghi đè → T7 KHÔNG quay lại ngày nghỉ",
+       CAL + "\n- Ban đầu T7 17/10/2026 của S1 là ngày nghỉ\n"
+             "- Admin set ca S1 T6 16/10/2026 = 20:00~06:00 → T7 17/10 đã bị ghi đè thành ca 00:00~06:00",
+       "1. Sửa ca S1 T6 16/10 thành 20:00~23:00 (không còn qua ngày), lưu\n"
+       "2. Quan sát lịch S1 ngày 17/10\n"
+       "3. Xóa ca S1 T6 16/10, lưu\n"
+       "4. Quan sát lịch S1 ngày 17/10",
+       "T6 20:00~06:00 → 20:00~23:00 → xóa",
+       "- Bước 2: T7 17/10 KHÔNG quay lại ngày nghỉ, vẫn giữ ca 00:00~06:00\n"
+       "- Bước 4: T7 17/10 KHÔNG quay lại ngày nghỉ, vẫn giữ ca 00:00~06:00",
+       spec="Spec không ghi",
+       note="Leader chốt MT-06 (2026-10-12): T7 không quay lại ngày nghỉ. ⚠ Ý「vẫn giữ ca 00:00~06:00」là "
+            "SUY LUẬN của AI (Leader chỉ nói không quay lại ngày nghỉ) — cần Leader xác nhận."),
+
     tc("Ca làm việc — qua ngày & biên 00:00", "ENV-002", "Normal",
        "Múi giờ JST: giờ hiển thị không lệch giữa Web / App / CSV",
        CAL + "\n- Có booking「予約確定」ngày 11/07/2026 19:00-00:00",
        "1. Xem giờ trên Web\n2. Xem giờ trên app mobile\n3. Export CSV và mở file",
        "Booking 19:00-00:00",
        "- Giờ hiển thị đúng theo JST ở cả 3 nơi\n- Không lệch ±9 giờ do timezone",
+       group="UI",
        note="Nguồn: #38520 r33."),
 
     tc("Ca làm việc — qua ngày & biên 00:00", "PERM-003", "Normal",
@@ -683,6 +735,7 @@ S3 = [
        "2 bot, staff trùng tên",
        "- Chỉ ca của bot A thay đổi\n- Ca + booking của bot B giữ nguyên\n"
        "- Truy vấn có điều kiện `bot_id` / `calendar_salon_id` đúng, không có bản ghi lẫn bot",
+       group="Data",
        note="Nguồn: #38520 r34."),
 
     # ══════════════ 19. Ca làm việc — CSV ══════════════
@@ -694,6 +747,7 @@ S3 = [
        "S1, S2, S3",
        "- B1: lỗi「スタッフを選択してください。」\n- B2: tải về 1 file\n"
        "- B3, B4: mỗi staff 1 file riêng",
+       group="UI",
        note="Nguồn: Quản lý calendar r949-r953."),
 
     tc("Ca làm việc — CSV", "OUT-EXPORT-001", "Normal",
@@ -704,6 +758,7 @@ S3 = [
        "- File có 3 cột:「追加したい日付」「開始時間」「終了時間」\n"
        "- KHÔNG export ngày nghỉ (is_day_off = 1)\n"
        "- Dữ liệu sort theo date, rồi start_time, rồi end_time tăng dần",
+       group="UI",
        note="Nguồn: Quản lý calendar r954-r955."),
 
     tc("Ca làm việc — CSV", "OUT-EXPORT-001", "Normal",
@@ -713,8 +768,9 @@ S3 = [
        "Ca 19:00-24:00",
        "- File mở được, encoding hiển thị tiếng Nhật đúng (không mojibake)\n"
        "- Cột giờ của ca ngày 11/07 xuất ĐẦY ĐỦ cả phần giờ (không mất giờ kết thúc)",
+       group="UI",
        note="Nguồn: #38520 r21. ⚠ Corpus ghi「ở csv chỉ nhập được: 00:00」— cần đối chiếu giá trị "
-            "thực xuất ra (24:00 hay 00:00), xem MT-04."),
+            "thực xuất ra (24:00 hay 00:00)."),
 
     tc("Ca làm việc — CSV", "FUNC-003", "Abnormal",
        "Import CSV: validate thiếu staff / thiếu file / sai định dạng file",
@@ -799,10 +855,11 @@ S3 = [
        "2. Đảo THỨ TỰ 2 cột 開始時間 và 終了時間 (giữ tên đúng) → import\n3. Kiểm tra DB",
        "File sai tên cột · file đảo thứ tự cột",
        "- B1: vẫn import được (hệ thống đọc theo thứ tự cột, không theo tên)\n"
-       "- B2: dữ liệu bị hiểu sai theo vị trí → cần xác nhận có validate hay không",
+       "- B2: KHÔNG có lỗi về header; dữ liệu đọc theo VỊ TRÍ cột (cột thứ 2 coi là 開始時間) — "
+       "dòng có giờ bắt đầu > giờ kết thúc bị lỗi theo validate từng dòng",
        spec="Đã hỏi leader",
-       note="Nguồn: Quản lý calendar r989 (「sai tên cột vẫn cho vào, dev đang lấy theo thứ tự cột」). "
-            "⚠ Đây là rủi ro dữ liệu — cần Leader quyết có bổ sung validate header không, xem MT-17."),
+       note="Leader chốt MT-17 (2026-10-12): logic hiện tại import CSV KHÔNG validate tên cột. "
+            "Nguồn: Quản lý calendar r989. ⚠ Kết quả B2 theo validate dòng là SUY LUẬN — verify thực tế."),
 
     tc("Ca làm việc — CSV", "FUNC-003", "Boundary",
        "Bug #26943: format giờ 1 chữ số và ngày không zero-pad",
@@ -845,9 +902,11 @@ S3 = [
        "1. Import file có dòng ca 11/07 = 19:00-21:00 (rút ngắn cắt vào booking)\n"
        "2. Quan sát kết quả và đối chiếu với hành vi khi làm cùng thao tác trên UI",
        "File CSV rút ngắn ca",
-       "- Hành vi khớp rule ghi đè của UI: HOẶC ghi đè thành công, HOẶC CHẶN vì còn booking 予約確定 "
-       "trong phần bị rút ngắn\n"
-       "- Không được xử lý khác UI",
+       "- Bị CHẶN vì còn booking 予約確定 trong phần bị rút ngắn: lỗi「上書き（短縮）するシフトの中に"
+       "「ステータス：予約確定」の予約が1つ以上残っています。シフトを上書き（短縮）する場合、短縮されるシフトに"
+       "対しての予約が全て「ステータス：キャンセル」になっている必要があります。」\n"
+       "- Ca giữ nguyên 19:00-24:00 — giống hệt khi thao tác trên UI",
        spec="Đã hỏi leader",
-       note="Nguồn: #38520 r24. ⚠ Corpus để ngỏ 2 khả năng → cần Leader chốt, xem MT-04."),
+       note="Leader chốt MT-04 (2026-10-12): ghi đè cắt vào booking approve/request → báo lỗi. "
+            "Nguồn: #38520 r24. ⚠ Text lỗi lấy theo UI; import CSV có thể hiển thị dạng lỗi theo dòng — verify."),
 ]

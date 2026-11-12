@@ -35,8 +35,10 @@ S6 = [
        env="PRODUCTION",
        note="⚠️ MT-01. Nguồn: r52 (『qrlanding kết bạn mới → send action_id, general_message; nếu "
             "bật tùy chọn thì send THÊM cấu hình của 新規友だち用』). NGƯỢC với job-spec.md:127 "
-            "và :328 (『Landing QR override HOÀN TOÀN add_friend_setting』). CHỜ LEADER CHỐT — "
-            "nếu chốt theo spec thì TC này dự kiến FAIL và phải raise bug.",
+            "và :328 (『Landing QR override HOÀN TOÀN add_friend_setting』). ✅ Leader chốt MT-01 "
+            "(2026-10-23): CẢ HAI cùng chạy — addFriendSetting TRƯỚC, landing SAU, gate bằng option "
+            "併用 (QR new: radio 併用する/併用しない; QR all: 3 checkbox 新規/既存/ブロック解除…を併用). "
+            "job-spec.md:127/:328 SAI, phải sửa spec (TC không còn dự kiến FAIL).",
        spec="Đã hỏi leader"),
 
     tc("Ưu tiên với QRコードアクション", "MSG-001", "Normal",
@@ -52,7 +54,7 @@ S6 = [
        "- VÌ friend là bạn mới nên nhận THÊM「N-msg」và tag TN",
        env="PRODUCTION",
        note="⚠️ MT-01. Nguồn: r53 (『qrlanding kết bạn all friend → send action_id, general_message; "
-            "TH1 nếu friend là new friend thì send thêm cấu hình 新規友だち用』). CHỜ LEADER CHỐT.",
+            "TH1 nếu friend là new friend thì send thêm cấu hình 新規友だち用』). ✅ Leader đã chốt MT-01 (2026-10-23): CẢ HAI cùng chạy — addFriendSetting trước, landing sau (gate bằng option 併用).",
        spec="Đã hỏi leader"),
 
     tc("Ưu tiên với QRコードアクション", "MSG-001", "Normal",
@@ -69,7 +71,7 @@ S6 = [
        "- Nhận THÊM「O-msg」và được gắn tag TO (cấu hình của trang 既存友だち用)",
        env="PRODUCTION",
        note="⚠️ MT-01. Nguồn: r149 (『TH2 nếu friend là old friend → send thêm cấu hình 既存友だち用』). "
-            "CHỜ LEADER CHỐT.",
+            "✅ Leader đã chốt MT-01 (2026-10-23): CẢ HAI cùng chạy — addFriendSetting trước, landing sau (gate bằng option 併用).",
        spec="Đã hỏi leader"),
 
     tc("Ưu tiên với QRコードアクション", "MSG-001", "Normal",
@@ -101,7 +103,7 @@ S6 = [
        "- Friend VẪN được gắn tag TN (action của trang 新規友だち用 vẫn chạy)",
        env="PRODUCTION",
        note="⚠️ MT-01. Nguồn: r55 (『Check khi landing không setting action → vẫn send action của "
-            "setting add new』), r151, r290. CHỜ LEADER CHỐT.",
+            "setting add new』), r151, r290. ✅ Leader đã chốt MT-01 (2026-10-23): CẢ HAI cùng chạy — addFriendSetting trước, landing sau (gate bằng option 併用).",
        spec="Đã hỏi leader"),
 
     tc("Ưu tiên với QRコードアクション", "MSG-001", "Normal",
@@ -116,7 +118,7 @@ S6 = [
        "- Friend VẪN nhận「N-msg」(tin nhắn của trang 新規友だち用)",
        env="PRODUCTION",
        note="⚠️ MT-01. Nguồn: r56 (『Check khi landing không setting msg → vẫn send msg của setting "
-            "add new』), r152, r291. CHỜ LEADER CHỐT.",
+            "add new』), r152, r291. ✅ Leader đã chốt MT-01 (2026-10-23): CẢ HAI cùng chạy — addFriendSetting trước, landing sau (gate bằng option 併用).",
        spec="Đã hỏi leader"),
 
     tc("Ưu tiên với QRコードアクション", "MSG-003", "Normal",
@@ -135,7 +137,7 @@ S6 = [
        note="⚠️ MT-01. Nguồn: r287 (『chỉ send 1 lần/1 user … use_msg_unblock = 1 send thêm cấu "
             "hình unblock』) và r288 (『check khi unblock lần 2 (không quét qr) → không send cả "
             "msg, action ở màn setting-add-friend-unblock』). Bước 5 là điểm dễ gây tranh cãi: "
-            "vì sao lần bỏ block thứ 2 lại KHÔNG chạy cấu hình unblock. CHỜ LEADER CHỐT.",
+            "vì sao lần bỏ block thứ 2 lại KHÔNG chạy cấu hình unblock. ✅ Leader đã chốt MT-01 (2026-10-23): CẢ HAI cùng chạy — addFriendSetting trước, landing sau (gate bằng option 併用).",
        spec="Đã hỏi leader"),
 
     tc("Ưu tiên với QRコードアクション", "MSG-003", "Normal",
@@ -150,7 +152,7 @@ S6 = [
        "- Cả 2 lần bỏ block friend đều nhận「U-msg」và được gắn tag TU",
        env="PRODUCTION",
        note="⚠️ MT-01. Nguồn: r289 (『khi landing để send nhiều lần → có call back block => "
-            "unblock sẽ send … send thêm cấu hình unblock』). CHỜ LEADER CHỐT.",
+            "unblock sẽ send … send thêm cấu hình unblock』). ✅ Leader đã chốt MT-01 (2026-10-23): CẢ HAI cùng chạy — addFriendSetting trước, landing sau (gate bằng option 併用).",
        spec="Đã hỏi leader"),
 
     tc("Ưu tiên với QRコードアクション", "MSG-001", "Normal",
@@ -169,7 +171,7 @@ S6 = [
        note="⚠️ MT-01. Nguồn: r54 (『xóa follow => friend vào block bot => quét landing → send "
             "action_id, general_message; send thêm cấu hình add new; check bảng "
             "detail_landing_click: is_old_fried = 0』). Đã viết lại theo góc nhìn tester. "
-            "CHỜ LEADER CHỐT.",
+            "✅ Leader đã chốt MT-01 (2026-10-23): CẢ HAI cùng chạy — addFriendSetting trước, landing sau (gate bằng option 併用).",
        spec="Đã hỏi leader"),
 
     tc("Ưu tiên với QRコードアクション", "FUNC-004", "Boundary",
@@ -189,7 +191,9 @@ S6 = [
        note="⚠️ MT-01. TC do AI bổ sung theo RULE-01 (Boundary cho quan điểm ưu tiên Cao). Corpus "
             "chỉ có case 1 lần (r150, r287) và nhiều lần (r289), không có case sát/vượt ngưỡng. "
             "job-spec.md:329 nói khi landing đã đạt giới hạn thì CẢ HAI đều bị bỏ qua — điểm này "
-            "chính là chỗ cần đo. CẦN LEADER CHỐT.",
+            "chính là chỗ cần đo. ✅ Leader chốt MT-01 (2026-10-23): CẢ HAI cùng chạy khi còn trong "
+            "giới hạn; riêng ứng xử tại/vượt ngưỡng N lần của landing chưa nêu rõ → đo trên "
+            "production và ghi lại.",
        spec="Đã hỏi leader"),
 
     tc("Ưu tiên với QRコードアクション", "FUNC-DATE-001", "Abnormal",
@@ -198,18 +202,23 @@ S6 = [
               "- Thời điểm test nằm NGOÀI khoảng đó",
        "1. Cài landing có giới hạn thời gian, thời điểm test nằm ngoài khoảng\n"
        "2. Cả 3 trang あいさつメッセージ đều cài tin nhắn + action\n"
-       "3. Dùng tài khoản LINE test quét QR landing để kết bạn\n"
-       "4. Đọc tin nhắn nhận được và kiểm tra tag\n"
-       "5. Lặp lại ở sát mốc: 1 phút TRƯỚC giờ bắt đầu và 1 phút SAU giờ kết thúc",
-       "Ngoài khoảng thời gian: trước giờ bắt đầu 1 phút, sau giờ kết thúc 1 phút",
-       "- Friend KHÔNG nhận action/tin nhắn của landing\n"
-       "- Friend cũng KHÔNG nhận action/tin nhắn của trang あいさつメッセージ\n"
-       "- Kết quả giống nhau ở cả 2 mốc sát ranh giới",
+       "3. Dùng tài khoản LINE test QUÉT QR LANDING để kết bạn → đọc tin nhắn + kiểm tra tag\n"
+       "4. Lặp lại ở sát mốc: 1 phút TRƯỚC giờ bắt đầu và 1 phút SAU giờ kết thúc\n"
+       "5. Dùng tài khoản test khác QUÉT MÃ KẾT BẠN THƯỜNG (không qua landing) → đọc tin nhắn + tag",
+       "Ngoài khoảng thời gian landing: trước giờ bắt đầu 1 phút, sau giờ kết thúc 1 phút · "
+       "kèm 1 lượt kết bạn thường",
+       "- Quét QR landing ngoài khoảng: friend KHÔNG nhận action/tin của landing, và cũng KHÔNG "
+       "nhận action/tin của あいさつメッセージ (giới hạn thời gian của landing chi phối cả cụm "
+       "landing + 併用)\n"
+       "- Kết quả giống nhau ở cả 2 mốc sát ranh giới\n"
+       "- Kết bạn bằng MÃ THƯỜNG (không qua landing): VẪN nhận tin nhắn + action của あいさつメッセージ "
+       "bình thường (giới hạn thời gian landing KHÔNG áp cho đường kết bạn thường)",
        env="PRODUCTION",
-       note="⚠️ MT-08. Nguồn: r62, r159, r295 (『check khi setting Có sử dụng giới hạn thời gian và "
-            "nằm ngoài khoảng thời gian đó → Không gửi action_id bảng landing và action/msg ở bảng "
-            "add_friend_setting』). Spec FA-007 KHÔNG có bất kỳ mô tả nào về giới hạn thời gian. "
-            "Bước 5 (mốc sát ranh giới) do AI bổ sung theo FUNC-DATE-001. CHỜ LEADER CHỐT.",
+       note="✅ Leader chốt MT-08 (2026-10-23): giới hạn thời gian là setting của LANDING, chỉ áp khi "
+            "friend quét QR landing; kết bạn bằng mã thường vẫn dùng setting あいさつメッセージ bình "
+            "thường. Nguồn r62/r159/r295. Bước 4 (mốc sát ranh giới) + bước 5 (đối chứng kết bạn "
+            "thường) do AI bổ sung. Việc sửa spec: ghi rõ giới hạn thời gian thuộc landing + nhánh "
+            "này vào job-spec.md.",
        spec="Đã hỏi leader"),
 
     tc("Ưu tiên với QRコードアクション", "STATE-DEP-001", "Normal",
@@ -224,10 +233,11 @@ S6 = [
        "- Friend KHÔNG nhận tin nhắn/action của landing (vì landing đang tắt)\n"
        "- Nhưng VẪN nhận tin nhắn + action của trang 新規友だち用 (được gắn tag TN)",
        env="PRODUCTION",
-       note="⚠️ MT-02. Nguồn: r93 (『check khi setting ON/OFF chọn vào option \"あいさつメッセージを"
-            "稼働させる\" → có gửi action add new friend khi qr đang OFF, và ở landing có chọn "
-            "option send new friend』) và khối case 13 (r248-r252). Tùy chọn "
-            "「あいさつメッセージを稼働させる」KHÔNG có trong spec FA-007. CHỜ LEADER CHỐT.",
+       note="✅ Leader chốt MT-02 (2026-10-23): tùy chọn「あいさつメッセージを稼働させる」CÓ THẬT. Khi QR "
+            "OFF mà bật các option 併用 (MT-01) VÀ ở mục「稼働OFF時に友だち追加された場合のアクション"
+            "(通常友だち追加として扱われます)」chọn「あいさつメッセージを稼働させる」thì gửi action kết "
+            "bạn lúc OFF. Nguồn r93 + case 13 (r248-r252). Việc sửa spec: bổ sung BR quan hệ "
+            "landing ↔ あいさつメッセージ + tùy chọn này vào feature-spec.md §5 và job-spec.md.",
        spec="Đã hỏi leader"),
 
     # ═══════════ 16. Thứ tự & loại action khi trùng landing ═══════════
@@ -249,7 +259,7 @@ S6 = [
        note="⚠️ MT-01. Nguồn: khối r205 (nêu rõ cách fix:『Sửa lại thứ tự action của "
             "addFriendSetting TRƯỚC rồi đến action LandingQR để scenario lấy của LandingQR』) + "
             "r206-r208 (『send action của scenario landing trước』/『bỏ qua scen của old friend』). "
-            "NGƯỢC với job-spec.md:127. CHỜ LEADER CHỐT.",
+            "NGƯỢC với job-spec.md:127. ✅ Leader đã chốt MT-01 (2026-10-23): CẢ HAI cùng chạy — addFriendSetting trước, landing sau (gate bằng option 併用).",
        spec="Đã hỏi leader"),
 
     tc("Thứ tự & loại action khi trùng landing", "FUNC-SEQ-001", "Normal",
@@ -312,11 +322,46 @@ S6 = [
        "4. Chụp màn hình chat, ghi lại thứ tự\n"
        "5. Lặp lại với 2 action text mỗi bên",
        "Case 1 action và case 2 action mỗi bên",
-       "- 「O-text」(あいさつメッセージ) gửi trước, 「L-text」(landing) gửi sau",
+       "- 「O-text」(あいさつメッセージ) gửi trước, 「L-text」(landing) gửi sau\n"
+       "- Action text KHÔNG bị đẩy xuống sau multi action (đã fix)",
        env="PRODUCTION",
-       note="Nguồn: r220-r223 (Case 5). Liên quan MT-01. ⚠️ Tab「Ngần review」của cùng file ghi 2 "
-            "câu hỏi treo:『Action text đang bị gửi sau multi action』và『Action text chưa có "
-            "trigger send từ đâu』— cần Leader xác nhận đã fix chưa (MT-16)."),
+       note="Nguồn: r220-r223 (Case 5). Liên quan MT-01. ✅ Leader chốt MT-16 (2026-10-23): "
+            "『Action text bị gửi sau multi action』ĐÃ FIX → bổ sung vế này vào expected. Hai câu hỏi "
+            "treo còn lại CHƯA FIX — xem 2 TC DỰ KIẾN FAIL kế dưới."),
+
+    tc("Thứ tự & loại action khi trùng landing", "FUNC-SEQ-001", "Abnormal",
+       "Thứ tự hiển thị action so với tin nhắn của chính friend — action KHÔNG được chen trước",
+       LAND + "\n- Trang 既存友だち用 cài multi action (có action text) + tin nhắn\n"
+              "- Có tài khoản LINE test đã từng là bạn",
+       "1. Cài trang 既存友だち用: tin nhắn + multi action (gồm action text)\n"
+       "2. Đưa friend test về bạn cũ\n"
+       "3. Dùng tài khoản LINE test gửi 1 tin nhắn cho bot để kết bạn lại\n"
+       "4. Chụp màn hình chat trên app LINE, ghi lại THỨ TỰ: tin nhắn của friend vs action/tin của bot",
+       "Friend tự gửi tin trước khi action chạy",
+       "- Tin nhắn do chính FRIEND gửi phải đứng ĐÚNG mốc thời gian của nó\n"
+       "- Action/tin của bot KHÔNG được hiển thị chen LÊN TRƯỚC tin nhắn của friend",
+       env="PRODUCTION",
+       note="⚠️ DỰ KIẾN FAIL. ✅ Leader chốt MT-16 (2026-10-23): câu hỏi『Action lại hiển thị trước "
+            "cả tin nhắn của friend?』→ CHƯA FIX. Nguồn tab「Ngần review」. Chạy xong nếu action vẫn "
+            "chen trước tin của friend thì raise bug.",
+       spec="Đã hỏi leader"),
+
+    tc("Thứ tự & loại action khi trùng landing", "OUT-TRUTH-001", "Abnormal",
+       "Action loại テキスト — trigger hiển thị nguồn gửi ở chat 1:1 (chưa có)",
+       LAND + "\n- Trang 既存友だち用 cài action text\n"
+              "- Có tài khoản LINE test đã từng là bạn",
+       "1. Cài trang 既存友だち用 action text「O-text」\n"
+       "2. Đưa friend test về bạn cũ, kết bạn lại\n"
+       "3. Về admin mở chat 1:1 của friend\n"
+       "4. Xem action text「O-text」có kèm nhãn trigger cho biết gửi từ đâu không",
+       "Action loại テキスト của trang 既存友だち用",
+       "- Action text「O-text」phải kèm nhãn trigger chỉ rõ nguồn gửi "
+       "(「機能名 = 友だち追加時設定」/「詳細 = 既存友だち用アクション」như MT-09)",
+       env="PRODUCTION",
+       note="⚠️ DỰ KIẾN FAIL. ✅ Leader chốt MT-16 (2026-10-23): câu hỏi『Action text chưa có trigger "
+            "send từ đâu』→ CHƯA FIX. Liên quan MT-09 (nhãn trigger). Chạy xong nếu action text thiếu "
+            "nhãn trigger thì raise bug.",
+       spec="Đã hỏi leader"),
 
     tc("Thứ tự & loại action khi trùng landing", "FUNC-SEQ-001", "Normal",
        "Action loại リマインド ở cả 2 nơi — remind của あいさつメッセージ chạy trước, landing sau",
@@ -379,7 +424,7 @@ S6 = [
        env="PRODUCTION",
        note="Nguồn: r235-r239 (Case 8: 『send rich menu của landing trước』/『bỏ qua scen của old "
             "friend』— diễn đạt ở tab nguồn không rõ; expected viết theo nguyên tắc richmenu ghi đè). "
-            "CẦN LEADER XÁC NHẬN.",
+            "✅ Leader đã chốt MT-01 (2026-10-23): kết quả cuối theo landing (landing chạy sau addFriendSetting).",
        spec="Đã hỏi leader"),
 
     tc("Thứ tự & loại action khi trùng landing", "FUNC-SEQ-001", "Normal",
@@ -410,7 +455,7 @@ S6 = [
        "- Giá trị cuối cùng của mục F là「gia tri landing」",
        env="PRODUCTION",
        note="Nguồn: r242, r243 (Case 10 — cột kết quả mong đợi ở tab nguồn TRỐNG). Expected do AI "
-            "viết theo quy tắc thứ tự đã chốt ở Case 9/11. CẦN LEADER XÁC NHẬN.",
+            "viết theo quy tắc thứ tự đã chốt ở Case 9/11. ✅ Leader đã chốt MT-01 (2026-10-23): kết quả cuối theo landing (landing chạy sau addFriendSetting).",
        spec="Đã hỏi leader"),
 
     tc("Thứ tự & loại action khi trùng landing", "FUNC-SEQ-001", "Normal",
@@ -443,7 +488,8 @@ S6 = [
        "- Nếu friend bị block thì các tin nhắn sau đó không gửi được và phải thấy ở màn 配信エラー",
        env="PRODUCTION",
        note="Nguồn: r246, r247 (Case 12 — cột kết quả mong đợi ở tab nguồn TRỐNG). Expected do AI "
-            "viết theo RULE-07. CẦN LEADER CHỐT hành vi mong muốn.",
+            "viết theo RULE-07. ✅ Leader chốt MT-01 (2026-10-23): landing chạy SAU addFriendSetting "
+            "nên trạng thái cuối theo landing; ghi lại chính xác block/ẩn để đối chiếu.",
        spec="Đã hỏi leader"),
 
     # ═══════════ 17. Trigger hiển thị ở chat 1:1 ═══════════
@@ -509,37 +555,44 @@ S6 = [
        env="PRODUCTION",
        note="⚠️ MT-09. Nguồn: r406, r407 (kết quả OK STEP)."),
 
-    tc("Trigger hiển thị ở chat 1:1", "OUT-TRUTH-001", "Abnormal",
-       "Bot xóa follow, friend quét QR kết bạn lại — chưa tính là kết bạn, không có trigger",
+    tc("Trigger hiển thị ở chat 1:1", "OUT-TRUTH-001", "Normal",
+       "Bot xóa follow, friend quét QR kết bạn lại — tính là bạn CŨ, chạy cấu hình 既存友だち用",
        "- Bot đã liên kết LINE OA thật\n"
-       "- Trang あいさつメッセージ đã cài multi action\n"
+       "- Trang 既存友だち用 đã cài multi action + tin nhắn\n"
        "- Có tài khoản LINE test đã từng là bạn",
        "1. Ở admin xóa follow của friend test\n"
        "2. Dùng tài khoản LINE test quét QR kết bạn lại\n"
-       "3. Về admin mở chat 1:1 xem trigger và action",
+       "3. Về admin mở chat 1:1 xem trigger và action\n"
+       "4. Kiểm tra friend nhận tin nhắn/action của trang nào",
        "Xóa follow rồi quét QR kết bạn lại",
-       "- KHÔNG hiển thị trigger nào và KHÔNG chạy action nào",
+       "- Friend được tính là BẠN CŨ (既存友だち), chạy cấu hình trang 既存友だち用\n"
+       "- Trigger ở chat 1:1:「機能名 = 友だち追加時設定」và「詳細 = 既存友だち用アクション」\n"
+       "- Friend nhận tin nhắn/action của trang 既存友だち用",
        env="PRODUCTION",
-       note="⚠️ Nguồn: r396 (『Hiện tại trên step chưa tính là kết bạn: ko có trigger + ko có "
-            "action』, kết quả OK STEP). Đây là hành vi ĐANG CÓ, không rõ có phải mong muốn không "
-            "— dòng chữ『Hiện tại』cho thấy chính người test cũng nghi ngờ. CẦN LEADER CHỐT "
-            "(MT-17): đúng ra friend quét QR kết bạn lại sau khi bị xóa follow PHẢI được coi là "
-            "bạn mới và chạy cấu hình 新規友だち用 (đối chiếu r54 nói is_old_friend = 0).",
+       note="✅ Leader chốt MT-17 (2026-10-23): bot xóa follow, friend quét QR kết bạn lại → tính là "
+            "kết bạn OLD (既存友だち). Nguồn r396 ghi『Hiện tại chưa tính là kết bạn: ko trigger + ko "
+            "action』KHÔNG còn là expected. ⚠️ DỰ KIẾN FAIL vs hành vi r396 — nếu production vẫn "
+            "『không tính kết bạn』thì raise bug. Việc sửa spec: bổ sung nhánh『admin đã xóa follow』"
+            "vào job-spec.md §Bước 1 (phân loại = bạn cũ).",
        spec="Đã hỏi leader"),
 
-    tc("Trigger hiển thị ở chat 1:1", "OUT-TRUTH-001", "Abnormal",
-       "Bot xóa follow, friend quét QR có tích tùy chọn action bạn cũ — trigger nào hiển thị?",
+    tc("Trigger hiển thị ở chat 1:1", "OUT-TRUTH-001", "Normal",
+       "Bot xóa follow, friend quét QR có tích tùy chọn action bạn cũ — trigger QRコードアクション",
        "- Bot đã liên kết LINE OA thật\n"
-       "- Có landing QR bật tùy chọn chạy action cho bạn cũ\n"
+       "- Có landing QR bật tùy chọn chạy action cho bạn cũ (既存友だち用あいさつメッセージを併用)\n"
        "- Có tài khoản LINE test đã từng là bạn (đã xóa follow)",
        "1. Cài landing bật tùy chọn chạy action cho bạn cũ\n"
        "2. Ở admin xóa follow của friend test\n"
        "3. Dùng tài khoản LINE test quét QR landing đó\n"
        "4. Về admin mở chat 1:1 xem trigger",
        "Landing có tích tùy chọn action bạn cũ",
-       "- Trigger hiển thị:「機能名 = QRコードアクション」và「詳細 = URL読み込み」",
+       "- Trigger hiển thị đủ 3 dòng:\n"
+       "  「機能名 = QRコードアクション」\n"
+       "  「管理名 = <Tên QR đã quét>」\n"
+       "  「詳細 = URL読み込み」",
        env="PRODUCTION",
-       note="⚠️ Nguồn: r399 — kết quả thực thi ở tab nguồn là **Pending** (chưa test xong). "
-            "Giữ TC nguyên trạng, đánh dấu CHƯA CÓ BẰNG CHỨNG. CẦN LEADER CHỐT (MT-18).",
+       note="✅ Leader chốt MT-18 (2026-10-23): trigger hiển thị 機能名 = QRコードアクション · "
+            "管理名 = <Tên QR đã quét> · 詳細 = URL読み込み. Nguồn r399 (kết quả gốc Pending) nay đã "
+            "có expected chuẩn — gỡ nhãn CHƯA CÓ BẰNG CHỨNG.",
        spec="Đã hỏi leader"),
 ]

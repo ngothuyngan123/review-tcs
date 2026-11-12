@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """FA-001 Chat 1:1 — Các điểm MÂU THUẪN giữa kho TCs tổng hợp và spec-features.
-Trạng thái: TOÀN BỘ CHỜ QUYẾT ĐỊNH của Leader.
+Trạng thái (cập nhật 2026-10-23): 19/20 đã chốt theo quyết định Leader (tab _Mâu thuẫn cần quyết);
+còn MT-18 CHỜ QUYẾT ĐỊNH.
 """
 
 COLS = ["ID", "Mức độ", "Trạng thái", "Chủ đề", "TCs nói gì (nguồn)", "Spec nói gì (nguồn)",
@@ -8,7 +9,7 @@ COLS = ["ID", "Mức độ", "Trạng thái", "Chủ đề", "TCs nói gì (ngu�
         "Việc phải làm tiếp"]
 
 CONFLICTS = [
-    ["MT-01", "CAO", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-01", "CAO", "✅ ĐÃ CHỐT",
      "Gửi tin từ LME có cập nhật tin nhắn cuối của bạn bè hay không — spec nói CÓ, TC mới nhất nói KHÔNG",
      "SpecImprove #35389 (4/2026 — khối MỚI NHẤT của tab master 「Content: Send message」r302-r350):\n"
      "• Tiêu đề ticket: 「Sửa khi send message ko update last message và last time send, "
@@ -34,13 +35,13 @@ CONFLICTS = [
      "Người đọc spec sẽ tin ngược lại và viết TC sai; tester đọc spec sẽ báo bug nhầm.",
      "TC-CHT-* nhóm 「Gửi text & phím tắt」(3 TC), 「Chèn friend info vào tin nhắn」(1 TC), "
      "「Gửi sticker」(1 TC), 「Gửi template — nội dung & action」(1 TC)",
-     "",
+     "Hiện tại là có cập nhật",
      "Chốt hành vi đúng cho 4 ô: (LME gửi / friend gửi) × (last_message / last_time_message). "
      "Nếu quyết định theo #35389: cập nhật `feature-spec.md:57`, `db-mapping.md:879`, và bổ sung 1 Business Rule "
      "mới ghi rõ 「chỉ friend gửi tin mới cập nhật tin nhắn cuối」; đồng thời ghi rõ hệ quả lên BR-02 "
      "(thứ tự sắp xếp danh sách bạn bè). Nếu code chưa fix thì các TC này dự kiến FAIL → raise bug."],
 
-    ["MT-02", "CAO", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-02", "CAO", "✅ ĐÃ CHỐT",
      "Tính năng trả lời trích dẫn (reply/quote) — spec KHÔNG có mô tả nghiệp vụ nào",
      "Corpus có ~230 dòng về trả lời trích dẫn ở tab 「Content: Hiển thị msg」 (r6-r13, r909-r1140):\n"
      "• Feature #28618 (02/2025) 「Hiển thị reply message từ phía line friend」+ Support #27755 (01/2025)\n"
@@ -61,12 +62,15 @@ CONFLICTS = [
      "nhưng spec chỉ có 3 cột DB. Không có tài liệu nào trả lời được: loại tin nào trích dẫn được, "
      "trích dẫn bị xoá khi nào, trả lời bằng media thì ra tin gì. Tester mới đọc spec sẽ bỏ sót toàn bộ vùng này.",
      "TC-CHT-* nhóm 「Reply / quote message」(15 TC)",
-     "",
+     "• Loại tin KHÔNG trích dẫn được: audio, vị trí, file, image map\n"
+     "• Trên chat 1:1 của lme: Bấm vào khung trích dẫn KHÔNG nhảy tới tin gốc "
+     "(nhưng trên line talk thì có thể nhảy tới tin gốc)\n"
+     "• Có thể trích dẫn những tin nhắn từ friend gửi tới LOA và cả tin nhắn LOA gửi cho friend",
      "Bổ sung vào `feature-spec.md`: 1 luồng end-to-end cho trả lời trích dẫn + ≥3 Business Rule "
      "(loại tin hỗ trợ trích dẫn, điều kiện xoá trích dẫn, hành vi khi trả lời bằng media/template). "
      "Bổ sung mô tả nghiệp vụ cho 3 cột quote_* ở `db-mapping.md`."],
 
-    ["MT-03", "CAO", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-03", "CAO", "✅ ĐÃ CHỐT",
      "Bot gói miễn phí chỉ xem được 180 ngày lịch sử chat — spec KHÔNG có rule này",
      "Feature #28859 (6/2025 — tab riêng trong file master, 8 TC lá):\n"
      "• Bot standard / pro / enterprise: hiện được TOÀN BỘ lịch sử chat (r3-r5)\n"
@@ -87,12 +91,13 @@ CONFLICTS = [
      "Ngược lại nếu code lỗi và hiện quá 180 ngày cho bot free thì đó là thất thoát doanh thu — "
      "không ai phát hiện vì không có rule để đối chiếu.",
      "TC-CHT-* nhóm 「Giới hạn plan & token」(3 TC: bot trả phí / bot miễn phí / sau khi nâng cấp)",
-     "",
+     "Bot gói miễn phí chỉ xem được 180 ngày lịch sử chat. "
+     "Sau khi nâng cấp gói trả phí thì có thể xem lịch sử chat không giới hạn",
      "Bổ sung vào `feature-spec.md` §5 một Business Rule mới về giới hạn 180 ngày cho gói free, "
      "ghi rõ: mốc tính từ đâu, áp cho cả web và app, nội dung thông báo, hành vi sau khi nâng cấp gói. "
      "Bổ sung điều kiện lọc theo gói cước vào mô tả BR-10 và vào `db-mapping.md` §5.14."],
 
-    ["MT-04", "CAO", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-04", "CAO", "✅ ĐÃ CHỐT",
      "Màn Cài đặt chat có 6 tab hay 8 tab — spec nói 6, TC mới nhất nói 8",
      "Tab 「[AI] Flow_setting_chat_v2」+ 「AI_TCs_Setting_chat_v1」 (06-07/2026 — bộ TC MỚI NHẤT của file master, "
      "cột kết quả ghi Pass trên cả staging và production):\n"
@@ -112,12 +117,15 @@ CONFLICTS = [
      "tức là có cả luồng máy chủ chưa được ghi lại. Bất kỳ ai lập kế hoạch test dựa trên spec sẽ bỏ sót 2 tab.",
      "Không có TC trong tab FA-001 (màn cài đặt chat được gom ở FA-041) — "
      "mâu thuẫn này ghi nhận để sửa spec, và ảnh hưởng phạm vi khi gom FA-041",
-     "",
+     "Spec mới có 8 tab. 2 tab phát sinh mới:\n"
+     "チャットのCSVエクスポート: Cho phép export lịch sử chat theo điều kiện filter\n"
+     "重複送信防止機能: Cho phép cài đặt chống nhiều người cùng gửi message tới 1 friend "
+     "trong khoảng thời gian đã cài đặt",
      "Cập nhật `feature-spec.md:31` và §2.2 của chat-11, đồng thời cập nhật `chat-setting/feature-spec.md:27, 464` "
      "lên 8 tab. Bổ sung mô tả nghiệp vụ + endpoint + job cho 2 tab mới. "
      "Quyết định luôn: khi gom FA-041 thì lấy tab 「Setting Chat」(human) hay 4 tab 「[AI]」làm nguồn chính."],
 
-    ["MT-05", "TRUNG BÌNH", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-05", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Khoảng giãn cách khi gửi tin dạng delay — spec nói 2-4 giây, TC nói 2-5 giây",
      "• Tab 「Content: Send message」r1093: 「check setting send temp delay => mỗi temp con sẽ send "
      "cách nhau 2-5s」\n"
@@ -131,12 +139,12 @@ CONFLICTS = [
      "Chênh 1 giây ở biên trên. Tester đo được khoảng cách 4,5 giây sẽ không biết là PASS hay FAIL: "
      "theo spec là vượt ngưỡng, theo TC là hợp lệ. Ảnh hưởng trực tiếp tới việc verify job gửi giãn cách.",
      "TC-CHT-* 「Gửi template — nội dung & action」(TC delay) và 「Đặt lịch gửi — delay & job」(TC bật giãn cách)",
-     "",
+     "2~5s",
      "Nhờ Dev xác nhận khoảng ngẫu nhiên thực tế trong code. Sau đó sửa CHO KHỚP ở cả 5 chỗ trong spec "
      "(`feature-spec.md:104, 626` · `db-mapping.md:401, 943` · `job-spec.md:132`) hoặc sửa TC — "
      "và ghi rõ ngưỡng cho phép khi đo thủ công."],
 
-    ["MT-06", "TRUNG BÌNH", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-06", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Trạng thái của bản ghi lịch gửi — spec TỰ MÂU THUẪN giữa BR-11 và mô tả job",
      "• Tab 「Rightbar」r269: thêm tin nhắn mà không lưu → 「check db: status = -1」 (nháp)\n"
      "• Tab 「Rightbar」r272: thao tác từ app mobile ghi đè → 「bản ghi được đè update status = 0 để send」\n"
@@ -150,11 +158,13 @@ CONFLICTS = [
      "corpus không có TC nào cho nhánh này.",
      "TC-CHT-* nhóm 「Đặt lịch gửi — soạn & lưu」(TC lưu nháp, TC lưu lịch, TC huỷ đặt lịch) "
      "và 「Đặt lịch gửi — delay & job」(TC tắt/bật job)",
-     "",
+     "schedule_send_chat.status = 0 => chưa gửi\n"
+     "schedule_send_chat.status = 1 => đã gửi\n"
+     "schedule_send_chat.status = 2 => đã hủy gửi",
      "Liệt kê ĐỦ các giá trị trạng thái trong BR-11 (-1 nháp / 0 chờ gửi / 1 đã gửi / 2 đã huỷ) "
      "và ghi rõ ai chuyển trạng thái ở mỗi bước. Bổ sung TC cho nhánh trạng thái đã huỷ (hiện corpus chưa có)."],
 
-    ["MT-07", "CAO", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-07", "CAO", "✅ ĐÃ CHỐT",
      "Giới hạn độ dài 送信ユーザー名 (tên profile người gửi) — CORPUS TỰ MÂU THUẪN, spec không ghi gì",
      "Tab 「Leftbar+Header」, cùng 1 màn Thêm/Sửa profile:\n"
      "• r352: 「nhập 20 ký tự」→ Expected: 「success」\n"
@@ -173,13 +183,13 @@ CONFLICTS = [
      "Nếu giới hạn thực là 30 mà tester test theo 20 thì bỏ lọt vùng 21-30; nếu ngược lại thì báo bug nhầm. "
      "Không tài liệu nào, kể cả TC gốc, trả lời được câu hỏi này.",
      "TC-CHT-* 「Profile người gửi — quản lý」(TC giới hạn độ dài — đã viết dưới dạng ĐO ngưỡng thực tế)",
-     "",
+     "送信ユーザー名: Giới hạn 20 ký tự",
      "Nhờ Dev xác nhận ràng buộc thực tế (cả tầng giao diện và tầng máy chủ, cả khi Thêm và khi Sửa). "
      "Ghi con số vào cột Validation của `feature-spec.md:507`, bổ sung ràng buộc cột `nick_name` "
      "vào `db-mapping.md` §3.13, và ghi rõ cơ chế khi vượt ngưỡng là CHẶN NHẬP hay BÁO LỖI "
      "(tuyệt đối không cắt âm thầm)."],
 
-    ["MT-08", "TRUNG BÌNH", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-08", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Ẩn bạn bè thì tự động xác nhận tin — người dùng chọn 「未確認」vẫn bị ghi đè thành đã xác nhận",
      "• Tab 「Leftbar+Header」r241: 「friend chưa confirm」→ Expected: 「spec cũ là ẩn đi thì sẽ confirm」\n"
      "• r289 (kết hợp 2 action): 「確認状況を変更 với 非表示・ブロック」→ Expected: "
@@ -195,12 +205,13 @@ CONFLICTS = [
      "Đây là vùng dễ gây khiếu nại: bạn bè bị ẩn kèm mất luôn dấu chưa đọc.",
      "TC-CHT-* 「Quick action — xác nhận, ẩn, block」(TC ẩn bạn bè có tin chưa xác nhận) và "
      "「Quick action — tag & kết hợp action」(TC kết hợp 未確認 + 非表示), 「Bộ đếm chưa xác nhận」(TC bot ẩn bạn bè)",
-     "",
+     "Đúng vậy. Khi hide friend thì trường conversation.confirm_count tự động reset về 0 "
+     "và cuộc hội thoại thành \"đã confirm\"",
      "Chốt: (a) ẩn bạn bè có còn tự động xác nhận không; (b) khi chọn đồng thời 未確認 + 非表示 thì "
      "ưu tiên lựa chọn nào. Sau đó bổ sung vào BR-05 phần xử lý xung đột giữa 2 action, "
      "và cân nhắc chặn/cảnh báo ở giao diện khi người dùng chọn tổ hợp mâu thuẫn."],
 
-    ["MT-09", "CAO", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-09", "CAO", "✅ ĐÃ CHỐT",
      "Cơ chế lưu trữ tin nhắn cũ — spec liệt kê bảng theo NĂM, corpus mô tả bảng lưu trữ theo TRANG",
      "• File 「01. TCsLine_Chat1:1」(cũ) tab 「Improve move database」(09/2023): mô tả 2 bảng lưu trữ "
      "`message_page_2` và `message_old`; kiểm tra tải lịch sử, xác nhận / bỏ xác nhận tin ở từng bảng (r3-r15); "
@@ -218,13 +229,14 @@ CONFLICTS = [
      "dữ liệu lịch sử nằm ở đó. Nếu vẫn còn mà spec không ghi, tester sẽ không test đường tải dữ liệu từ 2 bảng này "
      "và có thể bỏ lọt bug mất lịch sử chat của khách hàng lâu năm — đúng loại bug mà #33113 và #36859 đã từng xảy ra.",
      "TC-CHT-* nhóm 「Lịch sử chat & bảng message」(5 TC)",
-     "",
+     "Cơ chế lưu trữ tin nhắn cũ đang lưu ở 1 database khác. Và tách các bảng của mỗi năm:\n"
+     "messages_2020\r\nmessages_2021\r\nmessages_2022\r\nmessages_2023\r\nmessages_2024\r\nmessages_2025",
      "Nhờ Dev xác nhận: 2 bảng `message_page_2` / `message_old` còn tồn tại và còn dữ liệu không; "
      "job chuyển tin giữa chúng còn chạy không. Nếu còn: bổ sung vào `feature-spec.md` §3.3 và BR-10. "
      "Nếu đã bỏ: ghi rõ mốc thời gian ngừng dùng và cách dữ liệu cũ đã được chuyển đi, "
      "rồi đánh dấu các TC của tab 「Improve move database」là lỗi thời."],
 
-    ["MT-10", "TRUNG BÌNH", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-10", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Giới hạn dung lượng và định dạng file khi gửi media ở chat 1:1 — spec không ghi",
      "Tab 「Content: Send message」khối gửi media:\n"
      "• r409-r411: 「ảnh > 10 MB」/「video > 200 MB」/「audio > 25MB」 — nằm trong khối 「check upload fail」\n"
@@ -241,12 +253,14 @@ CONFLICTS = [
      "Ngoài ra con số 5 trong spec được giải thích là giới hạn LINE API, còn TC lại mô tả nó như "
      "giới hạn số file upload một lần ở giao diện — hai chuyện khác nhau.",
      "TC-CHT-* nhóm 「Gửi media」(TC vượt dung lượng, TC sai định dạng, TC giới hạn 5 file)",
-     "",
+     "ảnh <= 10 MB\nvideo <= 200 MB\naudio <= 25MB\npdf <= 10MB\n\n"
+     "- Các định dạng file khác không cho upload\n"
+     "- Media tối đa 5 file 1 lần upload",
      "Bổ sung vào `feature-spec.md` một Business Rule liệt kê đủ: dung lượng tối đa từng loại, "
      "danh sách định dạng được phép, số file tối đa mỗi lần và thông báo lỗi tương ứng. "
      "Đối chiếu với ma trận media ở `framework/catalog-lme.md` để bảo đảm nhất quán giữa các tính năng."],
 
-    ["MT-11", "TRUNG BÌNH", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-11", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Hai chỗ upload ảnh trong CÙNG màn chat 1:1 có quy tắc định dạng khác nhau",
      "• Tab 「Leftbar+Header」r345-r348 (ảnh profile người gửi, màn Thêm): 「Upload ảnh png」→ success; "
      "「Upload ảnh jpg, gif, jpeg」→ 「hiển thị msg png画像を選択してください。 / hiện tại: ảnh khác không hiển thị để chọn」\n"
@@ -264,12 +278,14 @@ CONFLICTS = [
      "chỉ nhận png/jpg còn tự mâu thuẫn ngay trong TC gốc.",
      "TC-CHT-* 「Profile người gửi — quản lý」(TC validate ảnh PNG) và 「Rightbar — 友だち情報」"
      "(TC mục kiểu ảnh và kiểu PDF)",
-     "",
+     "(a) ảnh profile người gửi: Chỉ nhận ảnh png và max file là 1MB\n"
+     "(b) friend info kiểu ảnh: Nhận ảnh jpg,jpeg,png và max file là 1MB\n"
+     "(c) friend info kiểu PDF: Chỉ nhận pdf và max file là 10MB",
      "Chốt định dạng cho từng chỗ: (a) ảnh profile người gửi; (b) friend info kiểu ảnh; (c) friend info kiểu PDF. "
      "Ghi vào cột Validation tương ứng trong `feature-spec.md` §4.4 và §4.6. "
      "Nếu 2 chỗ khác nhau là chủ ý thì ghi rõ lý do; nếu không thì thống nhất lại."],
 
-    ["MT-12", "TRUNG BÌNH", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-12", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Tổ hợp chéo điều kiện lọc tag và lọc 対応ステータス — chưa ai xác nhận hành vi",
      "Tab 「Leftbar+Header」khối 「Filter kết hợp tag và status」:\n"
      "• r65: 「Filter tag điều kiện OR + Filter status điều kiện OR」→ 「hiển thị friend thỏa mãn all đk」\n"
@@ -288,12 +304,17 @@ CONFLICTS = [
      "Hiện không có tài liệu nào nói tập kết quả đúng phải là gì.",
      "TC-CHT-* 「Modal 絞り込み — tag & trạng thái」(TC tổ hợp chéo — viết dưới dạng GHI NHẬN hành vi thực tế) "
      "và TC lọc theo trạng thái điều kiện AND",
-     "",
+     "Tag và Status đối ứng luôn luôn điều điện AND\n"
+     "「どれか1つ以上満たす(or)」条件 => Điều kiện OR trong Tag, điều kiện OR trong trạng thái đối ứng\n"
+     "「すべて満たす(and)」条件 => Điều kiện AND trong Tag, Điều kiện AND trong trạng thái đối ứng\n\n"
+     "Ví dụ: CHọn どれか1つ以上満たす(or)」条件, tag A, tag B, trạng thái C, trạng thái D\n\n"
+     "Thì điều kiện thỏa mãn filter là: (A OR B) AND (C OR D)\n\n"
+     "Nếu chọn すべて満たす(and)」条件 thì điều kiện thỏa mãn filter là: (A AND B) AND (C AND D)",
      "Chốt hành vi cho đủ 4 ô của ma trận (tag OR/AND × status OR/AND) và quan hệ giữa 2 nhóm lọc. "
      "Bổ sung vào BR-04 phần điều kiện AND/OR của 対応ステータス. Nếu 2 tổ hợp chéo chưa hỗ trợ thì "
      "phải chặn ở giao diện chứ không trả kết quả sai âm thầm."],
 
-    ["MT-13", "CAO", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-13", "CAO", "✅ ĐÃ CHỐT",
      "URL rút gọn — chat 1:1 hiện link GỐC còn app LINE hiện link rút gọn; spec không nói tầng hiển thị",
      "Tab 「Content: Send message」:\n"
      "• r545-r546 (preview trước khi gửi template): 「chỗ này update là dù shorten thì hiển thị trên chat 11 "
@@ -311,12 +332,13 @@ CONFLICTS = [
      "Thực tế chat 1:1 và màn xem trước cố tình giữ link gốc để admin đọc được. "
      "Tester sẽ báo bug nhầm ngay lần đầu kiểm tra, hoặc ngược lại bỏ qua khi chat 1:1 hiện nhầm link rút gọn.",
      "TC-CHT-* nhóm 「Shorten URL」(4 TC)",
-     "",
+     "TẦNG HIỂN THỊ: ghi rõ chat 1:1 và màn xem trước luôn hiển thị URL gốc, "
+     "chỉ phía người dùng LINE mới nhận URL rút gọn",
      "Bổ sung vào BR-15 phần TẦNG HIỂN THỊ: ghi rõ chat 1:1 và màn xem trước luôn hiển thị URL gốc, "
      "chỉ phía người dùng LINE mới nhận URL rút gọn; và ghi rõ thứ tự ưu tiên giữa cấu hình rút gọn "
      "của template và cấu hình của chat 1:1."],
 
-    ["MT-14", "TRUNG BÌNH", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-14", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Nhóm LINE — spec không có quy tắc nào cho hội thoại nhóm",
      "File 「01. TCsLine_Chat1:1」(cũ) tab 「Group chat」(05/2023, 64 dòng):\n"
      "• r15-r17: nhóm ẨN 3 mục ở cột phải — システム表示名, friend info, tag\n"
@@ -335,12 +357,12 @@ CONFLICTS = [
      "Ai đọc spec sẽ mặc định nhóm hoạt động y hệt bạn bè và bỏ sót toàn bộ vùng khác biệt này. "
      "Lưu ý: TC gốc từ 05/2023 — đã hơn 2 năm, cần verify lại.",
      "TC-CHT-* nhóm 「Group chat」(14 TC) và 「Danh sách nhóm — hiển thị」(6 TC)",
-     "",
+     "Theo TC",
      "Verify lại toàn bộ danh sách khác biệt (TC gốc > 2 năm), sau đó bổ sung vào `feature-spec.md` "
      "một mục riêng cho hội thoại nhóm: các mục bị ẩn ở cột phải, danh sách tính năng không áp dụng, "
      "quy tắc URL, và hành vi khi thành viên nhóm bấm link của LME."],
 
-    ["MT-15", "TRUNG BÌNH", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-15", "TRUNG BÌNH", "✅ ĐÃ CHỐT",
      "Các trường phục vụ bộ đếm chưa xác nhận — spec chỉ mô tả 1 trong 5 trường",
      "Tab 「improve count comfirm_message」(120 dòng TC) mô tả nhất quán 5 trường:\n"
      "• `conversation.confirm_count` — tăng 1 mỗi tin friend gửi đến (r3)\n"
@@ -364,12 +386,17 @@ CONFLICTS = [
      "Lưu ý: `feature-spec.md:394` ghi 「>0 = chua xac nhan」 nhưng `feature-spec.md:121` lại ghi điều kiện lọc "
      "là 「confirm_count=1」 — spec tự mâu thuẫn ngay bên trong (xem MT-19).",
      "TC-CHT-* nhóm 「Bộ đếm chưa xác nhận」(12 TC) và 「全て確認済みに変更」(11 TC)",
-     "",
+     "• `conversation.confirm_count` —  chỉ có giá trị 1 hoặc 0. Không tăng count sau khi giá trị đã là 1\n"
+     "• `conversation.has_status_0` — đánh dấu còn tin chưa xác nhận \n"
+     "• `conversation.has_status_1` — đánh dấu đã xác nhận \n"
+     "• `conversation.status_last_message` — trạng thái tin cuối, 0/1 \n"
+     "• `bots.count_user_unconfirm` — tổng số bạn bè chưa xác nhận của bot, giảm 1 khi xoá bạn bè \n"
+     "• Bảng `unconfirm_message` — có/không bản ghi theo trạng thái",
      "Bổ sung mô tả nghiệp vụ đầy đủ cho `has_status_0`, `has_status_1`, `status_last_message` và "
      "`bots.count_user_unconfirm` vào `db-mapping.md`; thêm 1 Business Rule mô tả vòng đời bộ đếm "
      "(khi nào tăng, khi nào giảm, khi nào giữ nguyên — bao gồm cả các nhánh chặn / bỏ chặn / ẩn / xoá bạn bè)."],
 
-    ["MT-16", "THẤP", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-16", "THẤP", "✅ ĐÃ CHỐT",
      "Giới hạn độ dài tiêu đề và nội dung ghi chú — spec không ghi",
      "Tab 「Rightbar」khối メモ:\n"
      "• r198: 「Field tên quản lý = blank」→ 「hiển thị msg タイトルを入力してください。」\n"
@@ -384,12 +411,12 @@ CONFLICTS = [
      "Mức độ thấp vì ghi chú là dữ liệu nội bộ, không gửi ra ngoài. Nhưng vẫn là ràng buộc nhập liệu "
      "mà tester cần biết để test biên, và người dùng cần biết để không mất nội dung đã soạn.",
      "TC-CHT-* 「Rightbar — メモ」(TC giới hạn độ dài — viết dưới dạng ĐO ngưỡng thực tế)",
-     "",
+     "Title memo giới hạn 20 ký tự, nội dung memo giới hạn 1000 ký tự",
      "Bổ sung ràng buộc bắt buộc + độ dài tối đa của 2 trường vào `feature-spec.md` §4.5 và "
      "`db-mapping.md` bảng ghi chú, kèm thông báo lỗi tương ứng và cơ chế khi vượt ngưỡng "
      "(chặn nhập hay báo lỗi)."],
 
-    ["MT-17", "CAO", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-17", "CAO", "✅ ĐÃ CHỐT",
      "Phân quyền Staff ở Chat 1:1 — spec tự nhận CHƯA XÁC ĐỊNH, corpus có ~40 dòng TC nhưng không có kết quả mong đợi",
      "• Corpus rải rác ~40 dòng 「Check thao tác bằng account staff」 / 「check account staff」 ở khắp các tab "
      "(Leftbar+Header r20, r124, r196, r313, r403, r472, r540, r564; Content: Send message r175, r196, r374, "
@@ -410,7 +437,8 @@ CONFLICTS = [
      "Corpus có 40 chỗ nhắc phải test staff nhưng không chỗ nào ghi kết quả kỳ vọng — nghĩa là chưa từng được chốt.",
      "TC-CHT-* nhóm 「Phân quyền staff & môi trường」(4 TC đầu — viết dưới dạng LẬP MA TRẬN quyền thực tế, "
      "bắt buộc kiểm tra ở tầng API chứ không chỉ giao diện)",
-     "",
+     "Spec hiện tại: Khi staff có quyền access màn hình nào thì sẽ có full quyền thao tác "
+     "của màn hình đó, chat 1:1 không ngoại lệ",
      "Nhờ Dev xác nhận có kiểm tra quyền ở tầng máy chủ cho các endpoint của chat 1:1 hay không. "
      "Lập ma trận quyền chính thức: 3 vai trò × các nhóm thao tác (xem / gửi tin / thao tác hàng loạt / "
      "sửa thông tin bạn bè / quản lý profile người gửi / chỉnh sửa 対応ステータス). "
@@ -443,7 +471,7 @@ CONFLICTS = [
      "「nội dung hiển thị ở chat 1:1 phải luôn khớp nội dung thực gửi cho người dùng LINE」. "
      "Theo dõi nhánh job của #37907 tới khi đóng."],
 
-    ["MT-19", "CAO", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-19", "CAO", "✅ ĐÃ CHỐT",
      "Điều kiện lọc 「未確認」 — spec ghi confirm_count = 1, corpus chứng minh bộ đếm tăng dần theo số tin",
      "• Tab 「improve count comfirm_message」r3: 「friend nhắn tin đến bot」→ 「count số message bảng conversation "
      "cột confirm_count / mỗi lần nhắn 1 tin đến -> confirm_count + 1 / has_status_0 = 1」 "
@@ -463,12 +491,12 @@ CONFLICTS = [
      "không thể dùng để verify.",
      "TC-CHT-* 「Filter danh sách bạn bè」(TC filter 未確認 — viết theo hướng dữ liệu có 1/2/5 tin chưa đọc) "
      "và 「Bộ đếm chưa xác nhận」(TC bộ đếm tăng dần)",
-     "",
+     "Filter  未確認 đang lọc theo điều kiện conversation.bot_id = ? AND confirm_count = 1",
      "Nhờ Dev xác nhận điều kiện thực trong truy vấn lọc. Sửa `feature-spec.md:121` cho khớp với "
      "`feature-spec.md:394`. Nếu điều kiện thực là `= 1` thì đây là BUG chưa đóng của #33731 → raise lại. "
      "Bổ sung TC dữ liệu biên: bạn bè có đúng 1 tin, 2 tin và nhiều tin chưa đọc."],
 
-    ["MT-20", "THẤP", "⏳ CHỜ QUYẾT ĐỊNH",
+    ["MT-20", "THẤP", "✅ ĐÃ CHỐT",
      "Tính năng AI tạo tin trả lời trên chat 1:1 — spec không nhắc tới",
      "• Tab 「Content: Hiển thị msg」r8, r12: mô tả 「icon AI」trên tin nhắn, khi rê chuột hiện "
      "「AIで返信メッセージを自動生成」với màu #1DE275 + #10CFD6\n"
@@ -484,7 +512,7 @@ CONFLICTS = [
      "đề xuất tách thành feature khác). Nhưng icon AI nằm NGAY TRÊN từng tin nhắn trong màn chat 1:1 — "
      "tức là một phần tử giao diện của FA-001 mà spec không ghi. Người đọc spec sẽ không biết icon đó tồn tại.",
      "TC-CHT-* 「Reply / quote message」(TC icon trả lời và icon AI)",
-     "",
+     "Chưa có tính năng này",
      "Chốt phạm vi: icon AI trên tin nhắn thuộc FA-001 hay thuộc feature ChatGPT riêng. "
      "Nếu thuộc FA-001: bổ sung vào §4 Field Traceability và mô tả luồng. "
      "Nếu tách riêng: tạo feature mới cho 「ChatGPT連携」và gom tab 「Chat GPT」(780 dòng) vào đó "

@@ -11,30 +11,30 @@ TMPL = ("template button standard (1 panel/nhiều panel × có ảnh/không ả
 S4 = [
     # ═══════════════ Reply / quote message ═══════════════
     tc("Reply / quote message", "UI-002", "Normal",
-       "Icon trả lời và icon AI trên tin nhắn — màu mặc định và hiệu ứng khi rê chuột",
+       "Icon trả lời trên tin nhắn — màu mặc định và hiệu ứng khi rê chuột",
        QUOTE,
-       "1. Rê chuột lên 1 tin nhắn của friend gửi → quan sát icon mũi tên và icon AI\n"
-       "2. Đọc màu và tooltip của từng icon\n3. Lặp lại với tin do bot gửi",
+       "1. Rê chuột lên 1 tin nhắn của friend gửi → quan sát icon mũi tên\n"
+       "2. Đọc màu và tooltip của icon\n3. Lặp lại với tin do bot gửi",
        "Tin của friend và tin của bot, loại text",
-       "- Mặc định 2 icon màu #888888\n"
+       "- Mặc định icon trả lời màu #888888\n"
        "- Rê chuột vào icon trả lời: màu #759CD0, hiện tooltip「このメッセージに返信」\n"
-       "- Rê chuột vào icon AI (chỉ ở tin của friend): màu chuyển gradient, hiện tooltip「AIで返信メッセージを自動生成」\n"
-       "- Tin của bot: chỉ có icon trả lời, không có icon AI",
-       spec="Spec không ghi",
-       note="MT-20: spec chat-11 không nhắc tính năng AI tạo tin trả lời. Nguồn: Content: Hiển thị msg r6-r13"),
+       "- Tính năng icon AI 「AIで返信メッセージを自動生成」 CHƯA phát hành (MT-20) — KHÔNG kiểm tra icon AI",
+       spec="Đã hỏi leader",
+       note="MT-20 (Leader chốt 2026-10-23): CHƯA có tính năng AI tạo tin trả lời trên chat 1:1 → bỏ phần kiểm tra icon AI. "
+            "Nguồn: Content: Hiển thị msg r6-r13"),
 
     tc("Reply / quote message", "UI-002", "Normal",
-       "Loại tin nào có icon trả lời — text, ảnh, video, PDF có; audio và vị trí không có",
+       "Loại tin nào trích dẫn được — text/ảnh/video/sticker có; audio/vị trí/file/image map không",
        QUOTE,
        "1. Rê chuột lần lượt lên từng loại tin ở cột Dữ liệu test (cả tin của friend và tin của bot)\n"
        "2. Ghi nhận tin nào hiện icon trả lời",
-       "text · ảnh · video · PDF · audio · vị trí · sticker · image map",
-       "- Text, ảnh, video, PDF: CÓ icon trả lời\n"
-       "- Audio và vị trí: KHÔNG có icon trả lời\n"
-       "- Image map: không có trích dẫn; ảnh thường thì có",
-       spec="Spec không ghi",
-       note="MT-02: spec chat-11 chỉ có cột quote_token/quote_message_id/quote_message_content ở db-mapping.md:119-121, "
-            "KHÔNG có quy tắc nào về trả lời. Nguồn: Content: Hiển thị msg r916, r917, r924, r926, r961, r962, r965"),
+       "text · ảnh · video · sticker · audio · vị trí · file (PDF) · image map",
+       "- Text, ảnh, video, sticker: CÓ icon trả lời (trích dẫn được)\n"
+       "- Audio, vị trí, file (PDF), image map: KHÔNG trích dẫn được (không có icon trả lời)\n"
+       "- Ảnh thường thì trích dẫn được; image map thì không",
+       spec="Đã hỏi leader",
+       note="MT-02 (Leader chốt 2026-10-23): loại tin KHÔNG trích dẫn được = audio, vị trí, file, image map. "
+            "Nguồn: Content: Hiển thị msg r916, r917, r924, r926, r961, r962, r965"),
 
     tc("Reply / quote message", "UI-001", "Normal",
        "Trích dẫn tin của BẠN BÈ — khung trích dẫn hiện avatar, tên và nội dung tương ứng",
@@ -55,11 +55,11 @@ S4 = [
        "1. Bấm icon trả lời trên tin bot gửi bằng profile MẶC ĐỊNH → quan sát khung trích dẫn\n"
        "2. Bấm icon trả lời trên tin bot gửi bằng profile KHÁC → quan sát\n"
        "3. Lặp lại với từng loại tin ở cột Dữ liệu test",
-       "text · ảnh · video · PDF · sticker · " + TMPL,
+       "text · ảnh · video · sticker · " + TMPL + " (file/PDF không trích dẫn được — xem TC loại tin)",
        "- Khung trích dẫn hiện đúng avatar + tên của profile đã gửi tin gốc (không phải profile đang chọn)\n"
        "- Nội dung trích dẫn hiển thị đúng theo từng loại tin",
-       spec="Spec không ghi",
-       note="MT-02. Gộp vì cùng kết quả. Nguồn: Content: Hiển thị msg r919-r943"),
+       spec="Đã hỏi leader",
+       note="MT-02 (Leader chốt 2026-10-23). Gộp vì cùng kết quả. Nguồn: Content: Hiển thị msg r919-r943"),
 
     tc("Reply / quote message", "STATE-CLEAN-001", "Normal",
        "Bấm X trên khung trích dẫn — chỉ xoá trích dẫn, giữ nội dung đang gõ",
@@ -101,6 +101,19 @@ S4 = [
        "2 tin M1, M2 khác nhau",
        "- Khung trích dẫn hiện tin M2 (tin trích dẫn cuối cùng)\n- Tin gửi ra trích dẫn đúng M2",
        note="Nguồn: Content: Hiển thị msg r949"),
+
+    tc("Reply / quote message", "UI-002", "Normal",
+       "Bấm vào khung trích dẫn ở chat 1:1 — KHÔNG nhảy tới tin gốc (khác LINE talk)",
+       QUOTE + "\n- Hội thoại A có tin trả lời trích dẫn 1 tin cũ (tin gốc nằm xa phía trên)",
+       "1. Ở chat 1:1 web: bấm vào khung trích dẫn của 1 tin trả lời\n"
+       "2. Quan sát khung chat có cuộn tới tin gốc không\n"
+       "3. Đối chiếu: trên app LINE của friend, bấm khung trích dẫn cùng tin",
+       "Tin trả lời trích dẫn tin gốc ở xa",
+       "- Chat 1:1 (LME): bấm khung trích dẫn KHÔNG nhảy / không cuộn tới tin gốc\n"
+       "- App LINE (LINE talk): bấm khung trích dẫn CÓ thể nhảy tới tin gốc",
+       spec="Đã hỏi leader",
+       note="MT-02 (Leader chốt 2026-10-23): chat 1:1 không nhảy tới tin gốc khi bấm khung trích dẫn; LINE talk thì có. "
+            "Nguồn: Content: Hiển thị msg r991"),
 
     tc("Reply / quote message", "STATE-CLEAN-001", "Abnormal",
        "Trích dẫn rồi chuyển sang bạn bè khác — trích dẫn và nội dung bị xoá",

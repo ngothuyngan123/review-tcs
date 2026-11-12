@@ -79,7 +79,7 @@ Tính năng quản lý hợp đồng và thanh toán cho phép Admin (chủ qu�
 | 「アカウントの操作」 | Button (trong bảng) | Cột cuối, cho LOA trạng thái「解約済み」/「強制解約」 | Chuyển đến trang thao tác tài khoản |
 | 「振込情報」 | Button (có icon) | Cột「ご利用料金」cho LOA「入金待ち」 | Mở modal thông tin chuyển khoản |
 | 「請求書」 | Button (có icon) | Cột「ご利用料金」cho LOA「入金待ち」 | Tải hoặc xem hoá đơn |
-| 「振込キャンセル」 | Button | Cột cuối, cho LOA「入金待ち」 | Huỷ đăng ký chuyển khoản |
+| 「振込キャンセル」 | Button | Cột cuối, **chỉ** cho hợp đồng **mua mới lần đầu** đang 口座発行中 / 入金待ち (mua mới スタンダード / プロ, nâng từ フリー). Đổi phương thức, gia hạn, スタンダード → プロ, 再契約, job bill → không hiện, chỉ có 「契約詳細」 _(Leader chốt 2026-10-16)_ | Huỷ đăng ký chuyển khoản |
 
 #### Filter / Search
 

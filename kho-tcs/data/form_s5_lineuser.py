@@ -543,7 +543,7 @@ S5 = [
        "- Chuẩn bị 1 bot Free và 1 bot Standard",
        "1. Với bot Free, kiểm tra mốc chặn của từng mục: 1000 folder · 500 item/page · 20.000 ký tự HTML · 20.000 ký tự CSS và JS · 50 step remind · 1000 khoảng point · 20.000 ký tự page sau trả lời · 20.000 ký tự text countdown\n2. Lặp toàn bộ cho bot Standard\n3. Đối chiếu mốc chặn của 2 bot",
        "8 mục giới hạn × 2 plan",
-       "Bot Free và bot Standard chặn ở ĐÚNG CÙNG một mốc ở cả 8 mục — KHÔNG có giới hạn riêng theo plan cho các mục này · riêng SỐ FORM thì vẫn theo plan: bot Free tối đa 3 form (spec BR-01)",
+       "Bot Free và bot Standard chặn ở ĐÚNG CÙNG một mốc ở cả 8 mục — KHÔNG có giới hạn riêng theo plan cho các mục này · riêng SỐ FORM thì vẫn theo plan: bot Free mới tối đa 3 form, bot Free cũ không giới hạn (spec BR-01 + MT-24)",
        env="PRODUCTION",
        spec="Đã hỏi leader",
        note="Leader chốt MT-03: đây là giới hạn CHUNG cho toàn bộ các bot, gồm cả bot free và bot có phí. RULE-08: liên quan plan → PRODUCTION. Nguồn: Limit Form answer r8, r20, r30, r44, r52, r60, r68, r76"),

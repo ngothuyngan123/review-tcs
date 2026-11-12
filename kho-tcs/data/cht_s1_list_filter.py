@@ -129,11 +129,12 @@ S1 = [
        "1. Chọn filter 未確認\n2. Ghi lại danh sách friend hiển thị\n"
        "3. Với 1 friend trong danh sách: mở hội thoại và bấm xác nhận\n4. Chọn lại filter 未確認",
        "3 friend chưa xác nhận: A có 1 tin chưa đọc, B có 2 tin, C có 5 tin",
-       "- Bước 2: hiện đủ cả 3 friend A, B, C — KHÔNG chỉ hiện friend có đúng 1 tin chưa đọc\n"
+       "- Bước 2: hiện đủ cả 3 friend A, B, C (mỗi friend confirm_count = 1 bất kể số tin chưa đọc)\n"
        "- Bước 4: friend vừa xác nhận biến mất khỏi danh sách, còn 2 friend",
        spec="Đã hỏi leader",
-       note="MT-19: spec ghi điều kiện `confirm_count = 1` (feature-spec.md:121) — nếu đúng thì friend có 2-5 tin "
-            "chưa đọc sẽ bị lọt. Nguồn: Leftbar+Header r70 + SpecImprove #33731 r74 + improve count comfirm_message r3"),
+       note="MT-19 + MT-15 (Leader chốt 2026-10-23): filter 未確認 lọc theo `conversation.bot_id = ? AND confirm_count = 1`; "
+            "confirm_count chỉ nhận 0 hoặc 1 (KHÔNG tăng theo số tin chưa đọc) nên friend có 1/2/5 tin đều hiện → #33731 không còn là bug. "
+            "Nguồn: Leftbar+Header r70 + SpecImprove #33731 r74 + improve count comfirm_message r3"),
 
     tc("Filter danh sách bạn bè", "LIST-001", "Normal",
        "Filter 確認済み — chỉ hiện bạn bè đã xác nhận hết tin nhắn",
@@ -304,7 +305,8 @@ S1 = [
        "Thử chọn 2 status ở tab AND",
        "- Ở tab AND, 対応ステータス hiển thị dạng radio: tick フォロー thì 対応中 tự bỏ tick\n"
        "- Chỉ áp dụng được 1 status; danh sách hiện friend có status được chọn cuối",
-       note="Khác hẳn tab OR (checkbox) → tách TC riêng. Nguồn: Leftbar+Header r55-r58"),
+       note="MT-12 (Leader chốt 2026-10-23): ở chế độ AND, vế status (C AND D) với conversation chỉ có 1 status → "
+            "chỉ chọn được 1 status (radio) là nhất quán. Nguồn: Leftbar+Header r55-r58"),
 
     tc("Modal 絞り込み — tag & trạng thái", "STATE-DEP-001", "Abnormal",
        "Tab AND của status: bỏ tick status đang lọc → filter trống dù trước đó đã có status",
@@ -313,8 +315,8 @@ S1 = [
        "Từ 対応中 → bỏ tick",
        "- Bộ lọc status về trống\n- Danh sách hiện lại toàn bộ friend (KHÔNG giữ status cũ)",
        spec="Đã hỏi leader",
-       note="Hành vi NGƯỢC với tab OR của tag (giữ filter cũ khi đóng X) và khác tab OR của status. "
-            "Nguồn: Leftbar+Header r59, r60 vs r51, r52 — cần Leader chốt là chủ ý hay lỗi"),
+       note="MT-12 (Leader chốt 2026-10-23): bộ chọn điều kiện chung cho tag + status, giữa 2 nhóm luôn AND. "
+            "Nguồn: Leftbar+Header r59, r60 vs r51, r52"),
 
     tc("Modal 絞り込み — tag & trạng thái", "FUNC-MULTI-001", "Normal",
        "Kết hợp filter tag và filter 対応ステータス — quan hệ AND giữa 2 nhóm",
@@ -324,18 +326,23 @@ S1 = [
        "4. Click 絞り込み表示",
        "Tag T1 + status 対応中",
        "- Chỉ hiện A (thoả cả 2 nhóm điều kiện)\n- KHÔNG hiện B (thiếu status), KHÔNG hiện C (thiếu tag)",
-       note="Nguồn: Leftbar+Header r65, r66"),
+       note="MT-12 (Leader chốt 2026-10-23): quan hệ giữa nhóm tag và nhóm 対応ステータス LUÔN là AND. "
+            "Nguồn: Leftbar+Header r65, r66"),
 
-    tc("Modal 絞り込み — tag & trạng thái", "REG-SPEC-001", "Abnormal",
-       "Tổ hợp chéo tag OR + status AND (và ngược lại) — hành vi chưa được xác nhận",
-       BOT + "\n" + TAGSET + "\n- Friend A: tag T1 + status 対応中\n- Friend B: tag T2 + status フォロー",
-       "1. Chọn tag ở tab OR (T1, T2)\n2. Chọn status ở tab AND (対応中)\n3. Click 絞り込み表示, ghi lại kết quả\n"
-       "4. Làm ngược lại: tag ở tab AND, status ở tab OR, ghi lại kết quả",
-       "Tổ hợp 1: tag OR + status AND · Tổ hợp 2: tag AND + status OR",
-       "- Ghi nhận kết quả thực tế của cả 2 tổ hợp và đối chiếu với quyết định của Leader ở MT-12\n"
-       "- Nếu hệ thống chưa hỗ trợ: phải chặn rõ ràng hoặc thông báo, KHÔNG trả kết quả sai âm thầm",
+    tc("Modal 絞り込み — tag & trạng thái", "FUNC-MULTI-001", "Normal",
+       "Bộ chọn điều kiện áp dụng CHUNG cho tag và 対応ステータス — công thức lọc",
+       BOT + "\n" + TAGSET + "\n- A, B là tag; C, D là 対応ステータス\n"
+       "- Friend có đủ các tổ hợp tag/status để kiểm từng vế công thức",
+       "1. Chọn 「どれか1つ以上満たす(OR)」 + tag A,B + status C,D → 絞り込み表示, ghi kết quả\n"
+       "2. Chọn 「すべて満たす(AND)」 + tag A,B + status C,D → 絞り込み表示, ghi kết quả\n"
+       "3. Kiểm tra modal KHÔNG cho đặt điều kiện khác nhau giữa tag và status (không có tổ hợp chéo)",
+       "Tag A,B + status C,D ở 2 chế độ OR / AND",
+       "- Bộ chọn 「どれか1つ以上満たす」/「すべて満たす」 áp cho CẢ 2 nhóm cùng lúc\n"
+       "- OR: điều kiện thoả filter là (A OR B) AND (C OR D)\n"
+       "- AND: điều kiện thoả filter là (A AND B) AND (C AND D)\n"
+       "- Quan hệ giữa nhóm tag và nhóm 対応ステータス LUÔN là AND; KHÔNG tồn tại tổ hợp chéo tag OR + status AND",
        spec="Đã hỏi leader",
-       note="MT-12: TC gốc ghi 「hiện tại mình chưa làm 2 case này」→ chưa ai xác nhận hành vi. "
+       note="MT-12 (Leader chốt 2026-10-23): bộ chọn điều kiện chung cho tag + 対応ステータス, giữa 2 nhóm luôn AND. "
             "Nguồn: Leftbar+Header r67, r68"),
 
     tc("Modal 絞り込み — tag & trạng thái", "CONC-001", "Abnormal",
@@ -380,7 +387,7 @@ S1 = [
        "4. Kiểm tra DB confirm_count của A và D + bots.count_user_unconfirm",
        "A: tag T1, 2 tin chưa đọc · D: không tag, 3 tin chưa đọc",
        "- A chuyển sang đã xác nhận (confirm_count = 0)\n"
-       "- D VẪN chưa xác nhận (confirm_count = 3), badge của D không đổi\n"
+       "- D VẪN chưa xác nhận (confirm_count = 1 — MT-15: chỉ nhận 0/1, không tăng theo số tin), badge của D không đổi\n"
        "- bots.count_user_unconfirm giảm đúng số friend đã được xác nhận, không về 0",
        note="Nguồn: Leftbar+Header r15, r544-r550 (SpecImprove #35144 — bug cũ là set count_user_unconfirm = 0 luôn)"),
 

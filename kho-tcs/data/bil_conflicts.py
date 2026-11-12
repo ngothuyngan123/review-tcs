@@ -26,7 +26,7 @@ CONFLICTS = [
      "Nếu member chạy theo TC cũ sẽ báo PASS khi tạo được sản phẩm 50円, trong khi V2 lẽ ra phải chặn. "
      "Ngược lại nếu server thật sự không validate (BR-15) thì CẢ HAI mốc đều không được enforce.",
      "『Tạo/sửa 単品 — 基本設定』TC「商品価格 = 99 / 100 / 50 → biên giá tối thiểu 100円」",
-     "",
+     "Giá tiền bill 商品価格 tối thiểu là 100 yên",
      "① Xác nhận với dev mốc tối thiểu hiện hành của màn 商品販売 V2 (100 hay 50).\n"
      "② Nếu chốt 100: giữ nguyên expected của TC, thêm chú thích TC gốc 50円 đã lỗi thời.\n"
      "③ Chạy kèm TC gọi API trực tiếp (MT-02) để biết server có chặn hay không.\n"
@@ -49,7 +49,7 @@ CONFLICTS = [
      "『Tạo/sửa 単品 — 基本設定』TC「決済システム bị khóa sau lần lưu đầu tiên」· "
      "『Tồn kho & 購入上限』TC「Gọi thẳng API mua vượt 購入上限」· "
      "『Phân quyền & môi trường』TC「Gọi API lưu sản phẩm với dữ liệu vi phạm ràng buộc client」",
-     "",
+     "Có bổ sung TCs API",
      "① Quyết định phạm vi: chỉ test UI, hay test cả tầng API.\n"
      "② Nếu có test API: chỉ định người có công cụ (DevTools/Postman) và môi trường được phép.\n"
      "③ Nếu KHÔNG test API: ghi rõ vào báo cáo rằng 7 rule ở §5.2 là RỦI RO CHƯA ĐƯỢC PHỦ.\n"
@@ -75,7 +75,7 @@ CONFLICTS = [
      "『Job bill định kỳ』TC「Admin ĐỔI GIÁ sản phẩm sau khi khách đã đăng ký」· "
      "『Màn 販売履歴』TC「販売価格 của hợp đồng ĐANG CHẠY hiển thị giá HIỆN TẠI」· "
      "『アクション設定』TC「Action text có chèn thông tin đơn hàng」",
-     "",
+     "Kỳ định kỳ bill theo GIÁ LÚC ĐĂNG KÝ. Khi giá sản phẩm thay đổi thì vẫn giữ nguyên giá ban đầu khi bill chu kỳ",
      "① Chốt nghiệp vụ: hợp đồng đã ký có bị áp giá mới không (đây là câu hỏi PHÁP LÝ, không chỉ kỹ thuật).\n"
      "② Nếu chốt 'giá lúc đăng ký': đây là BUG hiện tại, cần raise và sửa cả 2 cron + placeholder AMOUNT_ORDER.\n"
      "③ Nếu chốt 'giá hiện tại': cần bổ sung luồng THÔNG BÁO cho khách trước khi đổi giá.\n"
@@ -807,3 +807,17 @@ CONFLICTS = [
      "③ Nếu cả 2 đều đúng → BLOCKER, raise ngay.\n"
      "④ Đề xuất dev: kiểm MIME trước khi lưu + đặt quyền thư mục chặt hơn + chặn thực thi ở thư mục upload."],
 ]
+
+
+# QUYET DINH cua Leader keo tu Sheet ve local 2026-10-23 (MT-04/MT-05).
+# Chi GIU cau tra loi (cot quyet dinh); TCs cua FA-026 CHUA cap nhat theo -> status de cho.
+_SHEET_DECISIONS = {
+    "MT-01": "Giá tiền bill 商品価格 tối thiểu là 100 yên",
+    "MT-02": "Có bổ sung TCs API",
+    "MT-03": "Kỳ định kỳ bill theo GIÁ LÚC ĐĂNG KÝ. Khi giá sản phẩm thay đổi thì vẫn giữ nguyên giá ban đầu khi bill chu kỳ",
+    "MT-04": "1. Xóa sản phẩm đã có đơn => Xóa lịch sử mua hàng sản phẩm đó\n2. Xóa folder đang chứa sản phẩm => Xóa sản phẩm và lịch sử mua hàng của sản phẩm trong folder đó",
+    "MT-05": "Khi chuyển folder của nhiều item thì giữ nguyên vị trí của các item ở folder cũ sang folder mới và xếp xuống cuối với list item đang có hiện tại của folder mới",
+}
+for _row in CONFLICTS:
+    if _row[0] in _SHEET_DECISIONS and not str(_row[8]).strip():
+        _row[8] = _SHEET_DECISIONS[_row[0]]

@@ -21,7 +21,7 @@
 | Luồng | Tên JP | Mục đích |
 |---|---|---|
 | **EXPORT** | 「エクスポート」 | Tạo và lưu các **"định nghĩa file export"** — mỗi định nghĩa là một cấu hình có tên riêng, gồm: đối tượng bạn bè (kèm bộ lọc chi tiết) + danh sách cột dữ liệu muốn xuất. Hệ thống sinh file CSV **bất đồng bộ** theo định nghĩa đó; người dùng tải về khi file sẵn sàng |
-| **IMPORT** | 「インポート」 | Tải lên file CSV (bắt buộc là file đã export từ hệ thống rồi chỉnh sửa) để **ghi đè hàng loạt** 個別メモ / タグ / 友だち情報 của các bạn bè trong file |
+| **IMPORT** | 「インポート」 | Tải lên file CSV (bắt buộc là file đã export từ hệ thống rồi chỉnh sửa) để **ghi đè hàng loạt** 個別メモ / タグ / 友だち情報 (riêng 個別メモ: job import **thêm** memo mới 「CSV追加 (…)」, không ghi đè memo đang có — xem §2.3 Bước D; cập nhật 2026-10-13) của các bạn bè trong file |
 
 Điểm đặc trưng quan trọng nhất: **Laravel không sinh file CSV và không nhập dữ liệu**. Web chỉ ghi "định nghĩa công việc" vào bảng MySQL và đặt cột trạng thái; **Spring Boot job poll bảng đó** rồi thực thi. Ghi chú trên UI xác nhận điều này: 「※データ量によっては、CSVの作成に数時間かかる場合があります。」 (tuỳ lượng dữ liệu, việc tạo CSV có thể mất vài giờ).
 
@@ -575,7 +575,7 @@ Hướng: **R** = chỉ đọc/hiển thị · **W** = ghi khi lưu · **RW** = 
 | 17 | 「対象人数（有効友だちのみ）」 | SCR-CSV-03/04 | (real-time) → `csv_management.total_line_user` | W, J | — | Client gửi `arr_line_user_id`, server `count()`; **job ghi đè** bằng số thực |
 | 18 | 「絞り込み条件」 | SCR-CSV-03/04 | `filters_v2.text_preview` (nối các bản ghi and/or) | R | — | Nạp qua EP-10 |
 | 19 | Checkbox 「ステータスメッセージ」 | SCR-CSV-03/04 | `csv_management.show_message_status` → CSV từ `conversation.status_last_message` | W | — | BR-03 |
-| 20 | Checkbox 「個別メモ」 | SCR-CSV-03/04 | `csv_management.show_note` → `bot_line_user.memo` | W | — | BR-03 |
+| 20 | Checkbox 「個別メモ」 | SCR-CSV-03/04 | `csv_management.show_note` → **toàn bộ memo của bạn bè** ở bảng `memos` (`memoFindAllByConversationId`, theo hội thoại) — mỗi memo 1 cột ở cuối dòng CSV. **Không** đọc `bot_line_user.memo` | W | — | BR-03 · cập nhật 2026-10-13 (review #42336, Leader xác nhận) |
 | 21 | Checkbox 「友だち追加日」 | SCR-CSV-03/04 | `csv_management.show_date_of_add_friend` → `bot_line_user.followed_at` | W | — | BR-03 |
 | 22 | Checkbox 「対応マーク」 | SCR-CSV-03/04 | `csv_management.show_reciprocal_status` → `conversation.id_status` → `status_chat.name_status` | W | — | BR-03 |
 | 23 | Checkbox 「最終メッセージ受信日時」 | SCR-CSV-03/04 | `csv_management.show_date_of_last_message_received` → `last_time_receive_conversation.last_time_reveice` (ưu tiên) / `conversation.last_time_message` | W | — | BR-03 |

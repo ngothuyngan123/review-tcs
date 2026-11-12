@@ -171,7 +171,7 @@ Khu vực phía trên bảng hiển thị các banner cảnh báo theo loại:
 | 「詳細を確認」 | Status là 延滞中 |
 | 「契約詳細」 | Status là 正常, 解約待ち, 入金待ち (có LOA kết nối hoặc chưa kết nối) |
 | 「アカウントの操作」 | Status là 解約済み, 強制解約 |
-| 「振込キャンセル」 | Status là 入金待ち với đặc điểm nhất định (chưa rõ điều kiện cụ thể) |
+| 「振込キャンセル」 | **Chỉ** hợp đồng **mua mới lần đầu** đang 口座発行中 / 入金待ち (mua mới スタンダード / プロ, nâng từ フリー). Đổi phương thức, gia hạn, スタンダード → プロ, 再契約, job bill định kỳ → không hiện, chỉ hiện 「契約詳細」 _(Leader chốt 2026-10-16)_ |
 
 **Lưu ý**: Khi LOA chưa kết nối (LINE公式アカウント未接続) nhưng còn slot trống → hiển thị link「LINE公式アカウント未接続」dẫn đến `/admin/bot-add-v2?bot_slot_id={id}` để kết nối bot.
 
@@ -540,6 +540,6 @@ SCR-BLP-05 (Phát hành báo giá)
 | Modal thay đổi admin chính (主管理者を変更する) | Chưa click vào button này |
 | Modal thông tin chuyển khoản (振込情報) | Chưa click vào button này |
 | Giá trị các option trong dropdown combobox kính ngữ và chọn plan tại SCR-BLP-05 | Không visible từ snapshot YAML |
-| Điều kiện hiển thị button 「振込キャンセル」vs「契約詳細」khi status là 入金待ち | Cần xem code để xác định |
+| ~~Điều kiện hiển thị button 「振込キャンセル」vs「契約詳細」khi status là 入金待ち~~ | ✅ Đã chốt 2026-10-16 (Leader): chỉ mua mới lần đầu — xem bảng nút cột 8 |
 | Nội dung trang 「アカウントの操作」khi hợp đồng đã hủy | Chưa navigate vào trang này |
 | Logic sắp xếp mặc định của bảng SCR-BLP-01 | Chưa quan sát rõ |
