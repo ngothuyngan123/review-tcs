@@ -198,7 +198,7 @@
   - `in_tag`: 1 = kết quả gắn tag
   - `in_tag_and_friend`: gắn tag và ghi vào friend info
   - `is_link_friend_info`: 1 = tạo/cập nhật friend_information_setting
-  - `is_display_info_friend`: 1 = hiển thị giá trị bạn bè đã có
+  - `is_display_info_friend`: 1 = hiển thị giá trị bạn bè đã có (editor không cho bật với mục 友だち情報 loại 画像 / PDF — BR-15, #44620)
 
 ### FormAnswerResult
 

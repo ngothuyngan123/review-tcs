@@ -19,3 +19,4 @@ Thư mục chứa **tài liệu hợp đồng Public API** của LME — phần 
 
 - Skill [`/verify-support`](../../.claude/commands/verify-support.md) — câu hỏi khách về Public API đọc ở đây.
 - Task test Public API (`Surface = public-api`).
+- Skill [`/review-docs-api`](../../.claude/commands/review-docs-api.md) — review bản HTML mới (copy vào `docs/` với hậu tố `_v<version>`), diff với bản cũ, report ở `API-DOCS/v<version>_<ngày>/` của repo cha.

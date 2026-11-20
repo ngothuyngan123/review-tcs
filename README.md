@@ -32,6 +32,7 @@ lme-review-TCs/
 │   ├── 04-tc-list.template.md         # Template TCs do member viết
 │   ├── 05-review-report.template.md   # Template report review của Leader
 │   ├── 02-mcp-docs-review.template.md # Task MCP — review docs MCP (/review-docs-mcp)
+│   ├── 02-api-docs-review.template.md # Review docs Public API (/review-docs-api)
 │   └── 05-mcp-review-report.template.md # Task MCP — report review TC (/review-tc-mcp)
 ├── spec-features/                     # Spec đầy đủ (reverse-engineer) của từng feature
 │   ├── index.md
@@ -46,6 +47,7 @@ lme-review-TCs/
 ├── .env.example                       # Mẫu REDMINE_URL + REDMINE_API_KEY (copy thành .env, gitignored)
 ├── scripts/
 │   ├── redmine_fetch.py               # Fetch issue Redmine qua REST API (+ --download-attachments cho file đính kèm)
+│   ├── api_docs_extract.py            # /review-docs-api — HTML docs Public API → text · inventory · diff · check
 │   └── ...                            # push_tc / fetch_grid / parse_studio_tcs / build_indexes ...
 ├── framework/
 │   ├── review-checklist.md            # Rubric cho Leader review TAY (skill KHÔNG đọc)
@@ -62,8 +64,10 @@ lme-review-TCs/
 │   ├── review-tc.md                   # /review-tc — Leader review TCs
 │   ├── new-task-mcp.md                # /new-task-mcp — như /new-task, folder trong MCP/ + tải docs MCP
 │   ├── review-docs-mcp.md             # /review-docs-mcp — review docs MCP vs spec → report cho Leader đọc
+│   ├── review-docs-api.md             # /review-docs-api — review docs Public API v1 (4 trọng tâm) → API-DOCS/
 │   ├── write-tc-mcp.md                # /write-tc-mcp — viết TC MCP vào 04-tc-write.md (push Studio khi được yêu cầu)
 │   ├── review-tc-mcp.md               # /review-tc-mcp — review TC MCP (tool × param + rule MCP + E2E prompt)
+│   ├── pick-maincase.md               # /pick-maincase — chọn main case từ bộ TC đã có → 06-main-cases.md
 │   ├── write-tc.md                    # /write-tc — Member sinh draft TCs
 │   └── sync-tc.md                     # /sync-tc — Push TCs lên Google Sheet master
 ├── prompts/                           # Tài liệu hướng dẫn dùng slash commands
@@ -74,7 +78,8 @@ lme-review-TCs/
 │       ├── 01-bug-task.md
 │       ├── 03-dev-impact.md
 │       ├── 04-tc-list.md
-│       └── 05-review-report.md
+│       ├── 05-review-report.md
+│       └── 06-main-cases.md           # /pick-maincase (tuỳ chọn)
 ├── MCP/                             # Task test MCP tool (từ 2026-10-14) — 1 task = 1 folder
 │   └── YYYY-MM-DD_<id>_<slug>/
 │       ├── 01-bug-task.md · 03-dev-impact.md
@@ -83,6 +88,10 @@ lme-review-TCs/
 │       ├── 02-mcp-docs-review.md      # /review-docs-mcp — report docs cho Leader đọc (không lệnh nào đọc)
 │       ├── 05-review-report.md        # /review-tc-mcp
 │       └── _tool-inventory.md         # /review-docs-mcp — tool × param (docs nguồn ở spec-features/mcp/docs/)
+├── API-DOCS/                        # Review docs Public API (từ 2026-11-18) — 1 bản docs = 1 folder
+│   └── v<version>_YYYY-MM-DD/
+│       ├── 02-api-docs-review.md      # /review-docs-api — report cho Leader + câu hỏi gửi WSSJ
+│       └── _api-inventory.md · _api-diff.md · _api-check.md   # output script, không sửa tay
 └── examples/
     └── sample-review/                 # Ví dụ mẫu đầy đủ
 ```
@@ -128,12 +137,16 @@ Task MCP **không** đi `/new-task` → `/review-tc`, mà đi luồng riêng, fo
 
 Sau đó rẽ 2 nhánh:
 
-- **Studio/Sheet đã có TC** (file 04 có sẵn) → **`/review-tc-mcp <folder>`** — kiểm docs tính năng ở `spec-features/mcp/docs/` (thiếu → DỪNG), **đọc TC ở `04-tc-list.md`** (không fetch lại), review 2 hướng: **bám docs** (ma trận tool × param + 7 rule ở [framework/mcp-rules.md](framework/mcp-rules.md), có bước `get_*` verify sau khi tạo/sửa) + **E2E prompt** (ngôn ngữ tự nhiên qua ChatGPT/Claude — VN chính, JP đại diện; prompt chi tiết + chung) → `05-review-report.md` → `/sync-review-tc` push TC bổ sung (push xong tự refresh `04-tc-list.md` để lần review sau đọc được). **Không cần file 02.**
+- **Studio/Sheet đã có TC** (file 04 có sẵn) → **`/review-tc-mcp <folder>`** — kiểm docs tính năng ở `spec-features/mcp/docs/` (thiếu → DỪNG), **đọc TC ở `04-tc-list.md`** (không fetch lại), review 2 hướng: **bám docs** (ma trận tool × param + 7 rule ở [framework/mcp-rules.md](framework/mcp-rules.md), có bước `get_*` verify sau khi tạo/sửa) + **E2E prompt** (ngôn ngữ tự nhiên qua ChatGPT/Claude — VN chính, JP đại diện; prompt chi tiết + chung) → `05-review-report.md` → `/sync-review-tc` push TC bổ sung (push xong tự append TC đó vào `04-tc-list.md` — ID lấy từ response tool — để lần review sau đọc được). **Không cần file 02.**
 - **Studio chưa có TC** (phải viết mới) → **`/write-tc-mcp <folder>`** — kiểm docs tính năng ở `spec-features/mcp/docs/` (thiếu → DỪNG), đọc TC cũ ở `04-tc-list.md` để chống trùng, viết TC 2 hướng (bám docs + E2E prompt) vào file riêng `04-tc-write.md`; `/write-tc-mcp <folder> push` để đẩy lên Studio (luôn hỏi xác nhận) + tự refresh `04-tc-list.md`. Rồi `/review-tc-mcp`. `04-tc-list.md` chỉ chứa TC sync từ test tool về, không bao giờ push lại.
 
 **`/review-docs-mcp <folder>`** (tuỳ chọn, dùng ở nhánh nào cũng được) — lập inventory tool × param (từ docs ở `spec-features/mcp/docs/`), rà docs **mâu thuẫn nội tại** · **trái `spec-features/`** · **thiếu so với spec** (kể cả 4 rule bắt buộc: bot A↔B, staff không quyền, limit bot Free, trùng tên quản lý) → `02-mcp-docs-review.md` = **report cho Leader đọc**. Không lệnh nào gate / đọc file 02; docs sai / thiếu thì Leader yêu cầu cập nhật docs ở `spec-features/mcp/docs/`.
 
 Task chỉ gọi tới MCP như caller (vd filter dùng chung web / app / MCP) vẫn là task thường ở `tasks/`.
+
+### Review docs Public API (không gắn task)
+
+**`/review-docs-api <file HTML mới> [file HTML bản cũ]`** — khi WSSJ phát hành bản docs Public API mới. Copy bản gốc vào `spec-features/api-public/docs/`, chạy `scripts/api_docs_extract.py` (inventory endpoint × param · diff với bản cũ · check máy ví dụ), rồi review **4 trọng tâm theo thứ tự ưu tiên**: ① **docs tự mâu thuẫn** — kể cả ví dụ trái docs và ví dụ bất hợp lý · ② **khớp spec** `spec-features/admin/` từng tính năng (câu chữ + logic + dữ liệu, có bảng phạm vi đối chiếu) · ③ **điểm chưa rõ / dễ khiến client hiểu sai** · ④ **dễ đọc**. Bảo mật · rủi ro chạy trùng · changelog · khẳng định cần chạy thật là phần ưu tiên thấp (chạy nhẹ). Output `API-DOCS/v<version>_<ngày>/02-api-docs-review.md` = report cho Leader + danh sách câu hỏi gửi WSSJ. Không viết TC, không gọi API, không tự sửa `public-api-spec.md`.
 
 ### Phase 3 — Gửi feedback (chỉ khi `/review-tc`)
 Chia sẻ `05-review-report.md` cho member. Member fix TCs → review vòng 2 nếu cần.
@@ -195,6 +208,18 @@ Trong Claude Code (mở ở thư mục project root), gõ:
 ```
 
 → Luồng task MCP (xem §3 "Luồng riêng cho task MCP"). `/write-tc-mcp` và `/review-tc-mcp` bám thẳng docs ở `spec-features/mcp/docs/`, **không cần** `02-mcp-docs-review.md`.
+
+```
+/pick-maincase tasks/2026-11-12_45752_salon-khong-chi-dinh-nhan-vien-tu-dong/
+```
+
+→ Chọn **main case** (tập TC nhỏ nhất mà fail 1 case là không release / phải rollback) từ bộ TC đã có: phân loại task (fix bug → slot B1–B6 · feature / spec change → slot F1–F8), chọn TC theo 7 tiêu chí C1–C7, gắn môi trường chạy + đánh dấu case **bắt buộc kiểm tra sau release**, liệt kê slot chưa có TC → `06-main-cases.md`. Chỉ đọc, không ghi Studio / Sheet. Dùng được cho cả folder `tasks/` và `MCP/`.
+
+```
+/review-docs-api C:/Users/<user>/Downloads/api-detail-spec_vi.html
+```
+
+→ Review docs Public API bản mới (xem §3 "Review docs Public API"). Bản cũ để diff tự chọn trong `spec-features/api-public/docs/`; muốn chỉ định thì thêm đường dẫn làm arg2.
 
 Gõ slash command **không kèm folder** → Claude sẽ liệt kê các folder con trong `tasks/` (lệnh MCP: `MCP/`) để bạn chọn (trừ `/new-task` / `/new-task-mcp` — cần ID ticket Redmine bắt buộc).
 

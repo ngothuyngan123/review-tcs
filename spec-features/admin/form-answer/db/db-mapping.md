@@ -47,11 +47,11 @@
 |--------|------|----------|---------|-------|
 | `id` | int(11) | NOT NULL | — | PK, auto increment |
 | `bot_id` | int(11) | NOT NULL | — | FK → bots.id |
-| `name` | varchar(255) | NOT NULL | — | Tên quản lý nội bộ (「管理名」) — được set = system_name khi tạo |
-| `line_name` | varchar(255) | NULL | — | Tên form hiển thị (legacy, = name ban đầu) |
-| `system_name` | varchar(255) | NULL | — | Tên quản lý (「管理名」) — EP-07 map `system_name` → `name` |
+| `name` | varchar(255) | NOT NULL | — | Tên quản lý nội bộ (「管理名」) — 管理名 lưu vào **cả** `name` và `system_name` _(Leader chốt 2026-11-13)_ |
+| `line_name` | varchar(255) | NULL | — | 「フォーム名」(お客様に表示されるフォーム名) — tên hiển thị phía bạn bè; bắt buộc, tối đa 20 ký tự _(Leader chốt 2026-11-13)_ |
+| `system_name` | varchar(255) | NULL | — | Tên quản lý (「管理名」) — **GUI lấy cột này để hiển thị**; lưu song song với `name` _(Leader chốt 2026-11-13)_ |
 | `form_type` | tinyint(4) | NOT NULL | `1` | Loại form: `1`=シンプル, `2`=分岐 |
-| `title` | varchar(255) | NOT NULL | — | Tên form hiển thị với khách (「フォーム名」) |
+| `title` | varchar(255) | NOT NULL | — | 「タイトル」 hiển thị trên màn LINE トーク (各種設定 >「LINEトーク画面・フォーム名表示」, bắt buộc, tối đa 20 — sheet Msg validate r237). Khi tạo mới, EP-04 ghi フォーム名 vào cả `line_name` và `title` (sheet r179) |
 | `description` | text | NULL | — | Mô tả form (legacy) |
 | `reply_kind` | int(11) | NULL | — | Giới hạn trả lời: `0`=nhiều lần, `1`=1 lần, `2`=giới hạn số lần |
 | `reply_text` | varchar(255) | NULL | — | Thông báo khi vượt giới hạn trả lời |
@@ -70,7 +70,7 @@
 | `position` | int(11) | NOT NULL | `1` | Thứ tự hiển thị trong danh sách |
 | `color` | varchar(12) | NULL | — | Màu accent của form (default `#08BF5A`) |
 | `image_header` | varchar(256) | NULL | — | Ảnh header của form (legacy — xem cũng trong `form_answer_setting_common`) |
-| `button_submit_name` | varchar(128) | NULL | — | Text nút submit (「回答する」 mặc định) |
+| `button_submit_name` | varchar(128) | NULL | — | Text nút submit (「回答する」 mặc định) — form v3 KHÔNG dùng cột này: ボタンテキスト lưu ở `form_answer_page.button_name` _(Leader chốt 2026-11-13)_ |
 | `message_notify_success` | longtext | NULL | — | Nội dung thông báo thành công (legacy) |
 | `action_open_id` | int(11) | NULL | — | FK → t_actions.id (action khi mở form) |
 | `action_open_type` | int(11) | NOT NULL | `1` | Loại action khi mở: `1`=1 lần, khác=mỗi lần |
@@ -78,13 +78,13 @@
 | `action_reply_type` | int(11) | NOT NULL | `1` | Loại action sau submit: `1`=1 lần, khác=mỗi lần |
 | `custom_style` | longtext | NULL | — | Custom CSS (legacy) |
 | `reply_use_url` | tinyint(4) | NOT NULL | `0` | URL sau khi trả lời: `0`=default, `1`=custom, `2`=không redirect |
-| `title_timer` | blob | NULL | — | Tiêu đề bộ đếm ngược |
+| `title_timer` | blob | NULL | — | 「タイマーテキスト」 của カウントダウンタイマー — có hiển thị trên GUI; bắt buộc khi 設定する, tối đa 50 ký tự _(Leader chốt 2026-11-13)_ |
 | `option_show_timer` | tinyint(4) | NOT NULL | `0` | `0`=ẩn timer, `1`=hiển thị bộ đếm ngược |
 | `option_timer` | tinyint(4) | NOT NULL | `0` | Tùy chọn timer (loại) |
 | `unit_timer` | tinyint(4) | NOT NULL | `0` | Đơn vị timer |
 | `date_timer_count_down` | date | NULL | — | Ngày đếm ngược đến (「カウントダウンタイマー」) |
 | `time_timer_count_down` | varchar(255) | NULL | — | Giờ đếm ngược |
-| `time_duration` | varchar(255) | NULL | — | Thời gian duration |
+| `time_duration` | varchar(255) | NULL | — | 表示期限 kiểu 経過時間 — phần 時間 / 分 (không rỗng, không < 0) _(Leader chốt 2026-11-13)_ |
 | `text_color_timer` | varchar(255) | NULL | — | Màu chữ timer |
 | `bg_color_timer` | varchar(255) | NULL | — | Màu nền timer |
 | `url_redirect_timer` | varchar(255) | NULL | — | URL chuyển hướng khi timer hết |
@@ -93,7 +93,7 @@
 | `message_notify_count_down` | varchar(255) | NULL | — | Thông báo khi timer hết |
 | `url_notify_success` | varchar(255) | NULL | — | URL hiển thị sau khi trả lời thành công |
 | `is_duration_timer` | tinyint(4) | NOT NULL | `0` | Timer dạng duration |
-| `days_timer_count_down` | int(11) | NULL | — | Số ngày đếm ngược |
+| `days_timer_count_down` | int(11) | NULL | — | 表示期限 kiểu 経過時間 — phần 日 (không rỗng, không < 0) _(Leader chốt 2026-11-13)_ |
 | `bg_color_button` | varchar(255) | NULL | — | Màu nền nút submit (default `#EDF4FB`) |
 | `text_color_button` | varchar(255) | NULL | — | Màu chữ nút submit (default `#5799DB`) |
 | `count_user_reply` | int(11) | NULL | `0` | Tổng số lượt trả lời (reset khi soft-delete) |
@@ -144,10 +144,10 @@
 | `default` | varchar(255) | NULL | — | Giá trị mặc định |
 | `value` | varchar(255) | NULL | — | Giá trị (legacy/v1) |
 | `rules` | varchar(255) | NULL | — | Validation rules (JSON, vd: `{"required":true,"email":true}`) |
-| `settings` | longtext | NULL | — | Cấu hình selectable/optionable (JSON) |
+| `settings` | longtext | NULL | — | Cấu hình selectable/optionable (JSON) — gồm loại 「入力制限」 của item text (`selectable.type`) _(Leader chốt 2026-11-13)_ |
 | `is_new` | tinyint(4) | NULL | `0` | `0`=v1 data, `1`=v3 data |
 | `file_type` | tinyint(4) | NULL | `0` | Loại file upload cho phép |
-| `setting_number_limit` | text | NULL | — | Cài đặt giới hạn ký tự |
+| `setting_number_limit` | text | NULL | — | 「選択数の制限」 của item checkbox (複数選択) — giới hạn số đáp án được chọn (from / to) _(Leader chốt 2026-11-13)_ |
 | `select_number_limit` | tinyint(4) | NULL | `0` | Giới hạn số lựa chọn được chọn |
 | `css_setting_class` | text | NULL | — | CSS class tùy chỉnh (legacy) |
 | `auto_add_other` | tinyint(4) | NULL | `0` | Tự động thêm lựa chọn「その他」 |
@@ -156,7 +156,7 @@
 | `type_default_date` | tinyint(4) | NULL | `0` | Loại ngày mặc định |
 | `friend_info_type` | tinyint(4) | NULL | — | Loại dữ liệu friend info được link |
 | `is_link_friend_info` | tinyint(4) | NULL | `0` | `1`=tạo/cập nhật friend_information_setting |
-| `apply_rules` | tinyint(4) | NULL | `0` | Kích hoạt validation rules tùy chỉnh |
+| `apply_rules` | tinyint(4) | NULL | `0` | Bật 「入力制限」 (制限する) của item text; loại giới hạn lưu ở `settings` _(Leader chốt 2026-11-13)_ |
 | `placeholder` | varchar(255) | NULL | — | Placeholder (「プレースホルダ」) |
 | `created_at` | timestamp | NOT NULL | CURRENT_TIMESTAMP | Thời gian tạo |
 | `updated_at` | timestamp | NULL | — | Thời gian sửa |
@@ -169,7 +169,7 @@
 | `in_tag_and_friend` | tinyint(4) | NOT NULL | `0` | `1`=gắn tag và ghi vào friend info |
 | `bg_color` | varchar(255) | NULL | — | Màu nền item |
 | `text_color` | varchar(255) | NULL | — | Màu chữ item |
-| `is_display_info_friend` | tinyint(4) | NOT NULL | `0` | `0`=ẩn, `1`=hiển thị giá trị bạn bè đã có |
+| `is_display_info_friend` | tinyint(4) | NOT NULL | `0` | `0`=ẩn, `1`=hiển thị giá trị bạn bè đã có. Mục 友だち情報 loại 画像 / PDF: editor không có tuỳ chọn này (BR-15, #44620) |
 | `deleted_at` | timestamp | NULL | — | Soft-delete timestamp |
 | `css_specification` | text | NULL | — | CSS đặc tả (v3: CSSクラス cho 質問文 và 補足) |
 | `is_question` | tinyint(4) | NOT NULL | `1` | `1`=câu hỏi, `0`=nội dung trang trí |
@@ -193,8 +193,8 @@
 | `page_type` | tinyint(4) | NOT NULL | — | Loại trang: `1`=trang nội dung thường |
 | `page_number` | int(11) | NULL | — | Số thứ tự trang (0 cho スタートページ) |
 | `page_name` | varchar(100) | NULL | — | Tên trang (mặc định `スタートページ`) |
-| `page_image` | varchar(256) | NULL | — | Ảnh header của trang riêng |
-| `button_name` | varchar(100) | NULL | — | Text nút điều hướng trang |
+| `page_image` | varchar(256) | NULL | — | Ảnh header của trang riêng — png / jpg / jpeg, tối đa 10MB, tối đa 10000px _(Leader chốt 2026-11-13)_ |
+| `button_name` | varchar(100) | NULL | — | 「ボタンテキスト」 nút cuối trang (mặc định 「回答する」) — bắt buộc, tối đa 30 ký tự _(Leader chốt 2026-11-13)_ |
 | `button_pattern` | int(11) | NULL | — | Kiểu nút (1=mặc định) |
 | `button_color` | varchar(32) | NULL | — | Màu chữ nút (default `#FFFFFF`) |
 | `button_bg_color` | varchar(32) | NULL | — | Màu nền nút (default `#08BF5A`) |
@@ -408,7 +408,7 @@
 
 | UI Element | Label JP | DB Table | Column | Mapping Type | Confidence | Ghi chú |
 |-----------|----------|----------|--------|-------------|------------|---------|
-| Tên form cột 1 | 「管理名」 | `form_answer` | `name` | Direct | **Cao** | Tên quản lý nội bộ; EP-07 map `system_name` → `name` |
+| Tên form cột 1 | 「管理名」 | `form_answer` | `system_name` | Direct | **Cao** | Tên quản lý nội bộ; lưu cả `name` và `system_name`, GUI hiển thị `system_name` _(Leader chốt 2026-11-13)_ |
 | Loại form | 「タイプ」 | `form_answer` | `form_type` | Enum (1/2) | **Cao** | `1`=シンプル, `2`=分岐 |
 | Ngày tạo | 「作成日」 | `form_answer` | `created_at` | DateTime→Date | **Cao** | Format `Y.m.d` qua getCreatedAtAttribute() |
 | Ngày sửa | 「最終編集日」 | `form_answer` | `updated_at` | DateTime→Date | **Cao** | Format `Y.m.d` |
@@ -421,8 +421,8 @@
 
 | UI Element | Label JP | DB Table | Column | Mapping Type | Confidence | Ghi chú |
 |-----------|----------|----------|--------|-------------|------------|---------|
-| Tên quản lý | 「管理名」 | `form_answer` | `name` (= `system_name`) | Direct | **Cao** | EP-04 `system_name` → insert vào `name` |
-| Tên form | 「フォーム名」 | `form_answer` | `title` | Direct | **Cao** | EP-04 `form_name` → `title` |
+| Tên quản lý | 「管理名」 | `form_answer` | `name` + `system_name` | Direct | **Cao** | EP-04 `system_name` → lưu vào cả 2 cột; GUI hiển thị `system_name` _(Leader chốt 2026-11-13)_ |
+| Tên form | 「フォーム名」 | `form_answer` | `line_name` | Direct | **Cao** | EP-04 `form_name` → `line_name` (+ ghi cả `title` khi tạo mới) _(Leader chốt 2026-11-13)_ |
 | Thư mục | 「フォルダ」 | `form_answer` | `group_id` | FK | **Cao** | EP-04 `folder_id` → `group_id`; `0`=未分類 |
 | Loại form | 「タイプ」 | `form_answer` | `form_type` | Enum | **Cao** | EP-04 `form_type`: `1`=シンプル, `2`=分岐 |
 | Lựa chọn nhanh | 「よく使われる項目」 | `form_answer_details` | (multi rows) | Create items | **Cao** | EP-04 `attr` → INSERT nhiều record vào `form_answer_details` |
@@ -437,13 +437,14 @@
 | Bắt buộc | 「必須/任意」 | `form_answer_details` | `rules` | JSON field | **Cao** | `rules.required = true/false` |
 | Nội dung bổ sung | 「補足」 | `form_answer_details` | `help` | Direct | **Cao** | |
 | Placeholder | 「プレースホルダ」 | `form_answer_details` | `placeholder` | Direct | **Cao** | |
-| Giới hạn ký tự | 「入力制限」 | `form_answer_details` | `setting_number_limit` | JSON | **Cao** | |
+| Giới hạn nhập (item text) | 「入力制限」 | `form_answer_details` | `apply_rules` + `settings` | Multi-column | **Cao** | _(Leader chốt 2026-11-13)_ |
+| Giới hạn số đáp án (item checkbox) | 「選択数の制限」 | `form_answer_details` | `setting_number_limit` | JSON | **Cao** | _(Leader chốt 2026-11-13)_ |
 | Ghi thông tin bạn bè | 「友だち情報記録」 | `form_answer_details` | `friend_info_id` + `in_tag` | Multi-column | **Cao** | `friend_info_id` ≠ 0 → ghi; `in_tag=1` → gắn tag |
 | Link friend info | — | `form_answer_details` | `friend_info_id` | FK | **Cao** | FK → friend_information_setting.id |
 | CSS class (質問文) | 「CSSクラス(質問文)」 | `form_answer_details` | `css_specification` | JSON/text | **Cao** | v3 dùng `css_specification` |
 | Thứ tự item | — | `form_answer_details` | `position` | Sort order | **Cao** | Drag-drop → cập nhật `position` |
 | Ảnh header form | — | `form_answer_page` | `page_image` | File path | **Cao** | Ảnh header của từng trang |
-| Text nút submit | — | `form_answer` | `button_submit_name` | Direct | **Cao** | |
+| Text nút cuối trang | 「ボタンテキスト」 | `form_answer_page` | `button_name` | Direct | **Cao** | Bắt buộc, tối đa 30 ký tự _(Leader chốt 2026-11-13)_ |
 | Tên trang | 「ページ名」 | `form_answer_page` | `page_name` | Direct | **Cao** | |
 | Điều hướng tiếp theo | — | `form_answer_page` | `next_page_type` | Enum (2/3) | **Cao** | `3`=kết thúc, `2`=phân nhánh |
 | Câu hỏi phân nhánh | — | `form_answer_page` | `next_page_form_detail_id` | FK | **Cao** | |
@@ -492,9 +493,9 @@
 | Trang xác nhận | 「回答確認ページ」 | `form_answer` | `setting_page_confirm` | JSON | **Cao** | JSON: `{show: 0/1, ...}` |
 | Trang sau trả lời | 「回答後ページ」 | `form_answer` | `url_notify_success` / `reply_use_url` | Multi-column | **Cao** | `reply_use_url=2`=không redirect; `url_notify_success`=URL tùy chỉnh |
 | Giới hạn trả lời | 「回答制限」 | `form_answer` | `reply_kind`, `limit_reply_friend`, `is_limit_reply`, `limit_reply` | Multi-column | **Cao** | `reply_kind=0/1/2`, `limit_reply_friend`=giới hạn per user |
-| Thời gian hiển thị | 「表示期限」 | — | — | **Thấp** | Không tìm thấy cột `display_from`/`display_until` trong schema — có thể trong JSON hoặc chưa được implement |
+| Thời gian hiển thị | 「表示期限」(経過時間) | `form_answer` | `days_timer_count_down`, `time_duration` | Multi-column | **Cao** | Cập nhật theo sheet Msg validate r262 _(Leader chốt 2026-11-13)_ |
 | Bộ đếm ngược | 「カウントダウンタイマー」 | `form_answer` | `option_show_timer`, `date_timer_count_down`, `time_timer_count_down` | Multi-column | **Cao** | |
-| Hiển thị tên form LINE | 「LINEトーク画面・フォーム名表示」 | `form_answer` | `line_name` | Direct | **Trung bình** | `line_name` dự đoán là tên hiển thị trong LINE talk screen |
+| Hiển thị tên form LINE | 「LINEトーク画面・フォーム名表示」 | `form_answer` | `line_name` (お客様に表示されるフォーム名), `title` (タイトル), `description` (説明) | Multi-column | **Trung bình** | Theo sheet Msg validate r236–r240: フォーム名 ≤20 · タイトル ≤20 · 説明 ≤50, đều bắt buộc |
 
 ### SCR-FA11-08: Form công khai
 
@@ -580,7 +581,6 @@
 
 | UI Element | Screen | Lý do chưa match |
 |-----------|--------|-----------------|
-| 「表示期限」(từ/đến ngày) | SCR-FA11-07 | Không tìm thấy cột `display_from`/`display_until` trong `form_answer` schema — có thể được lưu trong `setting_page_confirm` JSON hoặc chưa được implement trong DB hiện tại — **Thấp** |
 | 「クイックテスト」trạng thái | SCR-FA11-01 | Trạng thái quick test không có cột riêng — được lấy từ `BotLineUserRepository` (tài khoản tester đã đăng ký chưa) — **Trung bình** |
 | Cột `count_reply` trong `form_answer_user_accept` | — | Index DB ghi `8 cột` nhưng schema chỉ thấy `is_update` — có thể có cột `count_reply` không xuất hiện rõ trong schema dump |
 
@@ -588,11 +588,9 @@
 
 | DB Table | Column | Lý do |
 |----------|--------|-------|
-| `form_answer` | `line_name` | Legacy — ban đầu = `name`, hiện tại UI chỉ dùng `name`/`system_name`/`title` |
 | `form_answer` | `google_sheet_access_token` (trong form_answer) | Legacy — OAuth token bây giờ lưu trong `bots.google_sheet_access_token` |
 | `form_answer` | `google_sheet_token` | Legacy field — bị supersede bởi `google_sheet_access_token` |
 | `form_answer` | `sheet_reference_id` | Internal migration reference |
-| `form_answer` | `title_timer` | Tiêu đề timer (blob) — không thấy trên UI hiện tại |
 | `form_answer` | `custom_js_bak` | Backup field — không thấy trên UI |
 | `form_answer` | `new_version` | Internal version flag — không có trên UI |
 | `form_answer` | `color` | Màu accent form legacy — không thấy trên UI v3 |

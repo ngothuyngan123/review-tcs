@@ -77,8 +77,8 @@
 
 | Tham số | Kiểu | Mô tả |
 |---------|------|-------|
-| `form_name` | string | Tên form hiển thị với khách hàng (「フォーム名」) |
-| `system_name` | string | Tên quản lý (「管理名」) |
+| `form_name` | string | Tên form hiển thị với khách hàng (「フォーム名」) → lưu `form_answer.line_name` (+ `title`) _(Leader chốt 2026-11-13)_ |
+| `system_name` | string | Tên quản lý (「管理名」) → lưu cả `form_answer.name` và `form_answer.system_name` _(Leader chốt 2026-11-13)_ |
 | `folder_id` | int | ID thư mục (0 = 未分類) |
 | `form_type` | int | Loại form: 1 = シンプル, 2 = 分岐 |
 | `attr` | JSON array | Danh sách câu hỏi ban đầu (từ lựa chọn nhanh) |
@@ -321,7 +321,7 @@
   - Tìm form theo `unique_key`
   - Kiểm tra hạn hợp đồng bot
   - Nếu có `line_id`: decode Hashids → tìm LineUser → kiểm tra đã trả lời chưa (`reply_kind`)
-  - Lấy dữ liệu trang và form items, gắn giá trị bạn bè nếu `is_display_info_friend=1`
+  - Lấy dữ liệu trang và form items, gắn giá trị bạn bè nếu `is_display_info_friend=1` (mục 友だち情報 loại 画像 / PDF: editor không cho bật — BR-15; form cũ đã bật → feature-spec Gaps #13)
   - Khi `mode=preview` (v1): nếu form dùng v3 → redirect sang v3
 - **Response**: View form công khai
 - **Mức độ tin cậy**: **Cao**

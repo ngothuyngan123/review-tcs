@@ -180,7 +180,7 @@ Hiển thị form preview theo dạng canvas có thể edit:
 | Ảnh header | Khu vực ảnh header, hiển thị「ヘッダー画像 設定なし」nếu chưa có — **Cao** |
 | Danh sách câu hỏi | Mỗi câu hỏi hiển thị tên, badge「必須」, icon kéo thả, click để chọn và edit — **Cao** |
 | Nút「＋ 項目・装飾を追加」| Mở modal thêm item (SCR-FA11-03-Modal) — **Cao** |
-| Khu vực nút submit | Hiển thị「ボタン」+ button「回答する」, click để chỉnh sửa text nút — **Cao** |
+| Khu vực nút submit | Hiển thị「ボタン」+ button「回答する」, click để chỉnh sửa text nút. 「ボタンテキスト」 bắt buộc, tối đa 30 ký tự, lưu `form_answer_page.button_name` _(Leader chốt 2026-11-13)_ — **Cao** |
 
 #### Panel property editor — Khu vực phải (khi chọn câu hỏi)
 
@@ -202,13 +202,14 @@ Khi click vào câu hỏi, hiện panel chỉnh sửa chi tiết bên phải:
 |--------|---------|---------|
 | Mô tả bổ sung | 「補足」 | Textarea, tối đa 200 ký tự — **Cao** |
 | Placeholder | 「プレースホルダ」 | Text input, tối đa 50 ký tự — **Cao** |
-| Giới hạn nhập | 「入力制限」 | Radio: 「制限しない」/ 「制限する」— **Cao** |
+| Giới hạn nhập | 「入力制限」 | Radio: 「制限しない」/ 「制限する」 (item text; 制限する thì bắt buộc chọn loại — lưu `apply_rules` + `settings`). Item checkbox 複数選択 có riêng 「選択数の制限」 lưu `setting_number_limit` _(Leader chốt 2026-11-13)_ — **Cao** |
 
 ##### Cài đặt ghi vào thông tin bạn bè
 
 | Thành phần | Chi tiết |
 |-----------|---------|
 | Toggle「友だち情報に回答を記録」| Radio: 「記録しない」/ 「記録する」— **Cao** |
+| Checkbox điền sẵn「すでに情報が登録されている場合、初めから入力された状態にする」(editor cũ: 「友だち情報が登録されている場合、初めからフォームに情報が入力された状態にする」) | Lưu `is_display_info_friend`=1 → trang khách điền sẵn giá trị 友だち情報 đã đăng ký. **Không hiển thị cho mục 友だち情報 loại 画像 / PDF** ở cả editor V3 lẫn editor cũ (chống lộ file / URL file đã đăng ký cho người có link form). Mục loại khác (vd văn bản 名前) giữ tuỳ chọn như cũ. _(Leader chốt 2026-11-20 — #44620, TC NEW-592)_ — **Cao** |
 | Accordion「CSSクラス指定」 | Tùy chỉnh CSS class cho 質問文 và 質問文補足 — **Trung bình** |
 
 #### Action buttons (bottom của panel)
@@ -303,7 +304,7 @@ Panel sidebar trái (accordion navigation) + panel nội dung bên phải + pane
 
 | Thành phần | Chi tiết |
 |-----------|---------|
-| 「共通ヘッダー画像」 | Khu vực drag-drop upload ảnh: 「ここにファイルをドラッグ」+「PCから選択」. Khuyến nghị: 1,000 × 400 px. Định dạng: png, jpg — **Cao** |
+| 「共通ヘッダー画像」 | Khu vực drag-drop upload ảnh: 「ここにファイルをドラッグ」+「PCから選択」. Khuyến nghị: 1,000 × 400 px (**chỉ khuyến nghị, KHÔNG chặn**). Validate: png / jpg / jpeg · tối đa 10MB · cao/rộng tối đa 10000px · chặn ảnh hỏng _(Leader chốt 2026-11-13)_ — **Cao** |
 | 「フォーム背景」 | Color picker: 「カラー」với input text hex (mặc định `#FFFFFF`) — **Cao** |
 
 #### Panel preview (bên phải)
@@ -445,7 +446,7 @@ Panel sidebar trái (accordion navigation) + panel nội dung bên phải
 
 **Các mục chưa chụp snapshot** (chỉ biết tên qua sidebar):
 - 「回答制限」: Giới hạn số lần trả lời — **Trung bình**
-- 「表示期限・カウントダウンタイマー」: Cài hạn hiển thị và đếm ngược — **Trung bình**
+- 「表示期限・カウントダウンタイマー」: Cài hạn hiển thị và đếm ngược — **Trung bình**. Đã xác nhận 2026-11-13: 表示期限 kiểu 経過時間 (日 / 時間 / 分, không rỗng, không < 0) lưu `days_timer_count_down` + `time_duration`; 「タイマーテキスト」 có hiển thị trên GUI (bắt buộc khi 設定する, tối đa 50 ký tự, lưu `title_timer`)
 - 「LINEトーク画面・フォーム名表示」: Hiển thị tên form trong màn hình chat LINE — **Trung bình**
 
 ---

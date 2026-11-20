@@ -450,8 +450,8 @@ erDiagram
 
 | # | UI Element | Màn hình | DB Table.Column | Hướng | Validation | Business Rule |
 |---|-----------|----------|----------------|-------|-----------|--------------|
-| 1 | 管理名 | SCR-FA11-01, 02, 03 | `form_answer.name` | Đọc/Ghi | Tối đa 50 ký tự (UI) / 255 (DB) | UI enforce 50 ký tự; EP-07 map `system_name` → `name` |
-| 2 | フォーム名 | SCR-FA11-02 | `form_answer.title` | Ghi | Tối đa 20 ký tự (UI) / 255 (DB) | Hiển thị với khách hàng |
+| 1 | 管理名 | SCR-FA11-01, 02, 03 | `form_answer.name` + `form_answer.system_name` | Đọc/Ghi | Tối đa 50 ký tự (UI) / 255 (DB) | Lưu vào **cả 2 cột** `name` và `system_name`; GUI lấy `system_name` để hiển thị _(Leader chốt 2026-11-13)_ |
+| 2 | フォーム名 (お客様に表示されるフォーム名) | SCR-FA11-02, 07 | `form_answer.line_name` | Đọc/Ghi | Bắt buộc, tối đa 20 ký tự (UI) / 255 (DB) | Tên hiển thị phía bạn bè lưu ở `line_name` _(Leader chốt 2026-11-13)_. Khi tạo mới EP-04 ghi cùng giá trị vào cả `title` (sheet Msg validate r179) |
 | 3 | フォルダ | SCR-FA11-01, 02 | `form_answer.group_id` → `form_answer_folder.id` | Đọc/Ghi | — | `group_id=0` = 未分類 |
 | 4 | タイプ (シンプル/分岐) | SCR-FA11-01, 02 | `form_answer.form_type` | Ghi (tạo), Đọc | — | `1`=シンプル, `2`=分岐; không đổi được sau khi tạo |
 | 5 | 公開状態 toggle | SCR-FA11-01 | `form_answer.is_public` | Đọc/Ghi | — | `0`=OFF, `1`=ON; EP-21 |
@@ -464,15 +464,16 @@ erDiagram
 | 12 | 必須/任意 | SCR-FA11-03 | `form_answer_details.rules` (JSON) | Đọc/Ghi | — | `{"required": true/false}` |
 | 13 | 補足 | SCR-FA11-03 | `form_answer_details.help` | Đọc/Ghi | Tối đa 200 ký tự | — |
 | 14 | プレースホルダ | SCR-FA11-03 | `form_answer_details.placeholder` | Đọc/Ghi | Tối đa 50 ký tự | — |
-| 15 | 入力制限 | SCR-FA11-03 | `form_answer_details.setting_number_limit` | Đọc/Ghi | — | JSON |
+| 15 | 入力制限 (item text — 短文回答 …) | SCR-FA11-03 | `form_answer_details.apply_rules` + `form_answer_details.settings` | Đọc/Ghi | 制限する thì bắt buộc chọn loại | Bật/tắt ở `apply_rules`, loại giới hạn ở `settings` (JSON `selectable.type`) _(Leader chốt 2026-11-13)_ |
+| 15b | 選択数の制限 (item checkbox — 複数選択) | SCR-FA11-03 | `form_answer_details.setting_number_limit` | Đọc/Ghi | from/to bắt buộc, số nguyên dương, from ≤ to | Giới hạn số đáp án được chọn _(Leader chốt 2026-11-13)_ |
 | 16 | 友だち情報に回答を記録 | SCR-FA11-03 | `form_answer_details.friend_info_id` + `in_tag` | Đọc/Ghi | — | `friend_info_id` âm = system field; dương = custom field |
 | 17 | Thứ tự item (drag-drop) | SCR-FA11-03 | `form_answer_details.position` | Ghi | — | — |
 | 18 | Loại item | SCR-FA11-03-Modal | `form_answer_details.type` | Ghi | — | Xem enum type bên dưới |
-| 19 | Ảnh header (trang) | SCR-FA11-03 | `form_answer_page.page_image` | Đọc/Ghi | png, jpg | — |
-| 20 | Text nút submit | SCR-FA11-03 | `form_answer.button_submit_name` | Đọc/Ghi | — | Mặc định「回答する」|
+| 19 | Ảnh header (trang) / item 画像 | SCR-FA11-03 | `form_answer_page.page_image`, `form_answer_details.file_upload` | Đọc/Ghi | png / jpg / jpeg · tối đa 10MB · cao/rộng tối đa 10000px · chặn ảnh hỏng | _(Leader chốt 2026-11-13)_ |
+| 20 | ボタンテキスト (nút cuối trang) | SCR-FA11-03 | `form_answer_page.button_name` | Đọc/Ghi | Bắt buộc, tối đa 30 ký tự | Mặc định「回答する」; lưu theo từng page, không phải `form_answer.button_submit_name` _(Leader chốt 2026-11-13)_ |
 | 21 | Điều hướng trang tiếp | SCR-FA11-03 | `form_answer_page.next_page_type` | Đọc/Ghi | — | `2`=phân nhánh, `3`=kết thúc |
 | 22 | Mapping phân nhánh | SCR-FA11-03 | `form_answer_page.next_page_setting` | Đọc/Ghi | — | JSON `[{value, pageId}]` |
-| 23 | 共通ヘッダー画像 | SCR-FA11-04 | `form_answer_setting_common.image_header` | Đọc/Ghi | png/jpg, 1000×400px | — |
+| 23 | 共通ヘッダー画像 | SCR-FA11-04 | `form_answer_setting_common.image_header` | Đọc/Ghi | png / jpg / jpeg · tối đa 10MB · cao/rộng tối đa 10000px · chặn ảnh hỏng | 1000×400px chỉ là kích thước **khuyến nghị**, KHÔNG chặn _(Leader chốt 2026-11-13)_ |
 | 24 | フォーム背景カラー | SCR-FA11-04 | `form_answer_setting_common.bg_form` | Đọc/Ghi | Hex color | Mặc định `#FFFFFF` |
 | 25 | Thiết kế見出し | SCR-FA11-04 | `form_answer_setting_common.label_*` | Đọc/Ghi | — | Nhiều cột (pattern, color, bg, font) |
 | 26 | Thiết kế区切り線 | SCR-FA11-04 | `form_answer_setting_common.line_*` | Đọc/Ghi | — | — |
@@ -492,6 +493,8 @@ erDiagram
 | 40 | Giới hạn trả lời | SCR-FA11-07 | `form_answer.reply_kind` | Đọc/Ghi | — | `0`=vô hạn, `1`=1 lần, `2`=giới hạn số lần |
 | 41 | Số lần giới hạn per user | SCR-FA11-07 | `form_answer.limit_reply_friend` | Đọc/Ghi | — | Dùng khi `reply_kind=2` |
 | 42 | Bộ đếm ngược | SCR-FA11-07 | `form_answer.option_show_timer`, `date_timer_count_down`, `time_timer_count_down` | Đọc/Ghi | — | Khi tắt → clear date/time |
+| 42b | 表示期限 — 経過時間 (日 / 時間 / 分) | SCR-FA11-07 | `form_answer.days_timer_count_down`, `form_answer.time_duration` | Đọc/Ghi | Không được rỗng, không < 0 (FE chặn lưu, không hiện message) | Cập nhật theo sheet Msg validate r262 _(Leader chốt 2026-11-13)_ |
+| 42c | タイマーテキスト (カウントダウンタイマー = 設定する) | SCR-FA11-07 | `form_answer.title_timer` | Đọc/Ghi | Bắt buộc, tối đa 50 ký tự | Có hiển thị trên GUI _(Leader chốt 2026-11-13)_ |
 | 43 | URL slug (form công khai) | SCR-FA11-08 | `form_answer.unique_key` | Đọc | — | `/form-render-v3/{unique_key}` |
 | 44 | 回答日時 | SCR-FA11-09 | `form_answer_result.created_at` | Đọc | — | Format hiển thị `YYYY.MM.DD(曜) HH:mm` |
 | 45 | 回答時間 | SCR-FA11-09 | `form_answer_result.duration_time_reply` | Đọc | — | Format MM:SS |
@@ -579,6 +582,10 @@ erDiagram
 **Nguồn:** `FormAnswerController.php:1242` (saveV3)
 **Mô tả:** Khi lưu form lần đầu (EP-05), nếu bot đã kết nối Google và form chưa có `google_sheet_id` → tự động tạo Google Spreadsheet mới và gán `google_sheet_id`.
 
+### BR-15: Mục 友だち情報 loại 画像 / PDF không có tuỳ chọn điền sẵn
+**Nguồn:** #44620 (commit f06e6af79d, `resources/views/basic/form_answer/components/v3/friend_info_file.blade.php`) · _(Leader chốt 2026-11-20 — #44620, TC NEW-592)_
+**Mô tả:** Tuỳ chọn điền sẵn (`is_display_info_friend`) — checkbox「すでに情報が登録されている場合、初めから入力された状態にする」(V3) /「友だち情報が登録されている場合、初めからフォームに情報が入力された状態にする」(editor cũ) — **không hiển thị** cho mục 友だち情報 loại 画像 / PDF ở cả editor V3 và editor cũ. Lý do: ai có link form đều thấy file / URL file đã đăng ký của bạn bè. Mục 友だち情報 loại khác giữ tuỳ chọn điền sẵn như cũ. Form tạo trước #44620 đã bật điền sẵn cho mục file → xem Gaps #13.
+
 ---
 
 ## 6. API Endpoints
@@ -641,8 +648,8 @@ Request body:
 
 | Tham số | Kiểu | Mô tả |
 |---------|------|-------|
-| `form_name` | string | Tên form hiển thị với khách (「フォーム名」) |
-| `system_name` | string | Tên quản lý (「管理名」) |
+| `form_name` | string | Tên form hiển thị với khách (「フォーム名」) → lưu `form_answer.line_name` (+ `title`) |
+| `system_name` | string | Tên quản lý (「管理名」) → lưu cả `form_answer.name` và `form_answer.system_name` |
 | `folder_id` | int | ID thư mục (0 = 未分類) |
 | `form_type` | int | `1`=シンプル, `2`=分岐 |
 | `attr` | JSON array | Danh sách câu hỏi ban đầu từ lựa chọn nhanh |
@@ -738,7 +745,7 @@ Response: `{"status": true, "msg": "success"}` hoặc `{"status": "false_friend"
 | 2 | **Tên bảng `form_answer_connect_google(s)`** — Logic spec ghi `form_answer_connect_google` (không có 's'), DB mapping ghi `form_answer_connect_googles` (có 's') | Trung bình | Kiểm tra `db/schema/tables/` để xác nhận tên chính xác |
 | 3 | **Cột `count_reply` trong `form_answer_user_accept`** — Schema dump không thấy cột này nhưng BR-03 (`reply_kind=2`) cần nó để theo dõi số lần trả lời | Trung bình | Đọc lại `db/schema/tables/form_answer_user_accept.sql` |
 | 4 | **Tab「友だち一覧」(SCR-FA11-09) chưa được spec** — Snapshot không phân biệt được nội dung tab này với tab「回答一覧」 | Trung bình | Thu thập snapshot riêng cho tab「友だち一覧」|
-| 5 | **「表示期限」(SCR-FA11-07) chưa map DB** — Không tìm thấy cột `display_from`/`display_until` trong `form_answer` schema | Trung bình | Có thể lưu trong `setting_page_confirm` JSON hoặc chưa implement trong DB |
+| 5 | ~~**「表示期限」(SCR-FA11-07) chưa map DB**~~ — **Đã giải quyết 2026-11-13**: kiểu 経過時間 lưu ở `form_answer.days_timer_count_down` + `form_answer.time_duration` (theo sheet Msg validate r262, Leader chốt) — xem Field #42b | — | — |
 | 6 | **「分岐タイプ」editor** — Chỉ quan sát form シンプル trong editor; cấu trúc UI của form phân nhánh (node graph, page navigation) chưa được ghi nhận | Thấp | Tạo form 分岐 và chụp snapshot editor để supplement |
 | 7 | **「フォーム表示時アクション」và「リマインドメッセージ」** (SCR-FA11-05) — Chỉ biết tên qua sidebar, chưa chụp snapshot chi tiết | Thấp | Thu thập snapshot các mục phụ này |
 | 8 | **「回答制限」, 「LINEトーク画面・フォーム名表示」** (SCR-FA11-07) — Chỉ biết tên qua sidebar | Thấp | Thu thập snapshot |
@@ -746,6 +753,7 @@ Response: `{"status": true, "msg": "success"}` hoặc `{"status": "false_friend"
 | 10 | **Cơ chế「クイックテスト」** — Chỉ thấy trạng thái「クイックテスト未登録」; flow đăng ký và gửi quick test chưa rõ đầu cuối | Thấp | Xem chi tiết EP-41 và flow đăng ký tester account |
 | 11 | **Google Sheets sync mechanism** — Job `AddResultFormAnswerToGoogleSpreadSheet` bị comment out; cơ chế sync thực tế qua `form_answer_connect_googles` chưa được document đầy đủ | Thấp | Tìm code sync hiện tại thay thế job bị comment |
 | 12 | **Luồng LINE User authentication** — Form công khai không cần đăng nhập nhưng cần có LINE session để link với bạn bè; cơ chế fallback khi không có `line_id` trong URL chưa rõ | Thấp | Kiểm tra `renderFormV3` logic cho trường hợp `line_id` rỗng |
+| 13 | **Form cũ đã bật điền sẵn cho mục 友だち情報 loại 画像 / PDF** (lưu trước #44620, `is_display_info_friend`=1) — trang khách còn điền sẵn file / URL đã đăng ký không. TC NEW-585 (sprint #45229) kỳ vọng mục file trống, mục văn bản vẫn điền sẵn — **chưa chốt** | Trung bình | Leader chốt cùng BR-15 |
 
 ---
 

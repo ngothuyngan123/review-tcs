@@ -1,0 +1,2257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>LME Public API v1 Reference</title>
+<style>
+  :root{
+    --bg:#ffffff; --surface:#f8fafc; --ink:#1f2937; --muted:#64748b; --line:#dbe3ef;
+    --blue:#2563eb; --green:#16a34a; --amber:#b45309; --red:#b91c1c; --violet:#7c3aed;
+    --code-bg:#0f172a; --code-ink:#e5e7eb; --shadow:0 1px 2px rgba(15,23,42,.05);
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",Arial,sans-serif;line-height:1.75;font-size:15.5px;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,p,li,td,th,pre,code{overflow-wrap:anywhere}
+  a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.88em;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:5px;padding:0 5px;color:#0f172a}
+  pre code{background:none;border:0;padding:0;color:inherit;font-size:inherit}
+
+  /* hero */
+  header.hero{background:linear-gradient(135deg,#10243f 0%,#1d3c64 55%,#245b86 100%);color:#fff;padding:38px 0 32px}
+  .hero-inner{max-width:1360px;margin:0 auto;padding:0 24px}
+  .kicker{display:inline-block;font-size:12px;letter-spacing:.12em;font-weight:800;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);padding:4px 12px;border-radius:999px;margin:0 0 14px}
+  .hero h1{font-size:30px;line-height:1.35;margin:0 0 8px;font-weight:800}
+  .hero .sub{font-size:14.5px;color:rgba(255,255,255,.86);margin:0 0 18px;max-width:900px}
+  .hmeta{display:flex;gap:8px;flex-wrap:wrap}
+  .hmeta span{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:4px 11px;border-radius:999px;font-size:12.5px}
+  .hmeta b{font-weight:800}
+  .hmeta .new{background:rgba(34,197,94,.24);border-color:rgba(134,239,172,.55)}
+
+  /* layout */
+  .layout{max-width:1360px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:270px minmax(0,1fr);gap:36px}
+  nav.side{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:22px 0 40px;font-size:13.5px}
+  nav.side .grp{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin:16px 0 4px}
+  nav.side a{display:block;color:#334155;padding:3px 10px;border-left:2px solid transparent;border-radius:0 6px 6px 0}
+  nav.side a.sub{padding-left:22px;font-size:13px;color:#475569}
+  nav.side a:hover{background:#eff6ff;text-decoration:none}
+  nav.side a.active{border-left-color:var(--blue);color:var(--blue);font-weight:700;background:#eff6ff}
+  nav.side .m{font-family:var(--mono);font-size:10.5px;font-weight:800;margin-right:5px}
+  nav.side .m.g{color:var(--blue)} nav.side .m.p{color:var(--green)}
+  main{padding:26px 0 80px;min-width:0}
+
+  section{scroll-margin-top:14px;margin-top:46px}
+  section:first-child{margin-top:0}
+  h2{font-size:23px;line-height:1.4;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  h3{font-size:18px;line-height:1.5;margin:28px 0 8px;scroll-margin-top:14px}
+  h4{font-size:14.5px;margin:22px 0 8px;color:#172033;text-transform:none}
+  p{margin:0 0 12px}
+  .lead{color:#475569;font-size:15px;max-width:980px}
+  ul,ol{margin:0 0 12px;padding-left:22px} li{margin-bottom:4px}
+
+  /* callouts */
+  .note,.warn,.tip,.prop{border-radius:0 10px 10px 0;padding:12px 16px;margin:12px 0;font-size:14.3px}
+  .note{background:#eff6ff;border-left:4px solid var(--blue)}
+  .warn{background:#fff7ed;border-left:4px solid #f59e0b}
+  .tip{background:#f0fdf4;border-left:4px solid var(--green)}
+  .prop{background:#faf5ff;border-left:4px solid var(--violet)}
+  .note p:last-child,.warn p:last-child,.tip p:last-child,.prop p:last-child{margin:0}
+  .note b.t,.warn b.t,.tip b.t,.prop b.t{display:block;font-size:12px;letter-spacing:.04em;margin-bottom:2px}
+
+  /* tables */
+  .tbl{overflow-x:auto;border:1px solid #cbd5e1;border-radius:8px;margin:8px 0 14px;background:#fff}
+  table{border-collapse:collapse;width:100%;font-size:13.8px}
+  th,td{padding:8px 11px;text-align:left;border-bottom:1px solid #e2e8f0;vertical-align:top}
+  th{background:#f1f5f9;font-size:12px;font-weight:800;color:#0f172a;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  td.nw,th.nw{white-space:nowrap}
+  td.k code{font-weight:700}
+  .req{display:inline-block;font-size:11px;font-weight:800;border-radius:4px;padding:0 6px;white-space:nowrap}
+  .req.y{background:#fee2e2;color:#991b1b} .req.n{background:#e2e8f0;color:#334155} .req.c{background:#fef3c7;color:#92400e}
+  .st{display:inline-block;font-family:var(--mono);font-weight:800;font-size:12px;border-radius:4px;padding:0 6px}
+  .st.s2{background:#dcfce7;color:#166534} .st.s4{background:#fef3c7;color:#92400e} .st.s5{background:#fee2e2;color:#991b1b}
+  .pill{display:inline-block;border-radius:999px;padding:1px 9px;font-size:11.5px;font-weight:800;white-space:nowrap}
+  .pill.new{background:#dcfce7;color:#166534;border:1px solid #86efac}
+  .pill.fix{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+  .pill.pr{background:#ede9fe;color:#5b21b6;border:1px solid #ddd6fe}
+
+  /* endpoint cards */
+  .ep{border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:var(--shadow);margin:26px 0;scroll-margin-top:14px}
+  .ep-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border-bottom:1px solid var(--line);padding:13px 18px;border-radius:12px 12px 0 0}
+  .ep-head h3{margin:0;font-size:16.5px}
+  .ep-body{padding:6px 18px 18px}
+  .mtd{display:inline-flex;justify-content:center;border-radius:6px;padding:1px 9px;font-size:12px;font-weight:900;color:#fff;min-width:54px;font-family:var(--mono)}
+  .mtd.get{background:var(--blue)} .mtd.post{background:var(--green)}
+  .ep-path{font-family:var(--mono);font-weight:800;font-size:14px;color:#0f172a}
+  .meta{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 4px}
+  .meta span{font-size:12px;background:#f8fafc;border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:#334155}
+  .meta b{color:#0f172a}
+
+  /* code */
+  pre.code,pre.http{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:12.6px;line-height:1.6;margin:8px 0 14px;font-family:var(--mono)}
+  pre.http{background:#1e293b}
+  .codetabs{border:1px solid #1e293b;border-radius:10px;overflow:hidden;margin:8px 0 14px;background:var(--code-bg)}
+  .codetabs .bar{display:flex;gap:2px;background:#1e293b;padding:6px 6px 0;flex-wrap:wrap;align-items:flex-end}
+  .codetabs button{font:700 12px var(--mono);background:transparent;color:#94a3b8;border:0;padding:6px 12px;border-radius:7px 7px 0 0;cursor:pointer}
+  .codetabs button[aria-selected="true"]{background:var(--code-bg);color:#fff}
+  .codetabs button.copy{margin-left:auto;border-radius:6px;margin-bottom:5px;padding:3px 10px;border:1px solid #334155}
+  .codetabs pre{margin:0;padding:14px 16px;color:var(--code-ink);font:12.6px/1.6 var(--mono);overflow-x:auto}
+  .codetabs noscript,.codetabs .fallback{display:block;color:#cbd5e1;padding:12px 16px;font-size:13px}
+
+  pre.mini{background:var(--code-bg);color:var(--code-ink);border-radius:7px;padding:8px 10px;margin:0;font:11.8px/1.55 var(--mono);overflow-x:auto;white-space:pre;max-width:560px}
+  .exlabel{display:inline-block;font-size:12px;font-weight:800;color:#334155;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:1px 8px;margin:10px 0 2px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff}
+  .card h4{margin-top:0}
+  .steps{counter-reset:s;list-style:none;padding:0}
+  .steps>li{counter-increment:s;position:relative;padding:0 0 6px 40px;margin-bottom:14px}
+  .steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:8px;background:#162033;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+  footer{margin-top:50px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+
+  @media(max-width:980px){
+    .layout{grid-template-columns:1fr;gap:0}
+    nav.side{position:static;max-height:none;border-bottom:1px solid var(--line);padding:12px 0}
+    nav.side details:not([open]) .links{display:none}
+    .grid2{grid-template-columns:1fr}
+  }
+  @media(min-width:981px){ nav.side summary{display:none} }
+  @media(max-width:560px){
+    .hero-inner,.layout{padding-left:16px;padding-right:16px}
+    .hero h1{font-size:23px}
+    .ep-body{padding:4px 12px 14px}
+  }
+  @media print{
+    nav.side{display:none} .layout{display:block} .codetabs .bar{display:none}
+    .ep{break-inside:auto} header.hero{background:#10243f !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <p class="kicker">API REFERENCE · PUBLIC API v1</p>
+    <h1>Đặc tả chi tiết LME Public API v1 (Phase 1)</h1>
+    <p class="sub">Tài liệu tham chiếu đầy đủ cho nhà phát triển tích hợp hệ thống bên ngoài (CRM, AI bot, EC) với LME: xác thực, quy ước chung, 12 endpoint, message object, action object, toàn bộ mã lỗi và ví dụ chạy được bằng curl / Python / Node.js / Ruby.</p>
+    <div class="hmeta">
+      <span>Bản: <b>1.3.0 (16/11/2026)</b></span>
+      <span>Người tạo: <b>WSSJ</b></span>
+      <span>Người nhận: <b>Công ty Missiona</b></span>
+      <span>Base URL: <b>https://api.lmes.jp/v1</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="side" aria-label="Mục lục">
+ <details open><summary>Mục lục</summary><div class="links">
+  <div class="grp">Bắt đầu</div>
+  <a href="#overview">1. Tổng quan</a>
+  <div class="grp">Đặc tả chung</div>
+  <a href="#common">2. Quy ước chung</a>
+  <a class="sub" href="#base-url">Base URL &amp; version</a>
+  <a class="sub" href="#auth">Xác thực</a>
+  <a class="sub" href="#request-format">Định dạng request</a>
+  <a class="sub" href="#response-format">Định dạng response</a>
+  <a class="sub" href="#headers">Response header</a>
+  <a class="sub" href="#errors">Status code &amp; mã lỗi</a>
+  <a class="sub" href="#rate-limit">Rate limit</a>
+  <a class="sub" href="#pagination">Phân trang</a>
+  <a class="sub" href="#idempotency">Idempotency &amp; retry</a>
+  <a href="#index">3. Danh sách API</a>
+  <div class="grp">Friend</div>
+  <a class="sub" href="#ep-friends"><span class="m g">GET</span>/friends</a>
+  <a class="sub" href="#ep-friend-detail"><span class="m g">GET</span>/friends/detail</a>
+  <a class="sub" href="#ep-tags"><span class="m g">GET</span>/tags</a>
+  <a class="sub" href="#ep-fields"><span class="m g">GET</span>/friend-info-fields</a>
+  <a class="sub" href="#ep-scenarios"><span class="m g">GET</span>/scenarios</a>
+  <div class="grp">Message</div>
+  <a class="sub" href="#ep-push"><span class="m p">POST</span>/messages/push</a>
+  <a class="sub" href="#ep-send-template"><span class="m p">POST</span>/messages/template</a>
+  <a class="sub" href="#ep-templates"><span class="m g">GET</span>/templates</a>
+  <div class="grp">Conversation</div>
+  <a class="sub" href="#ep-conversations"><span class="m g">GET</span>/conversations</a>
+  <a class="sub" href="#ep-conv-detail"><span class="m g">GET</span>/conversations/detail</a>
+  <a class="sub" href="#ep-handling"><span class="m g">GET</span>/handling-statuses</a>
+  <div class="grp">Action</div>
+  <a class="sub" href="#ep-do-action"><span class="m p">POST</span>/do_action</a>
+  <div class="grp">Object</div>
+  <a href="#message-objects">5. Message object</a>
+  <a class="sub" href="#msg-text">Text</a>
+  <a class="sub" href="#msg-image">Image</a>
+  <a class="sub" href="#msg-video">Video</a>
+  <a class="sub" href="#msg-audio">Audio</a>
+  <a href="#action-objects">6. Action object</a>
+  <a class="sub" href="#act-tag">tag</a>
+  <a class="sub" href="#act-friend-info">friend_info</a>
+  <a class="sub" href="#act-scenario">scenario</a>
+  <a class="sub" href="#act-handling">handling_status</a>
+  <a class="sub" href="#act-block">block / favorite / confirm_status</a>
+  <div class="grp">Tham chiếu</div>
+  <a href="#enums">7. Bảng giá trị</a>
+  <a href="#changelog">8. Lịch sử cập nhật</a>
+  <a href="#support">9. Hỗ trợ</a>
+ </div></details>
+</nav>
+
+<main>
+<!-- ============================================================ 1 -->
+<section id="overview">
+  <h2>1. Tổng quan</h2>
+  <p class="lead">LME Public API v1 cho phép hệ thống bên ngoài đọc dữ liệu friend / tag / scenario / template / conversation của một bot LINE trên LME, gửi message cho friend, và thao tác hàng loạt trên friend (gắn tag, cập nhật friend info, chạy/dừng scenario, đổi trạng thái chat).</p>
+  <div class="grid2">
+    <div class="card"><h4>API làm được gì</h4>
+      <ul>
+        <li>Đồng bộ danh sách friend và chi tiết friend (tag, friend info, scenario).</li>
+        <li>Gửi message text / image / video / audio hoặc gửi template có sẵn.</li>
+        <li>Đọc danh sách conversation (lọc chưa đọc, trạng thái xử lý, tag) và 100 message gần nhất.</li>
+        <li>Chạy tối đa 10 action trên tối đa 100 friend trong 1 request (<code>/do_action</code>).</li>
+      </ul></div>
+    <div class="card"><h4>Phạm vi một API key</h4>
+      <ul>
+        <li>Mỗi API key gắn với <b>đúng 1 bot</b>. Mọi request chỉ đọc/ghi dữ liệu của bot đó.</li>
+        <li>Key quyền <code>read</code> chỉ gọi được GET; key quyền <code>full</code> gọi được mọi endpoint.</li>
+        <li>ID thuộc bot khác, đã xoá hoặc không tồn tại đều trả <span class="st s4">404</span> <code>not_found</code> (không phân biệt "không tồn tại" và "không có quyền"). Nên cache danh sách tag / field / scenario / template ở phía bạn và làm mới khi gặp 404.</li>
+      </ul></div>
+  </div>
+</section>
+
+<!-- ============================================================ 2 -->
+<section id="common">
+  <h2>2. Quy ước chung</h2>
+
+  <h3 id="base-url">2.1 Base URL &amp; version</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Môi trường</th><th>Base URL</th><th>Ghi chú</th></tr></thead>
+    <tbody>
+      <tr><td>Production</td><td><code>https://api.lmes.jp/v1</code></td><td>Dữ liệu thật — message gửi đi là gửi thật tới LINE.</td></tr>
+      <tr><td>Staging</td><td><code>https://api-stg.lmes.jp/v1</code></td><td>Dùng key phát hành trên môi trường staging. Key production không dùng được ở staging và ngược lại.</td></tr>
+    </tbody></table></div>
+  <ul>
+    <li>Chỉ có version <code>v1</code>. Gọi version khác (ví dụ <code>/v2/friends</code>) → <span class="st s4">404</span> <code>not_found</code> "Unsupported API version: /v2/friends (only /v1 is available)"; nếu thiếu API key thì trả <span class="st s4">401</span> trước.</li>
+    <li>Path không tồn tại dưới <code>/v1</code>, hoặc sai HTTP method (ví dụ <code>POST /v1/friends</code>) → <span class="st s4">404</span> <code>not_found</code> "Endpoint not found: POST /v1/friends".</li>
+    <li>Path phân biệt chữ hoa/thường, không có dấu <code>/</code> ở cuối. Lưu ý <code>/do_action</code> dùng dấu gạch dưới, các path khác dùng gạch ngang.</li>
+  </ul>
+  <div class="note"><b class="t">CHÍNH SÁCH TƯƠNG THÍCH</b><p>Thêm field mới vào response hoặc thêm parameter tuỳ chọn là thay đổi <i>tương thích</i> và có thể phát hành trong <code>v1</code> — client phải bỏ qua field lạ. Thay đổi <i>không tương thích</i> (đổi tên/xoá field, đổi kiểu, đổi ý nghĩa) sẽ phát hành ở version mới hoặc báo trước kèm hướng dẫn chuyển đổi ở <a href="#changelog">Lịch sử cập nhật</a>.</p></div>
+
+  <h3 id="auth">2.2 Xác thực</h3>
+  <p><b>Phát hành key:</b> trên màn hình quản lý API key của bot trong LME, chọn quyền (<code>full</code> hoặc <code>read</code>) và hạn dùng (để trống = vĩnh viễn). Key có dạng <code>lme_live_sk_</code> + 32 ký tự hex.</p>
+  <div class="warn"><b class="t">LƯU Ý</b><p>LME chỉ lưu giá trị băm của key, không lưu key gốc. Hãy lưu key vào kho bí mật (secret manager / biến môi trường) ngay khi phát hành. Mất key thì phát hành key mới rồi xoá key cũ.</p></div>
+  <p>Gửi API key trong header <code>X-LME-API-KEY</code> ở <b>mọi</b> request. Không hỗ trợ truyền key qua query string hay body.</p>
+<pre class="http">GET /v1/tags HTTP/1.1
+Host: api.lmes.jp
+X-LME-API-KEY: lme_live_sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</pre>
+  <h4>Quyền (scope) của key</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Scope</th><th>Được gọi</th><th>Gọi endpoint ghi (POST)</th></tr></thead>
+    <tbody>
+      <tr><td><code>full</code></td><td>Mọi endpoint (GET + POST)</td><td>Cho phép</td></tr>
+      <tr><td><code>read</code></td><td>Chỉ GET</td><td><span class="st s4">403</span> <code>forbidden</code> "API key is read-only"</td></tr>
+    </tbody></table></div>
+  <h4>Vòng đời key</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Trạng thái key</th><th>Kết quả khi gọi API</th><th>Cách xử lý</th></tr></thead>
+    <tbody>
+      <tr><td>Đang hoạt động, còn hạn</td><td><span class="st s2">2xx</span></td><td>—</td></tr>
+      <tr><td>Hết hạn (<code>expires_at</code> đã qua)</td><td><span class="st s4">401</span> "API key expired"</td><td>Phát hành key mới.</td></tr>
+      <tr><td>Bị vô hiệu hoá / thu hồi</td><td><span class="st s4">403</span> "API key is no longer active"</td><td>Kích hoạt lại trên LME hoặc phát hành key mới.</td></tr>
+      <tr><td>Đã xoá</td><td><span class="st s4">401</span> "API key has been deleted"</td><td>Phát hành key mới.</td></tr>
+      <tr><td>Bot của key đã bị xoá</td><td><span class="st s4">403</span> "Bot not found or not accessible"</td><td>Liên hệ quản trị viên bot.</td></tr>
+    </tbody></table></div>
+  <p><b>Xoay vòng key (rotation) không gián đoạn:</b> phát hành key mới → triển khai key mới cho hệ thống của bạn → xác nhận request với key mới thành công → xoá key cũ.</p>
+  <h4>Thứ tự kiểm tra</h4>
+  <p>Server kiểm tra theo thứ tự dưới đây và dừng ở lỗi đầu tiên — giúp suy ra nguyên nhân khi gặp nhiều vấn đề cùng lúc (ví dụ key <code>read</code> gửi POST sai Content-Type sẽ nhận 403, không phải 400):</p>
+  <ol>
+    <li>Thiếu header <code>X-LME-API-KEY</code> → 401</li>
+    <li>Key không tồn tại → 401 "Invalid API key"</li>
+    <li>Key đã xoá → 401</li>
+    <li>Key hết hạn → 401</li>
+    <li>Key bị vô hiệu hoá → 403</li>
+    <li>Key <code>read</code> gọi method ghi → 403</li>
+    <li>Method ghi thiếu <code>Content-Type: application/json</code> → 400</li>
+    <li>Bot đã xoá → 403</li>
+    <li>Vượt rate limit → 429</li>
+    <li>Kiểm tra <code>Idempotency-Key</code> (chỉ POST có header) → 400 / 409</li>
+    <li>Validate parameter / body của endpoint → 400 / 404 / 422</li>
+  </ol>
+
+  <h3 id="request-format">2.3 Định dạng request</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Hạng mục</th><th>Quy ước</th></tr></thead>
+    <tbody>
+      <tr><td>Giao thức</td><td>Chỉ HTTPS.</td></tr>
+      <tr><td>GET</td><td>Parameter đặt ở query string, encode UTF-8 percent-encoding. Không gửi body.</td></tr>
+      <tr><td>POST</td><td>Body JSON UTF-8, header <code>Content-Type: application/json</code> bắt buộc (cho phép kèm <code>; charset=utf-8</code>). Thiếu/sai → <span class="st s4">400</span> "Content-Type must be application/json".</td></tr>
+      <tr><td>JSON lỗi cú pháp / sai kiểu field</td><td><span class="st s4">400</span> <code>invalid_request</code> "Request body is invalid (malformed JSON or wrong field type)." — ví dụ <code>"tag_ids": "101"</code> thay vì mảng số.</td></tr>
+      <tr><td>Field lạ trong body</td><td>Bị bỏ qua, không báo lỗi. Kiểm tra kỹ chính tả tên field — gõ sai tên field bắt buộc sẽ nhận lỗi "… is required".</td></tr>
+      <tr><td>Giá trị enum</td><td><code>type</code>, <code>action</code>, <code>tag_mode</code>, <code>display_status</code> không phân biệt hoa/thường và được trim khoảng trắng.</td></tr>
+      <tr><td>Nhiều giá trị trong 1 query parameter</td><td>Phân tách bằng dấu phẩy (<code>tag_ids=101,102</code>) <b>hoặc</b> lặp parameter (<code>tag_ids=101&amp;tag_ids=102</code>). Giá trị rỗng và trùng lặp bị bỏ. Tên có chứa dấu phẩy không lọc được bằng filter theo tên — dùng filter theo ID.</td></tr>
+      <tr><td>Ngày</td><td><code>YYYY-MM-DD</code> (ISO 8601, ví dụ <code>2026-11-16</code>).</td></tr>
+      <tr><td>Ngày giờ (response)</td><td><code>YYYY-MM-DDTHH:mm:ss+09:00</code> — luôn theo giờ Nhật (JST, UTC+9).</td></tr>
+      <tr><td>Múi giờ</td><td>Mọi filter ngày (ví dụ <code>added_date_from</code>) được hiểu theo giờ Nhật.</td></tr>
+    </tbody></table></div>
+
+  <h3 id="response-format">2.4 Định dạng response</h3>
+  <p>Mọi response (kể cả lỗi) là JSON UTF-8. Field <code>success</code> cho biết kết quả; luôn kiểm tra HTTP status trước.</p>
+  <div class="grid2">
+    <div><h4>Thành công</h4>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_7a001357",
+  "data": { ... },
+  "pagination": { ... }
+}</code></pre></div>
+    <div><h4>Lỗi</h4>
+<pre class="code"><code>{
+  "success": false,
+  "request_id": "req_20261116_9b2e04d1",
+  "error": {
+    "code": "validation_error",
+    "message": "actions[0] tag requires non-empty tag_ids."
+  }
+}</code></pre></div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead>
+    <tbody>
+      <tr><td><code>success</code></td><td>boolean</td><td><code>true</code> khi HTTP 2xx, <code>false</code> khi lỗi.</td></tr>
+      <tr><td><code>request_id</code></td><td>string</td><td>ID duy nhất của request, dạng <code>req_YYYYMMDD_xxxxxxxx</code>. Trùng với header <code>X-Request-Id</code>, trừ response replay của idempotency (xem <a href="#idempotency">2.9</a>). Ghi log giá trị này và gửi kèm khi liên hệ hỗ trợ.</td></tr>
+      <tr><td><code>data</code></td><td>object | array</td><td>Dữ liệu trả về. Các POST không trả <code>data</code> (field vắng mặt).</td></tr>
+      <tr><td><code>pagination</code></td><td>object</td><td>Chỉ có ở endpoint phân trang dạng chuẩn (xem <a href="#pagination">2.8</a>). Vắng mặt ở endpoint khác.</td></tr>
+      <tr><td><code>error.code</code></td><td>string</td><td>Mã lỗi máy đọc được — dùng giá trị này để rẽ nhánh xử lý.</td></tr>
+      <tr><td><code>error.message</code></td><td>string</td><td>Mô tả cho người đọc (tiếng Anh, riêng lỗi từ hệ thống gửi tin có thể là tiếng Nhật). Nội dung có thể thay đổi — <b>không</b> so khớp chuỗi message trong code.</td></tr>
+    </tbody></table></div>
+  <p>Mỗi response chỉ trả <b>một</b> lỗi — lỗi đầu tiên server phát hiện. Sửa xong lỗi đó có thể gặp lỗi tiếp theo.</p>
+
+  <h3 id="headers">2.5 Response header</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Header</th><th>Có ở</th><th>Mô tả</th></tr></thead>
+    <tbody>
+      <tr><td><code>X-Request-Id</code></td><td>Mọi response</td><td>ID của <b>lần gọi này</b>. Thường giống <code>request_id</code> trong body. Ngoại lệ: response replay của idempotency (có <code>Idempotency-Replayed: true</code>) — body là bản lưu từ lần gọi đầu nên mang <code>request_id</code> cũ, còn header mang ID mới của lần gọi lại. Khi liên hệ hỗ trợ, gửi cả hai.</td></tr>
+      <tr><td><code>X-RateLimit-Limit</code></td><td>Mọi response <code>/v1</code> (kể cả 401/403)</td><td>Hạn mức/phút của nhóm request hiện tại: 300 (GET) hoặc 60 (POST).</td></tr>
+      <tr><td><code>X-RateLimit-Remaining</code></td><td>Mọi response <code>/v1</code></td><td>Số request còn lại trong phút hiện tại. Với response lỗi xác thực (chưa xác định được bot) giá trị bằng <code>X-RateLimit-Limit</code>.</td></tr>
+      <tr><td><code>X-RateLimit-Reset</code></td><td>Mọi response <code>/v1</code></td><td>Thời điểm cửa sổ reset, Unix epoch (giây, UTC). Ví dụ <code>1763280060</code>.</td></tr>
+      <tr><td><code>Retry-After</code></td><td>Chỉ 429</td><td>Số giây cần chờ trước khi gọi lại (≥ 1).</td></tr>
+      <tr><td><code>Idempotency-Replayed</code></td><td>POST trả lại kết quả đã lưu</td><td><code>true</code> khi response là bản lưu từ lần gọi trước cùng <code>Idempotency-Key</code> — request <b>không</b> được thực thi lại.</td></tr>
+    </tbody></table></div>
+
+  <h3 id="errors">2.6 Status code &amp; mã lỗi</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>HTTP</th><th><code>error.code</code></th><th>Ý nghĩa</th><th>Retry?</th><th>Ví dụ nguyên nhân</th></tr></thead>
+    <tbody>
+      <tr><td><span class="st s2">200</span></td><td>—</td><td>Thành công</td><td>—</td><td>—</td></tr>
+      <tr><td><span class="st s4">400</span></td><td><code>invalid_request</code></td><td>Request sai định dạng</td><td>Không — sửa request</td><td>JSON lỗi, thiếu field/param bắt buộc, sai kiểu số, Content-Type sai, <code>limit</code> ≤ 0, <code>Idempotency-Key</code> &gt; 100 ký tự</td></tr>
+      <tr><td><span class="st s4">401</span></td><td><code>unauthorized</code></td><td>Xác thực thất bại</td><td>Không</td><td>Thiếu/sai key, key hết hạn, key đã xoá</td></tr>
+      <tr><td><span class="st s4">403</span></td><td><code>forbidden</code></td><td>Không có quyền</td><td>Không</td><td>Key bị vô hiệu hoá, key <code>read</code> gọi POST, bot đã xoá</td></tr>
+      <tr><td><span class="st s4">403</span></td><td><code>quota_exceeded</code></td><td>Hết hạn mức gửi tin của gói dịch vụ</td><td>Không (đến kỳ sau hoặc nâng gói)</td><td>Gói free vượt 1.000 tin/tháng: "月1000通の配信上限が超えました。"; hết hạn mức tin của gói LINE Official Account: "LINEプランの配信上限に達しました。"</td></tr>
+      <tr><td><span class="st s4">404</span></td><td><code>not_found</code></td><td>Không tìm thấy</td><td>Không</td><td>Friend/tag/scenario/template/field/option/trạng thái xử lý không tồn tại, đã xoá, hoặc thuộc bot khác; endpoint/version không tồn tại</td></tr>
+      <tr><td><span class="st s4">409</span></td><td><code>conflict</code></td><td>Xung đột idempotency</td><td>Không — dùng key mới</td><td><code>Idempotency-Key</code> đã dùng cho request có body/path khác</td></tr>
+      <tr><td><span class="st s4">409</span></td><td><code>in_progress</code></td><td>Request cùng key đang xử lý</td><td>Có — chờ vài giây</td><td>Gửi lại cùng <code>Idempotency-Key</code> khi lần đầu chưa xong</td></tr>
+      <tr><td><span class="st s4">422</span></td><td><code>validation_error</code></td><td>Đúng định dạng nhưng giá trị không hợp lệ</td><td>Không — sửa giá trị</td><td>Vượt giới hạn số lượng/độ dài, sai enum, action không hợp với field type, URL media không truy cập được, friend đã chặn LINE OA, hệ thống gửi tin LME từ chối</td></tr>
+      <tr><td><span class="st s4">429</span></td><td><code>rate_limited</code></td><td>Vượt rate limit</td><td>Có — sau <code>Retry-After</code> giây</td><td>&gt; 300 GET/phút hoặc &gt; 60 POST/phút của bot</td></tr>
+      <tr><td><span class="st s5">500</span></td><td><code>server_error</code></td><td>Lỗi phía server</td><td>GET: có — backoff. POST: cẩn thận — request có thể đã được thực thi (xem <a href="#idempotency">2.9</a>)</td><td>"Internal server error"</td></tr>
+    </tbody></table></div>
+  <h4>Lỗi chung — áp dụng cho mọi endpoint</h4>
+  <p>Bảng lỗi của từng endpoint ở mục 4 chỉ liệt kê lỗi riêng; các lỗi sau có thể xảy ra ở bất kỳ endpoint nào:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>HTTP</th><th>code</th><th>message</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead>
+    <tbody>
+      <tr><td>401</td><td><code>unauthorized</code></td><td>Missing X-LME-API-KEY header</td><td>Không gửi header hoặc header rỗng</td><td>Thêm header <code>X-LME-API-KEY</code></td></tr>
+      <tr><td>401</td><td><code>unauthorized</code></td><td>Invalid API key</td><td>Key gõ sai, thừa ký tự, hoặc key của môi trường khác</td><td>Kiểm tra key và Base URL</td></tr>
+      <tr><td>401</td><td><code>unauthorized</code></td><td>API key has been deleted</td><td>Key đã bị xoá</td><td>Phát hành key mới</td></tr>
+      <tr><td>401</td><td><code>unauthorized</code></td><td>API key expired</td><td>Quá <code>expires_at</code></td><td>Phát hành key mới</td></tr>
+      <tr><td>403</td><td><code>forbidden</code></td><td>API key is no longer active</td><td>Key bị vô hiệu hoá/thu hồi</td><td>Kích hoạt lại hoặc phát hành key mới</td></tr>
+      <tr><td>403</td><td><code>forbidden</code></td><td>API key is read-only</td><td>Key <code>read</code> gọi POST</td><td>Dùng key <code>full</code></td></tr>
+      <tr><td>403</td><td><code>forbidden</code></td><td>Bot not found or not accessible</td><td>Bot gắn với key đã bị xoá</td><td>Liên hệ quản trị viên bot</td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>Content-Type must be application/json</td><td>POST thiếu/sai Content-Type</td><td>Gửi <code>Content-Type: application/json</code></td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>Request body is invalid (malformed JSON or wrong field type).</td><td>Body không phải JSON hợp lệ hoặc field sai kiểu</td><td>Kiểm tra JSON và kiểu từng field</td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>Endpoint not found: {METHOD} {path}</td><td>Sai path hoặc sai method</td><td>Đối chiếu <a href="#index">Danh sách API</a></td></tr>
+      <tr><td>429</td><td><code>rate_limited</code></td><td>Rate limit exceeded: 300 requests/minute (read)</td><td>Vượt hạn mức phút</td><td>Chờ <code>Retry-After</code> giây</td></tr>
+      <tr><td>500</td><td><code>server_error</code></td><td>Internal server error</td><td>Lỗi không lường trước phía LME</td><td>GET: retry với exponential backoff. POST: xem <a href="#idempotency">2.9</a> trước khi retry. Nếu lặp lại, gửi <code>request_id</code> cho bộ phận hỗ trợ</td></tr>
+    </tbody></table></div>
+
+  <h3 id="rate-limit">2.7 Rate limit</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Nhóm</th><th>Method</th><th>Hạn mức</th></tr></thead>
+    <tbody>
+      <tr><td>Đọc</td><td>GET</td><td><b>300 request / phút / bot</b></td></tr>
+      <tr><td>Ghi</td><td>POST</td><td><b>60 request / phút / bot</b></td></tr>
+    </tbody></table></div>
+  <ul>
+    <li>Tính <b>theo bot</b>: nhiều API key của cùng 1 bot dùng chung hạn mức. Hai nhóm đọc/ghi đếm độc lập.</li>
+    <li>Cửa sổ cố định theo phút đồng hồ (fixed window): bộ đếm reset ở giây 00 mỗi phút (thời điểm trong <code>X-RateLimit-Reset</code>).</li>
+    <li>Chỉ request đã xác thực thành công mới bị đếm. Request bị 401/403/400-Content-Type không trừ hạn mức.</li>
+    <li>Request bị 429 không được thực thi. Chờ đúng <code>Retry-After</code> giây rồi gọi lại; không retry dồn dập.</li>
+    <li><code>/do_action</code> xử lý tới 100 friend × 10 action chỉ tính <b>1</b> request ghi — gom thao tác vào một request thay vì gọi lẻ từng friend.</li>
+  </ul>
+  <div class="tip"><b class="t">KHUYẾN NGHỊ</b><p>Đọc <code>X-RateLimit-Remaining</code> sau mỗi response; khi về 0 thì tạm dừng tới <code>X-RateLimit-Reset</code>. Với đồng bộ lớn, dùng <code>limit=500</code> để giảm số request.</p></div>
+
+  <h3 id="pagination">2.8 Phân trang</h3>
+  <p>Endpoint danh sách dùng phân trang theo trang (offset).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Parameter</th><th>Type</th><th>Mặc định</th><th>Quy tắc</th></tr></thead>
+    <tbody>
+      <tr><td><code>page</code></td><td>integer</td><td>1</td><td>Bắt đầu từ 1. Bỏ trống, <code>0</code> hoặc số âm → coi là <code>1</code>. Trang vượt quá tổng số trang → mảng rỗng (vẫn 200). Không phải số → <span class="st s4">400</span>.</td></tr>
+      <tr><td><code>limit</code></td><td>integer</td><td>100</td><td>1–500. <code>0</code> hoặc âm → <span class="st s4">400</span> "limit must be a positive integer (1..500), got: 0". Lớn hơn 500 → tự kẹp về 500 và response có <code>data.warnings: ["limit_clamped"]</code>. Không phải số → <span class="st s4">400</span>.</td></tr>
+    </tbody></table></div>
+  <h4>Khối <code>pagination</code></h4>
+<pre class="code"><code>"pagination": { "page": 2, "limit": 100, "total_items": 1240, "total_pages": 13, "has_next": true }</code></pre>
+  <div class="tbl"><table>
+    <thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead>
+    <tbody>
+      <tr><td><code>page</code></td><td>integer</td><td>Trang đã trả về (sau khi chuẩn hoá).</td></tr>
+      <tr><td><code>limit</code></td><td>integer</td><td>Số record/trang đã áp dụng (sau khi kẹp).</td></tr>
+      <tr><td><code>total_items</code></td><td>integer</td><td>Tổng số record khớp điều kiện.</td></tr>
+      <tr><td><code>total_pages</code></td><td>integer</td><td><code>ceil(total_items / limit)</code>; <code>0</code> khi không có record.</td></tr>
+      <tr><td><code>has_next</code></td><td>boolean</td><td><code>true</code> nếu còn trang sau.</td></tr>
+    </tbody></table></div>
+  <h4>Khác biệt giữa các endpoint</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Endpoint</th><th>Cách trả phân trang</th></tr></thead>
+    <tbody>
+      <tr><td><code>GET /tags</code>, <code>/friend-info-fields</code>, <code>/scenarios</code>, <code>/templates</code>, <code>/conversations</code></td><td>Khối <code>pagination</code> ở cấp gốc.</td></tr>
+      <tr><td><code>GET /friends</code></td><td><b>Không</b> có khối <code>pagination</code>; dùng <code>data.total_items</code> và <code>data.total_pages</code>. Duyệt tới khi <code>page ≥ data.total_pages</code>.</td></tr>
+      <tr><td><code>GET /handling-statuses</code></td><td>Không phân trang — trả toàn bộ.</td></tr>
+      <tr><td><code>GET /conversations/detail</code></td><td>Không phân trang — cố định tối đa 100 message gần nhất.</td></tr>
+    </tbody></table></div>
+  <div class="warn"><b class="t">LƯU Ý KHI ĐỒNG BỘ</b><p>Phân trang theo offset: nếu dữ liệu thay đổi giữa các lần gọi (friend mới kết bạn, conversation có tin mới) thì record có thể bị lệch trang — trùng hoặc sót. Hãy khử trùng theo ID ở phía bạn, và với <code>/friends</code> có thể khoanh vùng bằng <code>added_date_from</code>/<code>added_date_to</code>.</p></div>
+
+  <h3 id="idempotency">2.9 Idempotency &amp; retry</h3>
+  <p>Khi request POST bị timeout hoặc lỗi mạng, bạn không biết server đã xử lý hay chưa. Gửi header <code>Idempotency-Key</code> để retry an toàn mà không gửi trùng message / chạy trùng action.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Hạng mục</th><th>Quy tắc</th></tr></thead>
+    <tbody>
+      <tr><td>Áp dụng</td><td><code>POST /messages/push</code>, <code>POST /messages/template</code>, <code>POST /do_action</code>. GET bỏ qua header này.</td></tr>
+      <tr><td>Giá trị</td><td>Chuỗi do bạn tự sinh, tối đa <b>100</b> ký tự (vượt → <span class="st s4">400</span> "Idempotency-Key must be at most 100 characters."). Khuyến nghị UUID v4 hoặc ID nghiệp vụ duy nhất (ví dụ <code>order-8812-shipped</code>).</td></tr>
+      <tr><td>Ký tự khuyến nghị</td><td>Khuyến nghị chỉ dùng chữ cái ASCII <code>A–Z</code> <code>a–z</code>, chữ số <code>0–9</code>, dấu gạch ngang <code>-</code> và gạch dưới <code>_</code>. Server không chặn ký tự khác, nhưng tránh ký tự đặc biệt, dấu cách, ký tự có dấu hoặc tiếng Nhật — giá trị header HTTP không bảo đảm truyền đúng các ký tự này, nên lần retry có thể bị coi là key khác.</td></tr>
+      <tr><td>Khoảng trắng</td><td>Server cắt (trim) khoảng trắng ở hai đầu trước khi so khớp và đếm độ dài: <code>" abc "</code> và <code>"abc"</code> là cùng một key. Header rỗng hoặc chỉ có khoảng trắng được coi như không gửi.</td></tr>
+      <tr><td>Phạm vi</td><td>Duy nhất theo <b>API key</b>. Hai key khác nhau dùng cùng giá trị không ảnh hưởng nhau.</td></tr>
+      <tr><td>Thời gian lưu</td><td>Kết quả thành công được lưu <b>ít nhất 24 giờ</b>. Sau 24 giờ, bản lưu bị dọn định kỳ — thời điểm dọn không cố định, nên không dựa vào việc dùng lại cùng key sau 24 giờ (có thể nhận replay hoặc được thực thi như request mới). Mỗi thao tác nghiệp vụ nên dùng một key riêng.</td></tr>
+      <tr><td>"Cùng request"</td><td>So khớp method + path + body (byte-by-byte). Đổi thứ tự field hay khoảng trắng trong JSON cũng bị coi là request khác.</td></tr>
+      <tr><td>Không gửi header</td><td>Không có chống trùng — mỗi lần gọi đều được thực thi.</td></tr>
+      <tr><td>Khi hệ thống chống trùng gặp sự cố</td><td>Server vẫn xử lý request (không trả lỗi) nhưng <b>không</b> chống trùng cho request đó. Trường hợp hiếm, nhưng phía bạn vẫn nên có cơ chế tự kiểm tra trùng cho thao tác quan trọng.</td></tr>
+    </tbody></table></div>
+  <h4>Hành vi khi gửi lại cùng key</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Tình huống</th><th>Response</th></tr></thead>
+    <tbody>
+      <tr><td>Lần đầu (key mới)</td><td>Thực thi bình thường. Chỉ response <span class="st s2">2xx</span> được lưu.</td></tr>
+      <tr><td>Lần đầu đã thành công, gửi lại <b>đúng</b> request</td><td>Trả lại nguyên response đã lưu + header <code>Idempotency-Replayed: true</code>. Không thực thi lại. Body giữ <code>request_id</code> của lần đầu; header <code>X-Request-Id</code> là ID mới của lần gọi lại.</td></tr>
+      <tr><td>Lần đầu đã thành công, gửi lại với body/path <b>khác</b></td><td><span class="st s4">409</span> <code>conflict</code> "Idempotency-Key already used with a different request (method/path/body mismatch)."</td></tr>
+      <tr><td>Lần đầu <b>đang xử lý</b></td><td><span class="st s4">409</span> <code>in_progress</code> "A request with this Idempotency-Key is still being processed." — chờ vài giây rồi gửi lại. Nếu lần đầu treo quá 60 giây, server giải phóng key và thực thi lại.</td></tr>
+      <tr><td>Lần đầu bị lỗi (4xx/5xx)</td><td>Không lưu — gửi lại cùng key sẽ được thực thi lại (sau khi bạn sửa request).</td></tr>
+    </tbody></table></div>
+  <h4>Chiến lược retry khuyến nghị</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Kết quả</th><th>Nên retry?</th><th>Cách</th></tr></thead>
+    <tbody>
+      <tr><td>Timeout / lỗi mạng (không nhận được response)</td><td>Có</td><td>Giữ nguyên <code>Idempotency-Key</code> và body; backoff 1s → 2s → 4s… tối đa 5 lần. Nếu lần đầu đã xong → nhận replay; nếu đang xử lý → nhận 409 <code>in_progress</code>.</td></tr>
+      <tr><td>500 với GET</td><td>Có</td><td>Backoff như trên.</td></tr>
+      <tr><td>500 với POST</td><td>Cẩn thận</td><td>Response lỗi không được lưu, nên gửi lại cùng key sẽ được <b>thực thi lại</b> — <code>Idempotency-Key</code> không chặn trùng trong trường hợp này. Với <code>/messages/*</code>, message có thể đã vào hàng đợi gửi trước khi lỗi xảy ra: kiểm tra <a href="#ep-conv-detail">/conversations/detail</a> trước khi gửi lại. <code>/do_action</code> chủ yếu là thao tác ghi đè (gắn tag, đặt giá trị…) nên gửi lại thường an toàn, trừ <code>point_plus</code>/<code>point_minus</code> và <code>scenario.start</code>.</td></tr>
+      <tr><td>429</td><td>Có</td><td>Chờ <code>Retry-After</code>.</td></tr>
+      <tr><td>409 <code>in_progress</code></td><td>Có</td><td>Chờ 2–5 giây, gửi lại cùng key.</td></tr>
+      <tr><td>400 / 401 / 403 / 404 / 409 <code>conflict</code> / 422</td><td>Không</td><td>Sửa request; nếu đổi body thì dùng key mới.</td></tr>
+    </tbody></table></div>
+
+</section>
+
+<!-- ============================================================ 3 -->
+<section id="index">
+  <h2>3. Danh sách API</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Method</th><th>Path</th><th>Mục đích</th><th>Scope</th><th>Rate limit</th><th>Idempotency</th></tr></thead>
+    <tbody>
+      <tr><td><span class="mtd get">GET</span></td><td><a href="#ep-friends"><code>/v1/friends</code></a></td><td>Danh sách friend (lọc tên, tag, email, ngày kết bạn)</td><td>read / full</td><td>Đọc</td><td>—</td></tr>
+      <tr><td><span class="mtd get">GET</span></td><td><a href="#ep-friend-detail"><code>/v1/friends/detail</code></a></td><td>Chi tiết 1 friend (tag, friend info, scenario)</td><td>read / full</td><td>Đọc</td><td>—</td></tr>
+      <tr><td><span class="mtd get">GET</span></td><td><a href="#ep-tags"><code>/v1/tags</code></a></td><td>Danh sách tag</td><td>read / full</td><td>Đọc</td><td>—</td></tr>
+      <tr><td><span class="mtd get">GET</span></td><td><a href="#ep-fields"><code>/v1/friend-info-fields</code></a></td><td>Danh sách friend info field + option</td><td>read / full</td><td>Đọc</td><td>—</td></tr>
+      <tr><td><span class="mtd get">GET</span></td><td><a href="#ep-scenarios"><code>/v1/scenarios</code></a></td><td>Danh sách scenario</td><td>read / full</td><td>Đọc</td><td>—</td></tr>
+      <tr><td><span class="mtd post">POST</span></td><td><a href="#ep-push"><code>/v1/messages/push</code></a></td><td>Gửi 1–5 message text/image/video/audio</td><td>full</td><td>Ghi</td><td>Có</td></tr>
+      <tr><td><span class="mtd post">POST</span></td><td><a href="#ep-send-template"><code>/v1/messages/template</code></a></td><td>Gửi 1–5 template có sẵn</td><td>full</td><td>Ghi</td><td>Có</td></tr>
+      <tr><td><span class="mtd get">GET</span></td><td><a href="#ep-templates"><code>/v1/templates</code></a></td><td>Danh sách template</td><td>read / full</td><td>Đọc</td><td>—</td></tr>
+      <tr><td><span class="mtd get">GET</span></td><td><a href="#ep-conversations"><code>/v1/conversations</code></a></td><td>Danh sách conversation (lọc đã đọc, trạng thái xử lý, tag…)</td><td>read / full</td><td>Đọc</td><td>—</td></tr>
+      <tr><td><span class="mtd get">GET</span></td><td><a href="#ep-conv-detail"><code>/v1/conversations/detail</code></a></td><td>100 message gần nhất của 1 friend + trạng thái</td><td>read / full</td><td>Đọc</td><td>—</td></tr>
+      <tr><td><span class="mtd get">GET</span></td><td><a href="#ep-handling"><code>/v1/handling-statuses</code></a></td><td>Danh sách trạng thái xử lý</td><td>read / full</td><td>Đọc</td><td>—</td></tr>
+      <tr><td><span class="mtd post">POST</span></td><td><a href="#ep-do-action"><code>/v1/do_action</code></a></td><td>Chạy 1–10 action trên 1–100 friend</td><td>full</td><td>Ghi</td><td>Có</td></tr>
+    </tbody></table></div>
+</section>
+
+<!-- ============================================================ 4 -->
+<section id="endpoints">
+  <h2>4. Chi tiết API</h2>
+  <p class="lead">Mỗi endpoint gồm: HTTP request, parameter (kèm hành vi khi bỏ trống), response, bảng lỗi riêng và ví dụ. Lỗi chung (401/403/429/500…) xem <a href="#errors">2.6</a>.</p>
+
+<!-- ---------------- GET /friends ---------------- -->
+<article class="ep" id="ep-friends">
+  <div class="ep-head"><span class="mtd get">GET</span><span class="ep-path">/v1/friends</span><h3>Lấy danh sách friend</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>read / full</b></span><span>Rate limit: <b>Đọc (300/phút)</b></span><span>Phân trang: <b>data.total_items / total_pages</b></span></div>
+    <p>Dùng khi CRM đồng bộ lần đầu hoặc đồng bộ định kỳ danh sách friend của bot. Kết quả sắp xếp theo thời điểm kết bạn <b>mới nhất trước</b>. Danh sách gồm mọi friend LME đang quản lý của bot, <b>kể cả friend đã chặn LINE OA</b> — tình trạng chặn xem ở <code>block_status</code> của <a href="#ep-conv-detail">/conversations/detail</a>.</p>
+    <h4>HTTP request</h4><pre class="http">GET https://api.lmes.jp/v1/friends</pre>
+    <h4>Request header</h4>
+    <div class="tbl"><table><thead><tr><th>Header</th><th></th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>X-LME-API-KEY</code></td><td><span class="req y">Bắt buộc</span></td><td>API key (<a href="#auth">2.2</a>).</td></tr></tbody></table></div>
+    <h4>Query parameter</h4>
+    <div class="tbl"><table><thead><tr><th>Parameter</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+      <tr><td class="k"><code>page</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>Trang cần lấy, từ 1 (<a href="#pagination">2.8</a>).</td><td>1</td></tr>
+      <tr><td class="k"><code>limit</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>Số friend/trang, 1–500. &gt; 500 bị kẹp về 500 + <code>warnings</code>.</td><td>100</td></tr>
+      <tr><td class="k"><code>line_names</code></td><td>string, CSV</td><td><span class="req n">Tuỳ chọn</span></td><td>Tìm gần đúng (chứa chuỗi) theo tên LINE <b>hoặc</b> tên quản lý trong LME, không phân biệt hoa/thường. Ký tự <code>%</code> <code>_</code> được hiểu theo nghĩa đen. Nhiều tên → OR.</td><td>Không lọc theo tên</td></tr>
+      <tr><td class="k"><code>tag_ids</code></td><td>integer, CSV</td><td><span class="req n">Tuỳ chọn</span></td><td>Tag ID (từ <code>/tags</code>). Nhiều tag → OR (friend có ít nhất 1 tag). Mọi ID phải tồn tại trong bot, nếu không → 404.</td><td>Không lọc theo tag</td></tr>
+      <tr><td class="k"><code>emails</code></td><td>string, CSV</td><td><span class="req n">Tuỳ chọn</span></td><td>Email khớp chính xác. Nhiều email → OR.</td><td>Không lọc theo email</td></tr>
+      <tr><td class="k"><code>added_date_from</code></td><td>date</td><td><span class="req n">Tuỳ chọn</span></td><td>Ngày kết bạn từ (bao gồm), <code>YYYY-MM-DD</code>, giờ Nhật.</td><td>Không giới hạn đầu</td></tr>
+      <tr><td class="k"><code>added_date_to</code></td><td>date</td><td><span class="req n">Tuỳ chọn</span></td><td>Ngày kết bạn đến (bao gồm cả ngày đó), <code>YYYY-MM-DD</code>. Phải ≥ <code>added_date_from</code>.</td><td>Không giới hạn cuối</td></tr>
+    </tbody></table></div>
+    <p>Các filter khác nhau kết hợp <b>AND</b>; nhiều giá trị trong cùng filter kết hợp <b>OR</b>. Endpoint này <b>không</b> hỗ trợ <code>tag_names</code> — đổi tên → ID qua <code>/tags</code> trước.</p>
+    <h4>Response</h4>
+    <p>HTTP <span class="st s2">200</span></p>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>data.total_items</code></td><td>integer</td><td>Tổng số friend khớp điều kiện.</td></tr>
+      <tr><td><code>data.total_pages</code></td><td>integer</td><td>Tổng số trang theo <code>limit</code> đã áp dụng.</td></tr>
+      <tr><td><code>data.warnings</code></td><td>array&lt;string&gt;</td><td>Chỉ xuất hiện khi có cảnh báo. Hiện có: <code>limit_clamped</code> (limit &gt; 500 đã bị kẹp).</td></tr>
+      <tr><td><code>data.friend_detail[]</code></td><td>array&lt;object&gt;</td><td>Friend của trang hiện tại. Mảng rỗng khi không có kết quả.</td></tr>
+      <tr><td><code>…[].lmessage_friend_id</code></td><td>integer</td><td>Friend ID của LME — dùng cho mọi endpoint khác.</td></tr>
+      <tr><td><code>…[].line_friend_id</code></td><td>string | null</td><td>LINE user ID.</td></tr>
+      <tr><td><code>…[].line_name</code></td><td>string</td><td>Tên hiển thị LINE. Chuỗi rỗng <code>""</code> nếu không có.</td></tr>
+      <tr><td><code>…[].system_name</code></td><td>string | null</td><td>Tên quản lý đặt trong LME (システム表示名).</td></tr>
+      <tr><td><code>…[].email</code></td><td>string | null</td><td>Email đã lưu.</td></tr>
+      <tr><td><code>…[].phone</code></td><td>string | null</td><td>Số điện thoại đã lưu.</td></tr>
+      <tr><td><code>…[].added_time</code></td><td>date | null</td><td>Ngày kết bạn, <code>YYYY-MM-DD</code>. Với friend <code>old</code> là ngày LME ghi nhận friend (không phải ngày kết bạn thật với LINE OA).</td></tr>
+      <tr><td><code>…[].friendtype</code></td><td>string</td><td><code>new</code> — 新規友だち: kết bạn với LINE OA sau khi LINE OA đã kết nối LME. <code>old</code> — 既存友だち: đã là friend của LINE OA từ trước khi kết nối LME, được LME lấy về sau (ví dụ bằng chức năng 既存友だち情報取得). Vì vậy friend <code>old</code> có thể có <code>added_time</code> mới hơn friend <code>new</code>.</td></tr>
+    </tbody></table></div>
+    <h4>Lỗi riêng</h4>
+    <div class="tbl"><table><thead><tr><th>HTTP</th><th>code</th><th>message (ví dụ)</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead><tbody>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>Parameter 'page' has an invalid format (expected a numeric value).</td><td><code>page</code>/<code>limit</code> không phải số nguyên</td><td>Truyền số nguyên</td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>limit must be a positive integer (1..500), got: 0</td><td><code>limit</code> ≤ 0</td><td>Dùng 1–500</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>tag_ids must contain positive integer IDs (comma-separated), got: abc</td><td><code>tag_ids</code> không phải số nguyên dương</td><td>Truyền ID số, phân tách dấu phẩy</td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>tag_ids not found: [999]. Use GET /v1/tags to list available tags.</td><td>Tag không tồn tại / đã xoá / thuộc bot khác</td><td>Làm mới danh sách tag</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>added_date_from must be in format YYYY-MM-DD</td><td>Sai định dạng ngày (cả <code>added_date_to</code>)</td><td>Dùng <code>YYYY-MM-DD</code>, ví dụ <code>2026-11-01</code></td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>added_date_from must be &lt;= added_date_to</td><td>Khoảng ngày đảo ngược</td><td>Đổi lại thứ tự</td></tr>
+    </tbody></table></div>
+    <h4>Ví dụ</h4>
+<pre class="http">GET /v1/friends?page=1&amp;limit=100&amp;line_names=田中,佐藤&amp;tag_ids=101,102&amp;added_date_from=2026-10-01&amp;added_date_to=2026-10-31</pre>
+    <div class="codetabs" data-ex="friends"><pre class="fallback"><code>curl -sS "https://api.lmes.jp/v1/friends?page=1&amp;limit=100&amp;line_names=%E7%94%B0%E4%B8%AD%2C%E4%BD%90%E8%97%A4&amp;tag_ids=101%2C102&amp;added_date_from=2026-10-01&amp;added_date_to=2026-10-31" \
+  -H "X-LME-API-KEY: $LME_API_KEY"</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_0a1b2c3d",
+  "data": {
+    "total_items": 250,
+    "total_pages": 3,
+    "friend_detail": [
+      {
+        "added_time": "2026-10-30",
+        "friendtype": "new",
+        "line_friend_id": "U1a2b3c4d5e6f708192a3b4c5d6e7f809",
+        "lmessage_friend_id": 12345,
+        "line_name": "田中太郎",
+        "system_name": "田中 太郎（会員No.0042）",
+        "email": "tanaka.taro@example.co.jp",
+        "phone": "09012345678"
+      }
+    ]
+  }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 2</span> Tra friend theo email (khớp chính xác) — dùng để map khách hàng CRM/EC sang <code>lmessage_friend_id</code>. Friend ở đây là <code>old</code> (既存友だち) nên <code>added_time</code> là ngày LME ghi nhận:</p>
+<pre class="http">GET /v1/friends?emails=sato.hanako@example.co.jp</pre>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_1c2d3e4f",
+  "data": {
+    "total_items": 1,
+    "total_pages": 1,
+    "friend_detail": [
+      {
+        "added_time": "2026-11-11",
+        "friendtype": "old",
+        "line_friend_id": "U2b3c4d5e6f708192a3b4c5d6e7f8091a",
+        "lmessage_friend_id": 12346,
+        "line_name": "佐藤花子",
+        "system_name": "佐藤 花子",
+        "email": "sato.hanako@example.co.jp",
+        "phone": "08098765432"
+      }
+    ]
+  }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 3</span> Friend chưa nhập email/SĐT và không có tên LINE (<code>line_name</code> là chuỗi rỗng, các field khác <code>null</code>):</p>
+<pre class="code"><code>{
+  "added_time": "2026-09-22",
+  "friendtype": "new",
+  "line_friend_id": "U0c1d2e3f405162738495a6b7c8d9e0f1",
+  "lmessage_friend_id": 12401,
+  "line_name": "",
+  "system_name": null,
+  "email": null,
+  "phone": null
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 4</span> Không có friend nào khớp — vẫn HTTP 200:</p>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_2d3e4f5a",
+  "data": { "total_items": 0, "total_pages": 0, "friend_detail": [] }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 5</span> <code>limit=1000</code> bị kẹp về 500 — có thêm <code>warnings</code>:</p>
+<pre class="http">GET /v1/friends?limit=1000</pre>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_3e4f5a6b",
+  "data": {
+    "total_items": 1240,
+    "total_pages": 3,
+    "friend_detail": [ ... 500 phần tử ... ],
+    "warnings": ["limit_clamped"]
+  }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 6</span> Tag không tồn tại:</p>
+<pre class="code"><code>HTTP/1.1 404
+{
+  "success": false,
+  "request_id": "req_20261116_4f5a6b7c",
+  "error": { "code": "not_found", "message": "tag_ids not found: [999]. Use GET /v1/tags to list available tags." }
+}</code></pre>
+  </div>
+</article>
+
+<!-- ---------------- GET /friends/detail ---------------- -->
+<article class="ep" id="ep-friend-detail">
+  <div class="ep-head"><span class="mtd get">GET</span><span class="ep-path">/v1/friends/detail</span><h3>Lấy chi tiết friend</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>read / full</b></span><span>Rate limit: <b>Đọc</b></span><span>Phân trang: <b>không</b></span></div>
+    <p>Lấy thông tin đầy đủ của 1 friend: tag đang gắn, friend info (built-in + custom), scenario. Chỉ nhận <code>lmessage_friend_id</code> — muốn tra theo email dùng <code>/friends?emails=…</code> trước.</p>
+    <h4>HTTP request</h4><pre class="http">GET https://api.lmes.jp/v1/friends/detail</pre>
+    <h4>Query parameter</h4>
+    <div class="tbl"><table><thead><tr><th>Parameter</th><th>Type</th><th></th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td class="k"><code>lmessage_friend_id</code></td><td>integer</td><td><span class="req y">Bắt buộc</span></td><td>Friend ID của LME. Mỗi request lấy 1 friend.</td></tr>
+    </tbody></table></div>
+    <h4>Response</h4>
+    <p>HTTP <span class="st s2">200</span></p>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>data.friend.lmessage_friend_id</code></td><td>integer</td><td>Friend ID của LME.</td></tr>
+      <tr><td><code>data.friend.line_friend_id</code></td><td>string | null</td><td>LINE user ID.</td></tr>
+      <tr><td><code>data.friend.line_name</code></td><td>string | null</td><td>Tên hiển thị LINE.</td></tr>
+      <tr><td><code>data.friend.system_name</code></td><td>string | null</td><td>Tên quản lý (giá trị của field <code>-1</code>).</td></tr>
+      <tr><td><code>data.friend.email</code></td><td>string | null</td><td>Giá trị field <code>-3</code>.</td></tr>
+      <tr><td><code>data.friend.phone</code></td><td>string | null</td><td>Giá trị field <code>-2</code>.</td></tr>
+      <tr><td><code>data.friend.tags[]</code></td><td>array&lt;object&gt;</td><td>Tag đang gắn: <code>{id, name}</code>. Mảng rỗng nếu không có.</td></tr>
+      <tr><td><code>data.friend.friend_info[]</code></td><td>array&lt;object&gt;</td><td>Friend info: <code>{id, type, name, value}</code>. <b>Chỉ gồm field friend đã có dữ liệu</b> — field chưa từng nhập (built-in hay custom) không xuất hiện trong mảng, chứ không được trả kèm <code>value: null</code>. Muốn biết đủ danh sách field của bot, dùng <a href="#ep-fields">/friend-info-fields</a>.</td></tr>
+      <tr><td><code>…friend_info[].id</code></td><td>integer</td><td>Field ID (âm = built-in, xem <a href="#enum-builtin">7.2</a>).</td></tr>
+      <tr><td><code>…friend_info[].type</code></td><td>string | null</td><td><code>TEXT</code> <code>POINT</code> <code>DATE</code> <code>SELECT</code> <code>IMAGE</code> <code>FILE</code>.</td></tr>
+      <tr><td><code>…friend_info[].name</code></td><td>string</td><td>Tên field.</td></tr>
+      <tr><td><code>…friend_info[].value</code></td><td>string | number | null</td><td>Chuẩn hoá theo <code>type</code>: <b>POINT</b> → number (số nguyên hoặc thập phân; không parse được → <code>null</code>); <b>DATE</b> → <code>YYYY-MM-DD</code> (giá trị cũ dạng <code>2002.06.21</code>, <code>2026/1/5</code> được chuẩn hoá; giá trị không nhận dạng được là ngày thì trả <b>nguyên chuỗi đã lưu</b> — client nên kiểm tra định dạng trước khi parse); <b>SELECT</b> → nhãn option (string, không phải option_id — kể cả field <code>-6</code>); <b>IMAGE/FILE</b> → URL string; <b>TEXT</b> → string. Field chưa có dữ liệu thì không có trong mảng (xem trên); <code>null</code> chỉ xuất hiện khi bản ghi tồn tại nhưng rỗng, hoặc giá trị POINT không parse được.</td></tr>
+      <tr><td><code>data.friend.scenarios[]</code></td><td>array&lt;object&gt;</td><td>Scenario friend đã tham gia: <code>{id, name, status}</code>.</td></tr>
+      <tr><td><code>…scenarios[].status</code></td><td>string</td><td><code>following</code> (đang chạy), <code>completed</code> (đã chạy hết), <code>stopped</code> (đã dừng).</td></tr>
+    </tbody></table></div>
+    <h4>Lỗi riêng</h4>
+    <div class="tbl"><table><thead><tr><th>HTTP</th><th>code</th><th>message (ví dụ)</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead><tbody>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>Missing required parameter 'lmessage_friend_id'.</td><td>Không truyền param</td><td>Thêm <code>lmessage_friend_id</code></td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>Parameter 'lmessage_friend_id' has an invalid format (expected a numeric value).</td><td>Truyền <code>line_friend_id</code> (U…) hoặc chuỗi</td><td>Dùng ID số từ <code>/friends</code></td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>Friend not found</td><td>Friend không tồn tại hoặc thuộc bot khác</td><td>Kiểm tra lại ID / API key</td></tr>
+    </tbody></table></div>
+    <h4>Ví dụ</h4>
+<pre class="http">GET /v1/friends/detail?lmessage_friend_id=12345</pre>
+    <div class="codetabs" data-ex="friendDetail"><pre class="fallback"><code>curl -sS "https://api.lmes.jp/v1/friends/detail?lmessage_friend_id=12345" \
+  -H "X-LME-API-KEY: $LME_API_KEY"</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_4e5f6a7b",
+  "data": {
+    "friend": {
+      "lmessage_friend_id": 12345,
+      "line_friend_id": "U1a2b3c4d5e6f708192a3b4c5d6e7f809",
+      "line_name": "田中太郎",
+      "system_name": "田中 太郎（会員No.0042）",
+      "email": "tanaka.taro@example.co.jp",
+      "phone": "09012345678",
+      "tags": [
+        { "id": 101, "name": "カゴ落ち" }
+      ],
+      "friend_info": [
+        { "id": -3, "type": "TEXT", "name": "メールアドレス", "value": "tanaka.taro@example.co.jp" },
+        { "id": -4, "type": "DATE", "name": "生年月日", "value": "1990-04-12" },
+        { "id": -6, "type": "SELECT", "name": "都道府県名", "value": "東京都" },
+        { "id": 5001, "type": "POINT", "name": "購入回数", "value": 20 },
+        { "id": 5002, "type": "SELECT", "name": "会員ランク", "value": "ゴールド" }
+      ],
+      "scenarios": [
+        { "id": 88, "name": "カゴ落ちリマインド", "status": "following" }
+      ]
+    }
+  }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 2</span> Friend có đủ các kiểu field custom (POINT, DATE, SELECT, IMAGE, FILE) và scenario ở cả 3 trạng thái:</p>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_5a6b7c8d",
+  "data": {
+    "friend": {
+      "lmessage_friend_id": 12346,
+      "line_friend_id": "U2b3c4d5e6f708192a3b4c5d6e7f8091a",
+      "line_name": "佐藤花子",
+      "system_name": "佐藤 花子",
+      "email": "sato.hanako@example.co.jp",
+      "phone": "08098765432",
+      "tags": [
+        { "id": 103, "name": "セミナー参加" },
+        { "id": 102, "name": "VIP" }
+      ],
+      "friend_info": [
+        { "id": -1, "type": "TEXT", "name": "システム表示名", "value": "佐藤 花子" },
+        { "id": -2, "type": "TEXT", "name": "携帯電話", "value": "08098765432" },
+        { "id": -3, "type": "TEXT", "name": "メールアドレス", "value": "sato.hanako@example.co.jp" },
+        { "id": -4, "type": "DATE", "name": "生年月日", "value": "2000-01-03" },
+        { "id": -6, "type": "SELECT", "name": "都道府県名", "value": "栃木県" },
+        { "id": -8, "type": "TEXT", "name": "市区町村名", "value": "宇都宮市" },
+        { "id": 5001, "type": "POINT", "name": "購入回数", "value": 49 },
+        { "id": 5003, "type": "DATE", "name": "最終購入日", "value": "2026-08-05" },
+        { "id": 5002, "type": "SELECT", "name": "会員ランク", "value": "ゴールド" },
+        { "id": 5592, "type": "IMAGE", "name": "会員証画像", "value": "https://p.lmes.jp/msg_template/media/images/1001/2001/friend-info/sample_member_card.jpg" },
+        { "id": 5593, "type": "FILE", "name": "申込書PDF", "value": "https://p.lmes.jp/msg_template/media/files/1001/2001/friend-info/sample_application.pdf" }
+      ],
+      "scenarios": [
+        { "id": 12812, "name": "新規登録フォロー", "status": "completed" },
+        { "id": 13424, "name": "セミナー案内", "status": "following" },
+        { "id": 11560, "name": "休眠掘り起こし", "status": "stopped" }
+      ]
+    }
+  }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 3</span> Friend vừa kết bạn, chưa có dữ liệu — mảng rỗng, field thông tin <code>null</code>:</p>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_6b7c8d9e",
+  "data": {
+    "friend": {
+      "lmessage_friend_id": 12402,
+      "line_friend_id": "U4d5e6f708192a3b4c5d6e7f8091a2b3c",
+      "line_name": "鈴木一郎",
+      "system_name": null,
+      "email": null,
+      "phone": null,
+      "tags": [],
+      "friend_info": [],
+      "scenarios": []
+    }
+  }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 4</span> Friend không thuộc bot của API key:</p>
+<pre class="code"><code>HTTP/1.1 404
+{ "success": false, "request_id": "req_20261116_7c8d9e0f", "error": { "code": "not_found", "message": "Friend not found" } }</code></pre>
+  </div>
+</article>
+
+<!-- ---------------- GET /tags ---------------- -->
+<article class="ep" id="ep-tags">
+  <div class="ep-head"><span class="mtd get">GET</span><span class="ep-path">/v1/tags</span><h3>Lấy danh sách tag</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>read / full</b></span><span>Rate limit: <b>Đọc</b></span><span>Phân trang: <b>pagination</b></span></div>
+    <p>Lấy tag của bot để có tag ID trước khi lọc friend/conversation hoặc gắn/gỡ tag qua <code>/do_action</code>. Chỉ trả tag chưa xoá. Sắp xếp: tag <b>mới tạo trước</b> (ID giảm dần).</p>
+    <h4>HTTP request</h4><pre class="http">GET https://api.lmes.jp/v1/tags</pre>
+    <h4>Query parameter</h4>
+    <div class="tbl"><table><thead><tr><th>Parameter</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+      <tr><td class="k"><code>page</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>Trang, từ 1.</td><td>1</td></tr>
+      <tr><td class="k"><code>limit</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>1–500.</td><td>100</td></tr>
+    </tbody></table></div>
+    <h4>Response</h4>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>data.tags[].id</code></td><td>integer</td><td>Tag ID.</td></tr>
+      <tr><td><code>data.tags[].name</code></td><td>string</td><td>Tên tag.</td></tr>
+      <tr><td><code>data.tags[].friend_count</code></td><td>integer</td><td>Số friend đang gắn tag.</td></tr>
+      <tr><td><code>data.warnings</code></td><td>array&lt;string&gt;</td><td>Chỉ khi <code>limit</code> &gt; 500: <code>["limit_clamped"]</code>.</td></tr>
+      <tr><td><code>pagination</code></td><td>object</td><td><a href="#pagination">2.8</a>.</td></tr>
+    </tbody></table></div>
+    <h4>Lỗi riêng</h4>
+    <p>Chỉ lỗi <code>page</code>/<code>limit</code> (400) như <a href="#pagination">2.8</a>.</p>
+    <h4>Ví dụ</h4>
+<pre class="http">GET /v1/tags?page=1&amp;limit=100</pre>
+    <div class="codetabs" data-ex="tags"><pre class="fallback"><code>curl -sS "https://api.lmes.jp/v1/tags?page=1&amp;limit=100" \
+  -H "X-LME-API-KEY: $LME_API_KEY"</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_7a0026ae",
+  "data": {
+    "tags": [
+      { "id": 105, "name": "フォーム回答済み", "friend_count": 1 },
+      { "id": 104, "name": "キャンペーン除外", "friend_count": 0 },
+      { "id": 103, "name": "セミナー参加", "friend_count": 12 },
+      { "id": 102, "name": "VIP", "friend_count": 140 },
+      { "id": 101, "name": "カゴ落ち", "friend_count": 25 }
+    ]
+  },
+  "pagination": { "page": 1, "limit": 100, "total_items": 5, "total_pages": 1, "has_next": false }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 2</span> Duyệt trang: <code>limit=2&amp;page=2</code> — trang 2 của cùng danh sách trên:</p>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_8d9e0f1a",
+  "data": {
+    "tags": [
+      { "id": 103, "name": "セミナー参加", "friend_count": 12 },
+      { "id": 102, "name": "VIP", "friend_count": 140 }
+    ]
+  },
+  "pagination": { "page": 2, "limit": 2, "total_items": 5, "total_pages": 3, "has_next": true }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 3</span> Bot chưa có tag: <code>"tags": []</code>, <code>"pagination": {"page": 1, "limit": 100, "total_items": 0, "total_pages": 0, "has_next": false}</code>.</p>
+  </div>
+</article>
+
+<!-- ---------------- GET /friend-info-fields ---------------- -->
+<article class="ep" id="ep-fields">
+  <div class="ep-head"><span class="mtd get">GET</span><span class="ep-path">/v1/friend-info-fields</span><h3>Lấy danh sách friend info field</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>read / full</b></span><span>Rate limit: <b>Đọc</b></span><span>Phân trang: <b>pagination</b></span></div>
+    <p>Lấy field ID, kiểu field và danh sách option (với SELECT) để cập nhật friend info qua <code>/do_action</code>. Trang 1 luôn bắt đầu bằng các built-in field (ID âm, xem <a href="#enum-builtin">7.2</a>), sau đó là custom field (ID dương).</p>
+    <h4>HTTP request</h4><pre class="http">GET https://api.lmes.jp/v1/friend-info-fields</pre>
+    <h4>Query parameter</h4>
+    <div class="tbl"><table><thead><tr><th>Parameter</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+      <tr><td class="k"><code>page</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>Trang, từ 1.</td><td>1</td></tr>
+      <tr><td class="k"><code>limit</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>1–500.</td><td>100</td></tr>
+    </tbody></table></div>
+    <h4>Response</h4>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>data.fields[].field_id</code></td><td>integer</td><td>Field ID. Âm = built-in, dương = custom.</td></tr>
+      <tr><td><code>data.fields[].title</code></td><td>string</td><td>Tên field.</td></tr>
+      <tr><td><code>data.fields[].field_type</code></td><td>string</td><td><code>TEXT</code> <code>POINT</code> <code>DATE</code> <code>SELECT</code> <code>IMAGE</code> <code>FILE</code> (<a href="#enum-fieldtype">7.1</a>).</td></tr>
+      <tr><td><code>data.fields[].options</code></td><td>array&lt;object&gt; | null</td><td>Chỉ có giá trị khi <code>field_type = SELECT</code> và field đã cấu hình option; còn lại luôn <code>null</code>. Field <code>-6</code> (都道府県名) luôn trả đủ 47 option (<a href="#enum-pref">7.3</a>).</td></tr>
+      <tr><td><code>…options[].option_id</code></td><td>integer</td><td>Option ID — dùng cho <code>option_id</code> của action <code>friend_info.set</code>.</td></tr>
+      <tr><td><code>…options[].label</code></td><td>string</td><td>Nhãn option — là giá trị thấy được ở <code>/friends/detail</code>.</td></tr>
+      <tr><td><code>data.warnings</code></td><td>array&lt;string&gt;</td><td>Chỉ khi <code>limit</code> &gt; 500.</td></tr>
+      <tr><td><code>pagination</code></td><td>object</td><td><a href="#pagination">2.8</a>.</td></tr>
+    </tbody></table></div>
+    <h4>Lỗi riêng</h4>
+    <p>Chỉ lỗi <code>page</code>/<code>limit</code> (400).</p>
+    <h4>Ví dụ</h4>
+<pre class="http">GET /v1/friend-info-fields?page=1&amp;limit=100</pre>
+    <div class="codetabs" data-ex="fields"><pre class="fallback"><code>curl -sS "https://api.lmes.jp/v1/friend-info-fields?page=1&amp;limit=100" \
+  -H "X-LME-API-KEY: $LME_API_KEY"</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_7a003a05",
+  "data": {
+    "fields": [
+      { "field_id": -1, "title": "システム表示名", "field_type": "TEXT", "options": null },
+      { "field_id": -2, "title": "携帯電話", "field_type": "TEXT", "options": null },
+      { "field_id": -3, "title": "メールアドレス", "field_type": "TEXT", "options": null },
+      { "field_id": -4, "title": "生年月日", "field_type": "DATE", "options": null },
+      { "field_id": -6, "title": "都道府県名", "field_type": "SELECT", "options": [
+          { "option_id": 1, "label": "北海道" },
+          { "option_id": 13, "label": "東京都" },
+          { "option_id": 47, "label": "沖縄県" }
+      ] },
+      { "field_id": -7, "title": "郵便番号", "field_type": "TEXT", "options": null },
+      { "field_id": -8, "title": "市区町村名", "field_type": "TEXT", "options": null },
+      { "field_id": -9, "title": "町名/番地", "field_type": "TEXT", "options": null },
+      { "field_id": -10, "title": "建物名・部屋番号", "field_type": "TEXT", "options": null },
+      { "field_id": 5001, "title": "購入回数", "field_type": "POINT", "options": null },
+      { "field_id": 5002, "title": "会員ランク", "field_type": "SELECT", "options": [
+          { "option_id": 1, "label": "ゴールド" },
+          { "option_id": 2, "label": "シルバー" }
+      ] },
+      { "field_id": 5003, "title": "最終購入日", "field_type": "DATE", "options": null },
+      { "field_id": 5592, "title": "会員証画像", "field_type": "IMAGE", "options": null },
+      { "field_id": 5593, "title": "申込書PDF", "field_type": "FILE", "options": null },
+      { "field_id": 5610, "title": "希望エリア", "field_type": "SELECT", "options": null }
+    ]
+  },
+  "pagination": { "page": 1, "limit": 100, "total_items": 15, "total_pages": 1, "has_next": false }
+}</code></pre>
+    <h4>Giá trị chấp nhận khi ghi (<code>/do_action</code>)</h4>
+    <div class="tbl"><table><thead><tr><th><code>field_type</code></th><th>Giá trị hợp lệ</th></tr></thead><tbody>
+      <tr><td><code>TEXT</code></td><td>Chuỗi bất kỳ. API không giới hạn độ dài ở bước kiểm tra.</td></tr>
+      <tr><td><code>POINT</code></td><td>Số nguyên, cho phép số âm (ví dụ <code>-5</code>). Không nhận số thập phân. API không giới hạn min/max ở bước kiểm tra.</td></tr>
+      <tr><td><code>DATE</code></td><td><code>YYYY-MM-DD</code>.</td></tr>
+      <tr><td><code>SELECT</code></td><td><code>option_id</code> trong <code>options[]</code>.</td></tr>
+      <tr><td><code>IMAGE</code> / <code>FILE</code></td><td>URL HTTPS — ràng buộc ở <a href="#act-friend-info">friend_info</a>.</td></tr>
+    </tbody></table></div>
+    <p class="lead" style="font-size:13px">Sample rút gọn <code>options</code> của field <code>-6</code> — thực tế trả đủ 47 tỉnh. Field <code>5610</code> là SELECT chưa cấu hình option nên <code>options</code> = <code>null</code> (chưa thể <code>set</code> giá trị cho field này qua API). IMAGE/FILE ghi bằng URL — xem <a href="#act-friend-info">friend_info</a>.</p>
+  </div>
+</article>
+
+<!-- ---------------- GET /scenarios ---------------- -->
+<article class="ep" id="ep-scenarios">
+  <div class="ep-head"><span class="mtd get">GET</span><span class="ep-path">/v1/scenarios</span><h3>Lấy danh sách scenario</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>read / full</b></span><span>Rate limit: <b>Đọc</b></span><span>Phân trang: <b>pagination</b></span></div>
+    <p>Lấy scenario (step message) của bot để có <code>scenario_id</code> trước khi start/stop/resume qua <code>/do_action</code>. Chỉ trả scenario chưa xoá.</p>
+    <h4>HTTP request</h4><pre class="http">GET https://api.lmes.jp/v1/scenarios</pre>
+    <h4>Query parameter</h4>
+    <div class="tbl"><table><thead><tr><th>Parameter</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+      <tr><td class="k"><code>page</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>Trang, từ 1.</td><td>1</td></tr>
+      <tr><td class="k"><code>limit</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>1–500.</td><td>100</td></tr>
+    </tbody></table></div>
+    <h4>Response</h4>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>data.scenarios[].scenario_id</code></td><td>integer</td><td>Scenario ID.</td></tr>
+      <tr><td><code>data.scenarios[].name</code></td><td>string</td><td>Tên scenario.</td></tr>
+      <tr><td><code>data.scenarios[].followers_count</code></td><td>integer</td><td>Số friend đang nhận scenario (購読中).</td></tr>
+      <tr><td><code>data.scenarios[].completed_count</code></td><td>integer</td><td>Số friend đã nhận hết scenario (読了済).</td></tr>
+      <tr><td><code>data.scenarios[].dropped_count</code></td><td>integer</td><td>Số friend dừng giữa chừng (途中停止).</td></tr>
+      <tr><td><code>data.warnings</code></td><td>array&lt;string&gt;</td><td>Chỉ khi <code>limit</code> &gt; 500.</td></tr>
+      <tr><td><code>pagination</code></td><td>object</td><td><a href="#pagination">2.8</a>.</td></tr>
+    </tbody></table></div>
+    <p>Ba số đếm khớp với 3 cột tương ứng trên màn hình danh sách scenario của LME.</p>
+    <h4>Lỗi riêng</h4><p>Chỉ lỗi <code>page</code>/<code>limit</code> (400).</p>
+    <h4>Ví dụ</h4>
+<pre class="http">GET /v1/scenarios?page=1&amp;limit=100</pre>
+    <div class="codetabs" data-ex="scenarios"><pre class="fallback"><code>curl -sS "https://api.lmes.jp/v1/scenarios?page=1&amp;limit=100" \
+  -H "X-LME-API-KEY: $LME_API_KEY"</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_7a004d5c",
+  "data": {
+    "scenarios": [
+      { "scenario_id": 88, "name": "カゴ落ちリマインド", "followers_count": 120, "completed_count": 80, "dropped_count": 5 }
+    ]
+  },
+  "pagination": { "page": 1, "limit": 100, "total_items": 1, "total_pages": 1, "has_next": false }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 2</span> Nhiều scenario, gồm scenario mới tạo chưa có ai nhận (mọi số đếm = 0):</p>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_9e0f1a2b",
+  "data": {
+    "scenarios": [
+      { "scenario_id": 13424, "name": "セミナー案内", "followers_count": 12, "completed_count": 1, "dropped_count": 1 },
+      { "scenario_id": 13343, "name": "11月キャンペーン", "followers_count": 0, "completed_count": 0, "dropped_count": 0 },
+      { "scenario_id": 12812, "name": "新規登録フォロー", "followers_count": 0, "completed_count": 2, "dropped_count": 0 }
+    ]
+  },
+  "pagination": { "page": 1, "limit": 3, "total_items": 8, "total_pages": 3, "has_next": true }
+}</code></pre>
+  </div>
+</article>
+
+<!-- ---------------- POST /messages/push ---------------- -->
+<article class="ep" id="ep-push">
+  <div class="ep-head"><span class="mtd post">POST</span><span class="ep-path">/v1/messages/push</span><h3>Gửi message (text / image / video / audio)</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>full</b></span><span>Rate limit: <b>Ghi (60/phút)</b></span><span>Idempotency: <b>hỗ trợ</b></span></div>
+    <p>Gửi 1–5 message cho 1 friend, theo đúng thứ tự trong mảng. Mảng có thể trộn text và media. Message gửi đi xuất hiện trong lịch sử chat 1:1 của LME. Text được xử lý giống tin gửi từ màn hình chat của LME: token như <code>{name}</code> được thay bằng giá trị thật (xem <a href="#msg-text">Text message</a>).</p>
+    <div class="warn"><b class="t">KHÔNG THỂ THU HỒI</b><p>Message đã gửi tới LINE không thể huỷ. Luôn dùng <code>Idempotency-Key</code> khi có retry; thử nghiệm trên staging trước.</p></div>
+    <h4>HTTP request</h4><pre class="http">POST https://api.lmes.jp/v1/messages/push</pre>
+    <h4>Request header</h4>
+    <div class="tbl"><table><thead><tr><th>Header</th><th></th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>X-LME-API-KEY</code></td><td><span class="req y">Bắt buộc</span></td><td>Key scope <code>full</code>.</td></tr>
+      <tr><td><code>Content-Type</code></td><td><span class="req y">Bắt buộc</span></td><td><code>application/json</code></td></tr>
+      <tr><td><code>Idempotency-Key</code></td><td><span class="req c">Khuyến nghị</span></td><td>≤ 100 ký tự (<a href="#idempotency">2.9</a>). Bỏ trống → không chống gửi trùng.</td></tr>
+    </tbody></table></div>
+    <h4>Request body</h4>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+      <tr><td class="k"><code>friend_id</code></td><td>integer | string</td><td><span class="req y">Bắt buộc</span></td><td>Friend nhận message. Kiểu phụ thuộc <code>id_type</code>: số (<code>12345</code> hoặc <code>"12345"</code>) với <code>lmessage_friend_id</code>; chuỗi <code>U…</code> với <code>line_friend_id</code>.</td><td>400</td></tr>
+      <tr><td class="k"><code>id_type</code></td><td>string</td><td><span class="req n">Tuỳ chọn</span></td><td><code>lmessage_friend_id</code> | <code>line_friend_id</code> (phân biệt chữ hoa/thường).</td><td><code>lmessage_friend_id</code></td></tr>
+      <tr><td class="k"><code>messages</code></td><td>array&lt;<a href="#message-objects">Message object</a>&gt;</td><td><span class="req y">Bắt buộc</span></td><td>1–5 phần tử, gửi theo thứ tự.</td><td>400</td></tr>
+      <tr><td class="k"><code>mark_confirmed</code></td><td>boolean</td><td><span class="req n">Tuỳ chọn</span></td><td><code>true</code> → đánh dấu conversation là đã đọc (確認済み) sau khi gửi.</td><td><code>false</code> (giữ nguyên trạng thái đã đọc)</td></tr>
+    </tbody></table></div>
+    <p>Cấu trúc và giới hạn của từng loại message: xem <a href="#message-objects">5. Message object</a>.</p>
+    <h4>Response</h4>
+    <p>HTTP <span class="st s2">200</span> — <code>{"success": true, "request_id": "…"}</code>. Thành công nghĩa là LME đã kiểm tra request và <b>đưa message vào hàng đợi gửi</b>; việc gửi tới LINE Platform diễn ra ngay sau đó (thường trong vài giây). Response không xác nhận friend đã nhận được message. Message gửi lỗi ở bước này không xuất hiện trong <a href="#ep-conv-detail">/conversations/detail</a>.</p>
+    <p>Gặp timeout hoặc 500: message có thể đã vào hàng đợi. Retry kèm cùng <code>Idempotency-Key</code> theo <a href="#idempotency">2.9</a> — với 500, kiểm tra <code>/conversations/detail</code> trước khi gửi lại.</p>
+    <h4 id="send-quota">Cách tính hạn mức gửi tin</h4>
+    <p>Áp dụng cho cả <code>/messages/push</code> và <a href="#ep-send-template">/messages/template</a>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Hạn mức</th><th>Cách đếm</th></tr></thead>
+      <tbody>
+        <tr><td>Gói free của LME (1.000 tin/tháng)</td><td><b>1 request gửi thành công = 1 tin</b>, dù request có 1 hay 5 phần tử, và dù template nhóm nở ra bao nhiêu message. Nếu toàn bộ message trong request gửi lỗi, tin đó được hoàn lại. Bot gói trả phí của LME không bị đếm.</td></tr>
+        <tr><td>Gói LINE Official Account</td><td>Do LINE đếm theo số lần LME gọi API gửi của LINE. LME gửi tối đa 5 message mỗi lần gọi: request có ≤ 5 message tính 1 tin; request <code>/messages/template</code> nở ra hơn 5 message (template nhóm) được gửi thành nhiều lần gọi và tính nhiều tin.</td></tr>
+      </tbody></table></div>
+    <p>Hạn mức được kiểm tra lúc nhận request (hết hạn mức → <span class="st s4">403</span> <code>quota_exceeded</code>) và kiểm tra lại lúc gửi. Nếu gói free chạm hạn mức trong lúc message đang chờ trong hàng đợi, message không được gửi; LME hiển thị nó trong lịch sử chat với trạng thái lỗi "配信数がエルメのフリープラン上限（1,000通）に達しました。…", còn API không trả message lỗi nên nó không xuất hiện trong <code>/conversations/detail</code>.</p>
+    <h4>Lỗi riêng</h4>
+    <p>Server kiểm tra lần lượt: friend → mảng <code>messages</code> → từng message theo thứ tự (phần tử lỗi đầu tiên được báo với chỉ số <code>messages[i]</code>). Nếu có lỗi, <b>không</b> message nào được gửi.</p>
+    <div class="tbl"><table><thead><tr><th>HTTP</th><th>code</th><th>message (ví dụ)</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead><tbody>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>friend_id is required.</td><td>Thiếu <code>friend_id</code></td><td>Thêm field</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>id_type must be one of lmessage_friend_id|line_friend_id, got: line_user_id</td><td>Giá trị <code>id_type</code> lạ</td><td>Dùng 1 trong 2 giá trị</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>friend_id must be a numeric lmessage_friend_id.</td><td>Gửi <code>U…</code> nhưng quên <code>id_type=line_friend_id</code></td><td>Thêm <code>id_type</code> hoặc dùng ID số</td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>friend not found: 12345 / friend not found, line_friend_id: U…</td><td>Friend không thuộc bot</td><td>Kiểm tra ID</td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>messages is required.</td><td>Thiếu <code>messages</code></td><td>Thêm mảng</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>messages must be a non-empty array.</td><td><code>messages: []</code></td><td>Ít nhất 1 phần tử</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>messages exceeds max 5 per request.</td><td>&gt; 5 phần tử</td><td>Tách thành nhiều request</td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>messages[0].type is required.</td><td>Thiếu <code>type</code> hoặc phần tử <code>null</code></td><td>Thêm <code>type</code></td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>messages[0].type must be one of text|image|video|audio, got: sticker</td><td>Loại message không hỗ trợ</td><td>Dùng text/image/video/audio; loại khác gửi qua template</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>messages[i] … (xem <a href="#message-objects">mục 5</a>)</td><td>Vi phạm ràng buộc text/media/preview/duration</td><td>Xem bảng lỗi của từng message object</td></tr>
+      <tr><td>403</td><td><code>quota_exceeded</code></td><td>月1000通の配信上限が超えました。</td><td>Hết hạn mức tin/tháng của gói</td><td>Chờ kỳ sau hoặc nâng gói</td></tr>
+      <tr><td>403</td><td><code>quota_exceeded</code></td><td>LINEプランの配信上限に達しました。</td><td>Hết hạn mức tin của gói LINE Official Account</td><td>Chờ kỳ sau hoặc nâng gói LINE OA</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>Bot plan expired (over 7 days). Sending is disabled.</td><td>Gói LME của bot đã hết hạn quá 7 ngày</td><td>Gia hạn gói trên LME</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>ブロックしていますので送信できません。</td><td>Friend đã chặn LINE OA (<code>block_status = "blocked"</code>)</td><td>Không retry. Bỏ qua friend này cho tới khi friend bỏ chặn</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>(nội dung do hệ thống gửi tin trả về)</td><td>Hệ thống gửi tin LME từ chối message</td><td>Đọc <code>error.message</code>, sửa nội dung</td></tr>
+      <tr><td>400/409</td><td><code>invalid_request</code> / <code>conflict</code> / <code>in_progress</code></td><td>—</td><td>Lỗi <code>Idempotency-Key</code></td><td><a href="#idempotency">2.9</a></td></tr>
+    </tbody></table></div>
+    <h4>Ví dụ</h4>
+<pre class="http">POST /v1/messages/push
+Content-Type: application/json
+Idempotency-Key: push-12345-20261116-0001
+
+{
+  "friend_id": 12345,
+  "id_type": "lmessage_friend_id",
+  "messages": [
+    { "type": "text", "text": "お問い合わせありがとうございます。ご案内資料をお送りします。" },
+    { "type": "image", "url": "https://cdn.example.co.jp/images/guide.jpg", "preview_url": "https://cdn.example.co.jp/images/guide_preview.jpg" },
+    { "type": "video", "url": "https://cdn.example.co.jp/videos/intro.mp4", "preview_url": "https://cdn.example.co.jp/videos/intro_preview.jpg" },
+    { "type": "audio", "url": "https://cdn.example.co.jp/audio/guide.m4a", "duration": 60000 }
+  ],
+  "mark_confirmed": true
+}</pre>
+    <div class="codetabs" data-ex="push"><pre class="fallback"><code>curl -sS -X POST "https://api.lmes.jp/v1/messages/push" \
+  -H "X-LME-API-KEY: $LME_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: push-12345-20261116-0001" \
+  -d '{
+  "friend_id": 12345,
+  "id_type": "lmessage_friend_id",
+  "messages": [
+    {
+      "type": "text",
+      "text": "お問い合わせありがとうございます。ご案内資料をお送りします。"
+    },
+    {
+      "type": "image",
+      "url": "https://cdn.example.co.jp/images/guide.jpg",
+      "preview_url": "https://cdn.example.co.jp/images/guide_preview.jpg"
+    },
+    {
+      "type": "video",
+      "url": "https://cdn.example.co.jp/videos/intro.mp4",
+      "preview_url": "https://cdn.example.co.jp/videos/intro_preview.jpg"
+    },
+    {
+      "type": "audio",
+      "url": "https://cdn.example.co.jp/audio/guide.m4a",
+      "duration": 60000
+    }
+  ],
+  "mark_confirmed": true
+}'</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_7a0060b3"
+}</code></pre>
+    <p>Gửi theo LINE user ID:</p>
+<pre class="code"><code>{ "friend_id": "U1a2b3c4d5e6f708192a3b4c5d6e7f809", "id_type": "line_friend_id",
+  "messages": [ { "type": "text", "text": "ご注文 #8812 の商品を発送しました。" } ] }</code></pre>
+  </div>
+</article>
+
+<!-- ---------------- POST /messages/template ---------------- -->
+<article class="ep" id="ep-send-template">
+  <div class="ep-head"><span class="mtd post">POST</span><span class="ep-path">/v1/messages/template</span><h3>Gửi template message</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>full</b></span><span>Rate limit: <b>Ghi</b></span><span>Idempotency: <b>hỗ trợ</b></span></div>
+    <p>Gửi 1–5 template đã tạo sẵn trên LME cho 1 friend, theo thứ tự trong mảng. Dùng khi nội dung phức tạp (button, carousel, nhiều loại message…) hoặc cần quản lý nội dung trên LME thay vì trong hệ thống của bạn.</p>
+    <ul>
+      <li>Gửi được mọi template có trong <a href="#ep-templates">/templates</a>: text, ảnh, video, audio, sticker, vị trí, button, carousel, quick reply, template nhóm (gồm nhiều message).</li>
+      <li>Template nhóm được gửi thành nhiều message liên tiếp. Hạn mức gói free của LME tính <b>1 tin cho cả request</b>, dù có bao nhiêu template (xem <a href="#send-quota">Cách tính hạn mức gửi tin</a>).</li>
+      <li>Nút trong template giữ nguyên hành động đã cấu hình trên LME — hành động chạy khi friend bấm nút, giống như khi gửi template từ LME.</li>
+      <li>Token trong template (ví dụ <code>{name}</code>) được thay bằng giá trị thật lúc gửi, như <a href="#msg-text">Text message</a>.</li>
+      <li>Như <code>/messages/push</code>: thành công nghĩa là đã đưa vào hàng đợi gửi.</li>
+    </ul>
+    <h4>HTTP request</h4><pre class="http">POST https://api.lmes.jp/v1/messages/template</pre>
+    <h4>Request header</h4><p>Giống <a href="#ep-push">/messages/push</a>.</p>
+    <h4>Request body</h4>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+      <tr><td class="k"><code>friend_id</code></td><td>integer | string</td><td><span class="req y">Bắt buộc</span></td><td>Như <code>/messages/push</code>.</td><td>400</td></tr>
+      <tr><td class="k"><code>id_type</code></td><td>string</td><td><span class="req n">Tuỳ chọn</span></td><td><code>lmessage_friend_id</code> | <code>line_friend_id</code>.</td><td><code>lmessage_friend_id</code></td></tr>
+      <tr><td class="k"><code>templates</code></td><td>array&lt;object&gt;</td><td><span class="req y">Bắt buộc</span></td><td>1–5 phần tử, gửi theo thứ tự.</td><td>400</td></tr>
+      <tr><td class="k"><code>templates[].template_id</code></td><td>integer</td><td><span class="req y">Bắt buộc</span></td><td>Template ID từ <code>/templates</code>.</td><td>400</td></tr>
+      <tr><td class="k"><code>templates[].edited_content</code> <span class="pill new">mới</span></td><td>string</td><td><span class="req n">Tuỳ chọn</span></td><td>Nội dung text thay thế cho lần gửi này (token được thay như <a href="#msg-text">Text message</a>; chuỗi rỗng = không thay thế). Nên giữ ≤ 5.000 ký tự — giới hạn text của LINE. <b>Chỉ</b> dùng với template loại text; template loại khác → 422 và không message nào được gửi. <code>/templates</code> hiện không trả loại template — hãy ghi lại loại khi tạo template trên LME, hoặc thử trên staging. Template gốc trên LME không bị sửa.</td><td>Gửi nội dung gốc của template</td></tr>
+      <tr><td class="k"><code>mark_confirmed</code></td><td>boolean</td><td><span class="req n">Tuỳ chọn</span></td><td>Như <code>/messages/push</code>.</td><td><code>false</code></td></tr>
+    </tbody></table></div>
+    <h4>Response</h4><p>HTTP <span class="st s2">200</span> — <code>{"success": true, "request_id": "…"}</code>.</p>
+    <h4>Lỗi riêng</h4>
+    <p>Kiểm tra friend → mảng → từng template. Có lỗi thì không template nào được gửi.</p>
+    <div class="tbl"><table><thead><tr><th>HTTP</th><th>code</th><th>message (ví dụ)</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead><tbody>
+      <tr><td>400 / 422 / 404</td><td>—</td><td>friend_id is required. …</td><td>Lỗi friend (giống <code>/messages/push</code>)</td><td>—</td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>templates is required.</td><td>Thiếu <code>templates</code></td><td>Thêm mảng</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>templates must be a non-empty array.</td><td>Mảng rỗng</td><td>≥ 1 phần tử</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>templates exceeds max 5 per request.</td><td>&gt; 5 phần tử</td><td>Tách request</td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>templates[0].template_id is required.</td><td>Thiếu <code>template_id</code></td><td>Thêm ID</td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>templates[0] template_id not found: 7001</td><td>Template không tồn tại, đã xoá (vào thùng rác), nằm trong thư mục ẩn, hoặc thuộc bot khác</td><td>Làm mới <code>/templates</code></td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>templates[0] edited_content is only allowed for text templates, template 7001 has type: …</td><td>Dùng <code>edited_content</code> với template không phải text</td><td>Bỏ <code>edited_content</code></td></tr>
+      <tr><td>403</td><td><code>quota_exceeded</code></td><td>月1000通の配信上限が超えました。</td><td>Hết hạn mức gửi tin</td><td>Chờ kỳ sau / nâng gói</td></tr>
+      <tr><td>403</td><td><code>quota_exceeded</code></td><td>LINEプランの配信上限に達しました。</td><td>Hết hạn mức tin của gói LINE Official Account</td><td>Chờ kỳ sau / nâng gói LINE OA</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>Bot plan expired (over 7 days). Sending is disabled.</td><td>Gói LME của bot đã hết hạn quá 7 ngày</td><td>Gia hạn gói trên LME</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>ブロックしていますので送信できません。</td><td>Friend đã chặn LINE OA</td><td>Không retry</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>templates[0] template 7001 has no sendable message.</td><td>Template không có nội dung gửi được (ví dụ template nhóm rỗng)</td><td>Kiểm tra template trên LME</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>(nội dung do hệ thống gửi tin trả về)</td><td>Hệ thống gửi tin từ chối</td><td>Đọc <code>error.message</code></td></tr>
+    </tbody></table></div>
+    <h4>Ví dụ</h4>
+<pre class="http">POST /v1/messages/template
+Content-Type: application/json
+Idempotency-Key: ship-8812
+
+{
+  "friend_id": 12345,
+  "templates": [
+    { "template_id": 7001 },
+    { "template_id": 7003, "edited_content": "{name}様\nご注文 #8812 の商品を発送しました。" }
+  ],
+  "mark_confirmed": false
+}</pre>
+    <div class="codetabs" data-ex="sendTemplate"><pre class="fallback"><code>curl -sS -X POST "https://api.lmes.jp/v1/messages/template" \
+  -H "X-LME-API-KEY: $LME_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: ship-8812" \
+  -d '{
+  "friend_id": 12345,
+  "templates": [
+    {
+      "template_id": 7001
+    },
+    {
+      "template_id": 7003,
+      "edited_content": "{name}様\nご注文 #8812 の商品を発送しました。"
+    }
+  ],
+  "mark_confirmed": false
+}'</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_7a00740a"
+}</code></pre>
+  </div>
+</article>
+
+<!-- ---------------- GET /templates ---------------- -->
+<article class="ep" id="ep-templates">
+  <div class="ep-head"><span class="mtd get">GET</span><span class="ep-path">/v1/templates</span><h3>Lấy danh sách template</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>read / full</b></span><span>Rate limit: <b>Đọc</b></span><span>Phân trang: <b>pagination</b></span></div>
+    <p>Lấy template có thể gửi qua <code>/messages/template</code>. Không bao gồm template trong thùng rác, trong thư mục ẩn, hoặc thuộc thư mục đã xoá. Thứ tự giống màn hình template của LME: theo thứ tự thư mục, trong mỗi thư mục template mới hơn ở trên.</p>
+    <h4>HTTP request</h4><pre class="http">GET https://api.lmes.jp/v1/templates</pre>
+    <h4>Query parameter</h4>
+    <div class="tbl"><table><thead><tr><th>Parameter</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+      <tr><td class="k"><code>page</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>Trang, từ 1.</td><td>1</td></tr>
+      <tr><td class="k"><code>limit</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>1–500.</td><td>100</td></tr>
+    </tbody></table></div>
+    <h4>Response</h4>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>data.templates[].template_id</code></td><td>integer</td><td>Template ID.</td></tr>
+      <tr><td><code>data.templates[].name</code></td><td>string</td><td>Tên template.</td></tr>
+      <tr><td><code>data.warnings</code></td><td>array&lt;string&gt;</td><td>Chỉ khi <code>limit</code> &gt; 500.</td></tr>
+      <tr><td><code>pagination</code></td><td>object</td><td><a href="#pagination">2.8</a>.</td></tr>
+    </tbody></table></div>
+    <h4>Lỗi riêng</h4><p>Chỉ lỗi <code>page</code>/<code>limit</code> (400).</p>
+    <h4>Ví dụ</h4>
+<pre class="http">GET /v1/templates?page=1&amp;limit=100</pre>
+    <div class="codetabs" data-ex="templates"><pre class="fallback"><code>curl -sS "https://api.lmes.jp/v1/templates?page=1&amp;limit=100" \
+  -H "X-LME-API-KEY: $LME_API_KEY"</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_0f1a2b3c",
+  "data": {
+    "templates": [
+      { "template_id": 7001, "name": "発送完了のお知らせ" },
+      { "template_id": 7002, "name": "レビューのお願い" }
+    ]
+  },
+  "pagination": { "page": 1, "limit": 100, "total_items": 24, "total_pages": 1, "has_next": false }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 2</span> Trang vượt quá tổng số trang — HTTP 200, mảng rỗng:</p>
+<pre class="http">GET /v1/templates?page=5&amp;limit=100</pre>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_2c3d4e5a",
+  "data": { "templates": [] },
+  "pagination": { "page": 5, "limit": 100, "total_items": 24, "total_pages": 1, "has_next": false }
+}</code></pre>
+    <p>Endpoint này chỉ trả ID và tên — <b>không</b> trả loại template (text, ảnh, button…) hay nội dung. Xem nội dung trên màn hình template của LME. Lưu ý khi dùng <code>edited_content</code> của <a href="#ep-send-template">/messages/template</a>: chỉ áp dụng cho template text.</p>
+  </div>
+</article>
+
+<!-- ---------------- GET /conversations ---------------- -->
+<article class="ep" id="ep-conversations">
+  <div class="ep-head"><span class="mtd get">GET</span><span class="ep-path">/v1/conversations</span><h3>Lấy danh sách conversation</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>read / full</b></span><span>Rate limit: <b>Đọc</b></span><span>Phân trang: <b>pagination</b></span></div>
+    <p>Lấy danh sách hội thoại chat 1:1 của bot. Sắp xếp: conversation <b>favorite trước</b>, sau đó theo tin nhắn cuối <b>mới nhất trước</b>. Response danh sách không có field <code>favorite</code> — xem ở <code>favorite</code> của <a href="#ep-conv-detail">/conversations/detail</a>. Dùng để tìm hội thoại chưa đọc, theo trạng thái xử lý, tên hoặc tag.</p>
+    <h4>HTTP request</h4><pre class="http">GET https://api.lmes.jp/v1/conversations</pre>
+    <h4>Query parameter</h4>
+    <div class="tbl"><table><thead><tr><th>Parameter</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+      <tr><td class="k"><code>page</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>Trang, từ 1.</td><td>1</td></tr>
+      <tr><td class="k"><code>limit</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td>1–500.</td><td>100</td></tr>
+      <tr><td class="k"><code>confirm_status</code></td><td>integer</td><td><span class="req n">Tuỳ chọn</span></td><td><code>0</code> = đã đọc (確認済み), <code>1</code> = chưa đọc (未確認 — đang chờ trả lời).</td><td>Cả hai</td></tr>
+      <tr><td class="k"><code>handling_status_ids</code></td><td>integer, CSV</td><td><span class="req n">Tuỳ chọn</span></td><td>Status ID từ <code>/handling-statuses</code>. Nhiều giá trị → OR.</td><td>Không lọc</td></tr>
+      <tr><td class="k"><code>handling_status_names</code></td><td>string, CSV</td><td><span class="req n">Tuỳ chọn</span></td><td>Tên trạng thái xử lý, khớp chính xác, không phân biệt hoa/thường. Gộp OR với <code>handling_status_ids</code>.</td><td>Không lọc</td></tr>
+      <tr><td class="k"><code>line_names</code></td><td>string, CSV</td><td><span class="req n">Tuỳ chọn</span></td><td>Tìm gần đúng theo tên LINE hoặc tên quản lý, không phân biệt hoa/thường. Nhiều tên → OR.</td><td>Không lọc</td></tr>
+      <tr><td class="k"><code>tag_ids</code></td><td>integer, CSV</td><td><span class="req n">Tuỳ chọn</span></td><td>Tag ID của friend. Gộp với <code>tag_names</code>.</td><td>Không lọc</td></tr>
+      <tr><td class="k"><code>tag_names</code></td><td>string, CSV</td><td><span class="req n">Tuỳ chọn</span></td><td>Tên tag, khớp chính xác, không phân biệt hoa/thường.</td><td>Không lọc</td></tr>
+      <tr><td class="k"><code>tag_mode</code></td><td>string</td><td><span class="req n">Tuỳ chọn</span></td><td><code>or</code> = có ít nhất 1 tag; <code>and</code> = có đủ tất cả tag. Chỉ có tác dụng khi có <code>tag_ids</code>/<code>tag_names</code>.</td><td><code>or</code></td></tr>
+      <tr><td class="k"><code>display_status</code></td><td>string</td><td><span class="req n">Tuỳ chọn</span></td><td><code>display</code> = đang hiển thị, <code>hidden</code> = đã ẩn, <code>all</code> = cả hai.</td><td><code>display</code></td></tr>
+    </tbody></table></div>
+    <p>Filter khác nhau kết hợp AND; nhiều giá trị trong cùng filter kết hợp OR (tag theo <code>tag_mode</code>). Tên chứa dấu phẩy: dùng filter theo ID.</p>
+    <h4>Response</h4>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>data.conversations[].lmessage_friend_id</code></td><td>integer</td><td>Dùng cho <code>/conversations/detail</code>, <code>/friends/detail</code>, <code>/do_action</code>.</td></tr>
+      <tr><td><code>…[].line_friend_id</code></td><td>string | null</td><td>LINE user ID.</td></tr>
+      <tr><td><code>…[].line_name</code></td><td>string</td><td>Tên LINE; <code>""</code> nếu không có.</td></tr>
+      <tr><td><code>…[].system_name</code></td><td>string | null</td><td>Tên quản lý trong LME.</td></tr>
+      <tr><td><code>…[].last_message</code></td><td>string | null</td><td>Nội dung tóm tắt của tin nhắn cuối.</td></tr>
+      <tr><td><code>…[].last_message_date</code></td><td>datetime | null</td><td>Thời điểm tin nhắn cuối, <code>+09:00</code>.</td></tr>
+      <tr><td><code>…[].confirm_status</code></td><td>string</td><td><code>read</code> (確認済み) | <code>unread</code> (未確認).</td></tr>
+      <tr><td><code>…[].handling_status</code></td><td>object | null</td><td><code>{id, name}</code>; <code>null</code> nếu chưa gắn.</td></tr>
+      <tr><td><code>data.warnings</code></td><td>array&lt;string&gt;</td><td>Chỉ khi <code>limit</code> &gt; 500.</td></tr>
+      <tr><td><code>pagination</code></td><td>object</td><td><a href="#pagination">2.8</a>.</td></tr>
+    </tbody></table></div>
+    <h4>Lỗi riêng</h4>
+    <div class="tbl"><table><thead><tr><th>HTTP</th><th>code</th><th>message (ví dụ)</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead><tbody>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>Parameter 'limit' has an invalid format (expected a numeric value).</td><td><code>page</code>/<code>limit</code> sai</td><td><a href="#pagination">2.8</a></td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>confirm_status must be 0 (read) or 1 (unread), got: 2</td><td>Giá trị khác 0/1</td><td>Dùng 0 hoặc 1</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>handling_status_ids must contain positive integer IDs (comma-separated), got: x</td><td>ID không phải số nguyên dương (tương tự <code>tag_ids</code>)</td><td>Sửa giá trị</td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>handling_status_ids not found: [99]. Use GET /v1/handling-statuses to list available statuses.</td><td>Status không tồn tại / thuộc bot khác</td><td>Làm mới danh sách</td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>handling_status_names not found: [フォローアップ]. …</td><td>Tên không khớp chính xác</td><td>Kiểm tra chính tả</td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>tag_ids not found: [999]. … / tag_names not found: [VIPP]. …</td><td>Tag không tồn tại</td><td>Làm mới <code>/tags</code></td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>tag_mode must be or|and, got: xor</td><td>Giá trị lạ</td><td><code>or</code> / <code>and</code></td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>display_status must be display|hidden|all, got: show</td><td>Giá trị lạ</td><td>Dùng 1 trong 3 giá trị</td></tr>
+    </tbody></table></div>
+    <h4>Ví dụ</h4>
+<pre class="http">GET /v1/conversations?page=1&amp;limit=50&amp;confirm_status=1&amp;handling_status_ids=12,13&amp;tag_names=VIP,カゴ落ち&amp;tag_mode=or</pre>
+    <div class="codetabs" data-ex="conversations"><pre class="fallback"><code>curl -sS "https://api.lmes.jp/v1/conversations?page=1&amp;limit=50&amp;confirm_status=1&amp;handling_status_ids=12%2C13&amp;tag_names=VIP%2C%E3%82%AB%E3%82%B4%E8%90%BD%E3%81%A1&amp;tag_mode=or" \
+  -H "X-LME-API-KEY: $LME_API_KEY"</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_1a2b3c4d",
+  "data": {
+    "conversations": [
+      {
+        "lmessage_friend_id": 12345,
+        "line_friend_id": "U1a2b3c4d5e6f708192a3b4c5d6e7f809",
+        "line_name": "田中太郎",
+        "system_name": "田中 太郎（会員No.0042）",
+        "last_message": "=========\n\n◯ ご希望の日時\n11月20日 午前\n\n=========",
+        "last_message_date": "2026-11-16T13:51:25+09:00",
+        "confirm_status": "unread",
+        "handling_status": { "id": 12, "name": "対応中" }
+      }
+    ]
+  },
+  "pagination": { "page": 1, "limit": 50, "total_items": 1, "total_pages": 1, "has_next": false }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 2</span> Không filter — hội thoại của 佐藤 (12346) là favorite nên đứng đầu dù tin cuối cũ hơn (response không có field <code>favorite</code>; <code>/conversations/detail?lmessage_friend_id=12346</code> trả <code>"favorite": "yes"</code>); <code>last_message</code> là bản tóm tắt (ví dụ thông báo trả lời form, tên sticker…); hội thoại chưa gắn trạng thái có <code>handling_status: null</code>:</p>
+<pre class="http">GET /v1/conversations?limit=3</pre>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_0a1b2c3e",
+  "data": {
+    "conversations": [
+      {
+        "lmessage_friend_id": 12346,
+        "line_friend_id": "U2b3c4d5e6f708192a3b4c5d6e7f8091a",
+        "line_name": "佐藤花子",
+        "system_name": "佐藤 花子",
+        "last_message": "ありがとうございます",
+        "last_message_date": "2026-11-12T09:00:02+09:00",
+        "confirm_status": "read",
+        "handling_status": { "id": 15, "name": "対応完了" }
+      },
+      {
+        "lmessage_friend_id": 12345,
+        "line_friend_id": "U1a2b3c4d5e6f708192a3b4c5d6e7f809",
+        "line_name": "田中太郎",
+        "system_name": "田中 太郎（会員No.0042）",
+        "last_message": "=========\n\n◯ ご希望の日時\n11月20日 午前\n\n=========",
+        "last_message_date": "2026-11-16T13:51:25+09:00",
+        "confirm_status": "unread",
+        "handling_status": { "id": 12, "name": "対応中" }
+      },
+      {
+        "lmessage_friend_id": 12401,
+        "line_friend_id": "U0c1d2e3f405162738495a6b7c8d9e0f1",
+        "line_name": "",
+        "system_name": null,
+        "last_message": null,
+        "last_message_date": "2026-11-10T08:15:40+09:00",
+        "confirm_status": "read",
+        "handling_status": null
+      }
+    ]
+  },
+  "pagination": { "page": 1, "limit": 3, "total_items": 7, "total_pages": 3, "has_next": true }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 3</span> Lọc theo tên trạng thái xử lý và hội thoại đã ẩn:</p>
+<pre class="http">GET /v1/conversations?handling_status_names=トラブル,フォロー&amp;display_status=hidden</pre>
+    <p>Kết quả cùng cấu trúc ở trên; nếu không có hội thoại khớp: <code>"conversations": []</code> với <code>total_items: 0</code>.</p>
+    <p><span class="exlabel">Ví dụ 4</span> Tên tag không tồn tại:</p>
+<pre class="code"><code>HTTP/1.1 404
+{
+  "success": false,
+  "request_id": "req_20261116_1b2c3d4f",
+  "error": { "code": "not_found", "message": "tag_names not found: [VIPP]. Use GET /v1/tags to list available tags." }
+}</code></pre>
+  </div>
+</article>
+
+<!-- ---------------- GET /conversations/detail ---------------- -->
+<article class="ep" id="ep-conv-detail">
+  <div class="ep-head"><span class="mtd get">GET</span><span class="ep-path">/v1/conversations/detail</span><h3>Lấy message gần nhất của friend</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>read / full</b></span><span>Rate limit: <b>Đọc</b></span><span>Phân trang: <b>không (tối đa 100)</b></span></div>
+    <p>Lấy tối đa 100 message gần nhất của 1 friend kèm trạng thái conversation, để CRM / AI xem ngữ cảnh hội thoại.</p>
+    <h4>Giới hạn</h4>
+    <div class="tbl"><table><thead><tr><th>Hạng mục</th><th>Giới hạn</th></tr></thead><tbody>
+      <tr><td>Số message</td><td>Tối đa <b>100</b> message gần nhất. Không lấy được message cũ hơn qua API này.</td></tr>
+      <tr><td>Thứ tự</td><td><b>Mới nhất trước</b> (<code>messages[0]</code> là message mới nhất).</td></tr>
+      <tr><td>Phạm vi lịch sử</td><td>Bot gói <b>free</b>: 180 ngày gần nhất. Bot <b>trả phí</b>: 365 ngày gần nhất.</td></tr>
+      <tr><td>Message lỗi</td><td>Message gửi thất bại (trạng thái ERROR) <b>không</b> được trả về — khớp với màn hình chat của LME.</td></tr>
+    </tbody></table></div>
+    <h4>HTTP request</h4><pre class="http">GET https://api.lmes.jp/v1/conversations/detail</pre>
+    <h4>Query parameter</h4>
+    <div class="tbl"><table><thead><tr><th>Parameter</th><th>Type</th><th></th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td class="k"><code>lmessage_friend_id</code></td><td>integer</td><td><span class="req y">Bắt buộc</span></td><td>Friend cần lấy hội thoại.</td></tr>
+    </tbody></table></div>
+    <h4>Response</h4>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>data.lmessage_friend_id</code></td><td>integer</td><td>Friend đã truy vấn.</td></tr>
+      <tr><td><code>data.messages[]</code></td><td>array&lt;object&gt;</td><td>0–100 message, mới nhất trước.</td></tr>
+      <tr><td><code>…[].delivery_date</code></td><td>datetime</td><td>Thời điểm gửi/nhận, <code>+09:00</code>.</td></tr>
+      <tr><td><code>…[].sender</code></td><td>string</td><td><code>friend</code> (friend gửi) | <code>LINE_OA</code> (bot/nhân viên gửi, kể cả gửi tự động).</td></tr>
+      <tr><td><code>…[].message_type</code></td><td>string</td><td>Loại message — xem <a href="#enum-msgtype">7.4</a>.</td></tr>
+      <tr><td><code>…[].data</code></td><td>string | array | object | null</td><td>Nội dung đã chuẩn hoá theo <code>message_type</code>: text, image, video, audio, file, action_from_booking → string; template, broadcast, event, action, scenario → mảng (scenario có thể là string khi không còn dữ liệu template); pdf, sticker, location, stop_scenario, scenario_empty_step, start_remind, stop_remind, action_from_booking_salon/lesson → object; dòng log hệ thống có thể là <code>null</code>. Ví dụ đầy đủ từng loại: <a href="#conv-gallery">bảng ví dụ theo message_type</a>.</td></tr>
+      <tr><td><code>data.handling_status</code></td><td>object | null</td><td><code>{id, name}</code> trạng thái xử lý hiện tại.</td></tr>
+      <tr><td><code>data.display_status</code></td><td>string</td><td><code>display</code> | <code>hidden</code>.</td></tr>
+      <tr><td><code>data.block_status</code></td><td>string</td><td><code>normal</code> | <code>blocked</code> (friend đã chặn LINE OA) | <code>block</code> (LME đã chặn friend).</td></tr>
+      <tr><td><code>data.favorite</code></td><td>string</td><td><code>yes</code> | <code>no</code>.</td></tr>
+    </tbody></table></div>
+    <h4>Lỗi riêng</h4>
+    <div class="tbl"><table><thead><tr><th>HTTP</th><th>code</th><th>message (ví dụ)</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead><tbody>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>Missing required parameter 'lmessage_friend_id'.</td><td>Thiếu param</td><td>Thêm param</td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>Parameter 'lmessage_friend_id' has an invalid format (expected a numeric value).</td><td>Không phải số</td><td>Dùng ID số</td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>Conversation not found</td><td>Friend chưa có hội thoại hoặc thuộc bot khác</td><td>Kiểm tra ID</td></tr>
+    </tbody></table></div>
+    <h4>Ví dụ</h4>
+<pre class="http">GET /v1/conversations/detail?lmessage_friend_id=12345</pre>
+    <div class="codetabs" data-ex="convDetail"><pre class="fallback"><code>curl -sS "https://api.lmes.jp/v1/conversations/detail?lmessage_friend_id=12345" \
+  -H "X-LME-API-KEY: $LME_API_KEY"</code></pre></div>
+<p>Response mẫu: cấu trúc, thứ tự và dạng <code>data</code> giống response thật; tên, ID, URL và nội dung là dữ liệu giả. Rút gọn còn 12 message để dễ đọc — thực tế trả tối đa 100.</p>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_2b3c4d5e",
+  "data": {
+    "lmessage_friend_id": 12345,
+    "messages": [
+      {
+        "delivery_date": "2026-11-16T13:51:25+09:00",
+        "sender": "LINE_OA",
+        "message_type": "text",
+        "data": "=========\n\n◯ ご希望の日時\n11月20日 午前\n\n◯ 写真をアップロードしてください\nhttps://p.lmes.jp/msg_template/media/images/1001/2001/form/sample_photo.jpg\n\n========="
+      },
+      {
+        "delivery_date": "2026-11-16T13:51:25+09:00",
+        "sender": "LINE_OA",
+        "message_type": "text",
+        "data": "田中様 \n\n回答を受け付けました。"
+      },
+      {
+        "delivery_date": "2026-11-15T19:28:00+09:00",
+        "sender": "LINE_OA",
+        "message_type": "template",
+        "data": [
+          { "type": "text", "content": "ご回答ありがとうございました。担当者よりご連絡いたします。" }
+        ]
+      },
+      {
+        "delivery_date": "2026-11-13T18:32:22+09:00",
+        "sender": "friend",
+        "message_type": "sticker",
+        "data": { "packageId": "11538", "stickerId": "51626506" }
+      },
+      {
+        "delivery_date": "2026-11-13T18:27:03+09:00",
+        "sender": "LINE_OA",
+        "message_type": "scenario",
+        "data": [
+          { "type": "text", "content": "ご登録ありがとうございます！まずはこちらをご覧ください。" }
+        ]
+      },
+      {
+        "delivery_date": "2026-11-13T18:26:59+09:00",
+        "sender": "LINE_OA",
+        "message_type": "scenario",
+        "data": [
+          { "scenario_name": "新規登録フォロー", "start_day": "0", "start_time": "0:00" }
+        ]
+      },
+      {
+        "delivery_date": "2026-11-11T19:55:01+09:00",
+        "sender": "friend",
+        "message_type": "audio",
+        "data": "https://p.lmes.jp/msg_template/line-user/media-step/2001/audio/audio_10003_100000000000000003_1794390000003.m4a"
+      },
+      {
+        "delivery_date": "2026-11-11T19:51:28+09:00",
+        "sender": "friend",
+        "message_type": "location",
+        "data": { "address": "東京都千代田区丸の内1丁目9-1", "latitude": "35.681236", "title": null, "longitude": null }
+      },
+      {
+        "delivery_date": "2026-11-11T19:51:26+09:00",
+        "sender": "friend",
+        "message_type": "file",
+        "data": "https://p.lmes.jp/msg_template/line-user/media-step/2001/file/file_10002_100000000000000002_1794390000002.pdf"
+      },
+      {
+        "delivery_date": "2026-11-11T19:49:59+09:00",
+        "sender": "friend",
+        "message_type": "video",
+        "data": "https://p.lmes.jp/msg_template/line-user/media-step/2001/video/video_10004_100000000000000004_1794390000004.mp4"
+      },
+      {
+        "delivery_date": "2026-11-11T19:19:31+09:00",
+        "sender": "friend",
+        "message_type": "image",
+        "data": "https://p.lmes.jp/msg_template/line-user/media-step/2001/image/image_10001_100000000000000001_1794390000001.jpeg"
+      },
+      {
+        "delivery_date": "2026-11-11T19:16:29+09:00",
+        "sender": "friend",
+        "message_type": "text",
+        "data": "注文した商品の配送状況を教えてください"
+      }
+    ],
+    "handling_status": { "id": 12, "name": "対応中" },
+    "display_status": "display",
+    "block_status": "normal",
+    "favorite": "no"
+  }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 2</span> Friend đã chặn LINE OA, hội thoại đã ẩn, chưa gắn trạng thái xử lý — message cuối là dòng log hệ thống:</p>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_6e7f8a9b",
+  "data": {
+    "lmessage_friend_id": 12399,
+    "messages": [
+      { "delivery_date": "2026-11-13T13:10:09+09:00", "sender": "LINE_OA", "message_type": "text", "data": null },
+      { "delivery_date": "2026-11-13T13:08:41+09:00", "sender": "LINE_OA", "message_type": "broadcast", "data": [ { "type": "text", "content": "【11月限定】会員様限定セールのお知らせ" } ] },
+      { "delivery_date": "2026-11-12T09:00:02+09:00", "sender": "friend", "message_type": "text", "data": "ありがとうございます" }
+    ],
+    "handling_status": null,
+    "display_status": "hidden",
+    "block_status": "blocked",
+    "favorite": "no"
+  }
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 3</span> Friend có hội thoại nhưng không còn message nào trong phạm vi lịch sử (ví dụ bot free, message cuối cách đây hơn 180 ngày): <code>"messages": []</code>, các trạng thái vẫn được trả bình thường.</p>
+
+    <h4 id="conv-gallery">Ví dụ <code>data</code> theo từng <code>message_type</code></h4>
+    <p>Dạng <code>data</code> của mỗi dòng giống response thật; nội dung, ID và URL là dữ liệu giả. Host media trên production là <code>https://p.lmes.jp</code>; dữ liệu cũ có thể dùng host khác — luôn dùng nguyên URL được trả về.</p>
+    <div class="tbl"><table><thead><tr><th>message_type</th><th>Phát sinh khi</th><th>sender</th><th>Ví dụ <code>data</code></th></tr></thead><tbody>
+      <tr><td><code>text</code></td><td>Friend hoặc nhân viên nhắn văn bản; message gửi qua <code>/messages/push</code> (type text); template gửi kèm <code>edited_content</code>; thông báo trả lời form; dòng log hệ thống</td><td>friend / LINE_OA</td><td><pre class="mini">"注文した商品の配送状況を教えてください"</pre></td></tr>
+      <tr><td><code>image</code></td><td>Friend gửi ảnh; nhân viên/API gửi ảnh</td><td>friend / LINE_OA</td><td><pre class="mini">"https://p.lmes.jp/msg_template/line-user/media-step/2001/image/image_10001_100000000000000001_1794390000001.jpeg"</pre></td></tr>
+      <tr><td><code>video</code></td><td>Friend/nhân viên/API gửi video</td><td>friend / LINE_OA</td><td><pre class="mini">"https://p.lmes.jp/msg_template/line-user/media-step/2001/video/video_10004_100000000000000004_1794390000004.mp4"</pre></td></tr>
+      <tr><td><code>audio</code></td><td>Friend/nhân viên/API gửi audio. URL có thể kèm <code>?duration=&lt;ms&gt;</code></td><td>friend / LINE_OA</td><td><pre class="mini">"https://p.lmes.jp/msg_template/media/voices/1001/2001/sample_voice02.m4a?duration=728086"</pre></td></tr>
+      <tr><td><code>file</code></td><td>Friend gửi file</td><td>friend</td><td><pre class="mini">"https://p.lmes.jp/msg_template/line-user/media-step/2001/file/file_10002_100000000000000002_1794390000002.pdf"</pre></td></tr>
+      <tr><td><code>pdf</code></td><td>Nhân viên gửi PDF từ màn hình chat</td><td>LINE_OA</td><td><pre class="mini">{
+  "file_name": "sample_guide.pdf",
+  "file_size": 401609,
+  "url": "https://p.lmes.jp/msg_template/media/pdf/1001/2001/sample_guide.pdf",
+  "file_name_original": "ご案内資料.pdf"
+}</pre></td></tr>
+      <tr><td><code>sticker</code></td><td>Friend/nhân viên gửi sticker. ID là <b>string</b></td><td>friend / LINE_OA</td><td><pre class="mini">{ "packageId": "11538", "stickerId": "51626506" }</pre></td></tr>
+      <tr><td><code>location</code></td><td>Friend gửi vị trí. <code>latitude</code>/<code>longitude</code> có thể là string hoặc <code>null</code>; <code>title</code> có thể <code>null</code></td><td>friend</td><td><pre class="mini">{
+  "address": "東京都千代田区丸の内1丁目9-1",
+  "latitude": "35.681236",
+  "title": null,
+  "longitude": null
+}</pre></td></tr>
+      <tr><td><code>template</code></td><td>Gửi template từ chat, auto reply, rich menu, <code>/messages/template</code>… Mảng các phần tử của template (xem bảng con bên dưới)</td><td>LINE_OA</td><td><pre class="mini">[
+  { "type": "text", "content": "ご予約ありがとうございます。" },
+  { "type": "image", "content": "https://p.lmes.jp/msg_template/media/images/1001/2001/sample01/sample01.png" }
+]</pre></td></tr>
+      <tr><td><code>broadcast</code></td><td>Message broadcast (一斉配信)</td><td>LINE_OA</td><td><pre class="mini">[ { "type": "text", "content": "【11月限定】会員様限定セールのお知らせ" } ]</pre></td></tr>
+      <tr><td><code>scenario</code> — message</td><td>Một step của scenario được gửi. Nếu không còn dữ liệu template của step (ví dụ template đã bị xoá), <code>data</code> có thể là <b>string</b> thay vì mảng</td><td>LINE_OA</td><td><pre class="mini">[ { "type": "text", "content": "ご登録ありがとうございます！" } ]</pre></td></tr>
+      <tr><td><code>scenario</code> — ghi nhận bắt đầu</td><td>Friend được cho vào scenario (ghi nhận, không phải message gửi đi). <code>start_day</code> là string hoặc number; <code>start_time</code> dạng <code>"0:00"</code> hoặc <code>"00:00:00"</code>; cả hai có thể <code>null</code></td><td>LINE_OA</td><td><pre class="mini">[ { "scenario_name": "新規登録フォロー", "start_day": "0", "start_time": "0:00" } ]</pre></td></tr>
+      <tr><td><code>stop_scenario</code></td><td>Scenario của friend bị dừng</td><td>LINE_OA</td><td><pre class="mini">{ "scenario_name": "新規登録フォロー" }</pre>hoặc<pre class="mini">{ "scenario_name": "新規登録フォロー", "start_day": null, "start_time": null }</pre></td></tr>
+      <tr><td><code>scenario_empty_step</code></td><td>Scenario chạy tới step không có nội dung. Các field có thể đều <code>null</code></td><td>LINE_OA</td><td><pre class="mini">{ "scenario_name": null, "start_day": null, "start_time": null }</pre></td></tr>
+      <tr><td><code>event</code></td><td>Message của sự kiện / nhắc lịch (リマインダ)</td><td>LINE_OA</td><td><pre class="mini">[ { "type": "text", "content": "明日10:00からセミナーを開催します。" } ]</pre></td></tr>
+      <tr><td><code>start_remind</code></td><td>Friend được đăng ký nhắc lịch. <code>startDateTime</code> dạng <code>YYYY-MM-DD HH:mm</code> (giờ Nhật), có thể <code>null</code></td><td>LINE_OA</td><td><pre class="mini">{ "remind_name": "セミナー前日リマインド", "startDateTime": "2026-11-10 18:28" }</pre></td></tr>
+      <tr><td><code>stop_remind</code></td><td>Huỷ nhắc lịch của friend</td><td>LINE_OA</td><td><pre class="mini">{ "remind_name": "セミナー前日リマインド", "startDateTime": null }</pre></td></tr>
+      <tr><td><code>action</code></td><td>Message gửi bởi action (アクション) — ví dụ khi bấm rich menu, nút, trả lời form</td><td>LINE_OA</td><td><pre class="mini">[
+  { "type": "buttons", "content": { "data": [ { "title": "キャンペーン", "text": "参加はこちら", "buttons": [ { "label": "参加する" } ] } ] } },
+  { "type": "image", "content": "https://p.lmes.jp/msg_template/media/images/1001/2001/sample02/sample02.jpg" }
+]</pre></td></tr>
+      <tr><td><code>action_from_booking</code></td><td>Thông báo tự động từ đặt lịch / thanh toán. <code>data</code> là <b>string</b></td><td>LINE_OA</td><td><pre class="mini">"決済に失敗しました。\nカードのご利用枠や有効期限などをご確認いただき\n再度、購入手続きを行なってください。"</pre></td></tr>
+      <tr><td><code>action_from_booking_salon</code></td><td>Thông báo tự động của đặt lịch salon. <code>type</code> = loại thông báo (予約受付時アクション, 予約キャンセル時アクション, 予約前後のリマインドメッセージ…)</td><td>LINE_OA</td><td><pre class="mini">{
+  "type": "予約受付時アクション",
+  "calendar_name": "渋谷店",
+  "content": "田中様\n\n下記の通り、予約が完了いたしました。\n\n◇ 予約日時\n2026年11月17日（火）10:00-11:00\n\n◇ ご予約コース名\nカット\n\n◇ コース料金\n1,600円"
+}</pre></td></tr>
+      <tr><td><code>action_from_booking_lesson</code></td><td>Thông báo tự động của đặt lịch lesson. Cấu trúc giống salon</td><td>LINE_OA</td><td><pre class="mini">{
+  "type": "予約キャンセル時アクション",
+  "calendar_name": "ヨガ教室",
+  "content": "田中様\n\n下記の通り、キャンセルが完了いたしました。\n\n◇ 予約日時\n2026年11月24日（火）13:00-14:00"
+}</pre></td></tr>
+      <tr><td><code>unknown</code></td><td>Loại chưa được phân loại (hiện gồm: message gửi bởi action khi friend trả lời form). <code>data</code> giữ nguyên dữ liệu gốc, có thể <code>null</code></td><td>LINE_OA</td><td><pre class="mini">null</pre></td></tr>
+    </tbody></table></div>
+
+    <h4>Phần tử con của <code>template</code> / <code>broadcast</code> / <code>scenario</code> / <code>event</code> / <code>action</code></h4>
+    <p>Mỗi phần tử có dạng <code>{ "type": "...", "content": ... }</code>:</p>
+    <div class="tbl"><table><thead><tr><th><code>type</code></th><th>Dạng <code>content</code></th><th>Ví dụ</th></tr></thead><tbody>
+      <tr><td><code>text</code></td><td>string — nội dung template đã lưu. Token (ví dụ <code>{name}</code>) có thể còn ở dạng token, không phải giá trị friend thực nhận</td><td><pre class="mini">{ "type": "text", "content": "田中様、ご来店ありがとうございました。" }</pre></td></tr>
+      <tr><td><code>image</code></td><td>URL string (gồm cả imagemap)</td><td><pre class="mini">{ "type": "image", "content": "https://p.lmes.jp/msg_template/media/images/1001/2001/sample01/sample01.png" }</pre></td></tr>
+      <tr><td><code>video</code></td><td>URL string</td><td><pre class="mini">{ "type": "video", "content": "https://p.lmes.jp/msg_template/media/images/1001/2001/sample_video.mp4" }</pre></td></tr>
+      <tr><td><code>audio</code></td><td>object <code>{file_name, file_size, url}</code>. <code>file_size</code> có thể là <code>-1</code> hoặc <code>null</code> khi không xác định</td><td><pre class="mini">{ "type": "audio", "content": {
+    "file_name": "sample_voice01.m4a",
+    "file_size": 4708093,
+    "url": "https://p.lmes.jp/msg_template/media/voices/1001/2001/sample_voice01.m4a?duration=290816" } }</pre></td></tr>
+      <tr><td><code>sticker</code></td><td>object <code>{packageId, stickerId}</code> (string)</td><td><pre class="mini">{ "type": "sticker", "content": { "packageId": "8515", "stickerId": "16581243" } }</pre></td></tr>
+      <tr><td><code>location</code></td><td>object <code>{address, latitude, longitude, title}</code> — trong template toạ độ là number</td><td><pre class="mini">{ "type": "location", "content": {
+    "address": "東京都千代田区丸の内1丁目", "latitude": 35.6812, "longitude": 139.7671, "title": "東京駅" } }</pre></td></tr>
+      <tr><td><code>buttons</code> — panel</td><td>object <code>{data: [{title, text, buttons: [{label}]}]}</code>; mỗi phần tử <code>data</code> là 1 panel (carousel có nhiều panel)</td><td><pre class="mini">{ "type": "buttons", "content": { "data": [
+    { "title": "", "text": "コースA", "buttons": [ { "label": "予約する" }, { "label": "詳細" } ] },
+    { "title": "", "text": "コースB", "buttons": [ { "label": "予約する" } ] } ] } }</pre></td></tr>
+      <tr><td><code>buttons</code> — quick reply</td><td>object <code>{flag_type_content_quick_reply, text, content, buttons: [{label}]}</code>. <code>flag_type_content_quick_reply</code>: <code>1</code> = nội dung là văn bản, <code>2</code> = nội dung là ảnh (<code>text</code>/<code>content</code> là URL ảnh)</td><td><pre class="mini">{ "type": "buttons", "content": {
+    "flag_type_content_quick_reply": 1,
+    "text": "ご希望の時間帯を選んでください",
+    "content": "ご希望の時間帯を選んでください",
+    "buttons": [ { "label": "午前" }, { "label": "午後" } ] } }</pre></td></tr>
+      <tr><td><code>introduction</code></td><td>object <code>{friend_name, template_id, url_addfriend, content}</code> (giới thiệu tài khoản)</td><td><pre class="mini">{ "type": "introduction", "content": {
+    "friend_name": "LMEサポート", "template_id": 34353,
+    "url_addfriend": "https://line.me/R/ti/p/@lme-support", "content": "こちらもご登録ください" } }</pre></td></tr>
+    </tbody></table></div>
+
+    <h4>Message gửi qua API sẽ hiển thị lại thế nào</h4>
+    <div class="tbl"><table><thead><tr><th>Request đã gửi</th><th><code>message_type</code> khi đọc lại</th><th><code>data</code></th></tr></thead><tbody>
+      <tr><td><code>/messages/push</code> — <code>type: text</code></td><td><code>text</code></td><td>Nguyên văn <code>text</code> trong request — token chưa được thay (ví dụ vẫn là <code>{name}様</code>)</td></tr>
+      <tr><td><code>/messages/push</code> — <code>type: image</code> / <code>video</code></td><td><code>image</code> / <code>video</code></td><td>Nguyên văn <code>url</code> đã gửi</td></tr>
+      <tr><td><code>/messages/push</code> — <code>type: audio</code></td><td><code>audio</code></td><td>URL string (<code>url</code> đã gửi)</td></tr>
+      <tr><td><code>/messages/template</code> — không có <code>edited_content</code></td><td><code>template</code></td><td>Mảng phần tử của template</td></tr>
+      <tr><td><code>/messages/template</code> — có <code>edited_content</code></td><td><b><code>text</code></b></td><td>Nội dung <code>edited_content</code> (token chưa được thay)</td></tr>
+    </tbody></table></div>
+    <p>Tất cả đều có <code>sender: "LINE_OA"</code>. Message gửi lỗi không xuất hiện.</p>
+
+    <h4>Lưu ý khi xử lý <code>data</code></h4>
+    <ul>
+      <li><b>Dòng log hệ thống</b> (kết bạn, friend chặn/bỏ chặn, LME chặn/bỏ chặn/ẩn, xoá message…) xuất hiện với <code>message_type: "text"</code>, <code>sender: "LINE_OA"</code> — API hiện chưa có field riêng để phân biệt với tin nhân viên gửi. <code>data</code> của dòng log là <code>null</code> hoặc một trong các chuỗi cố định:
+        <div class="tbl"><table><thead><tr><th><code>data</code></th><th>Sự kiện</th></tr></thead><tbody>
+          <tr><td><code>null</code></td><td>Các dòng log còn lại (ví dụ kết bạn, friend chặn / bỏ chặn LINE OA, xoá message)</td></tr>
+          <tr><td><code>"ブロックしました"</code></td><td>LME chặn friend</td></tr>
+          <tr><td><code>"ブロックを解除しました"</code></td><td>LME bỏ chặn friend</td></tr>
+          <tr><td><code>"非表示しました"</code></td><td>LME ẩn hội thoại</td></tr>
+          <tr><td><code>"メッセージ受信により追加"</code></td><td>Friend được thêm vào LME khi nhắn tin tới LINE OA</td></tr>
+        </tbody></table></div>
+        Nếu chỉ cần hội thoại thật, bỏ qua message <code>text</code> + <code>LINE_OA</code> có <code>data</code> là <code>null</code> hoặc khớp nguyên văn bảng trên. Danh sách có thể được bổ sung — sẽ ghi ở <a href="#changelog">Lịch sử cập nhật</a>.</li>
+      <li><b>Thông báo trả lời form</b> là <code>text</code> có khung <code>=========</code> liệt kê câu hỏi / câu trả lời.</li>
+      <li><b>Button</b> luôn có tiêu đề, nội dung và nhãn nút như bảng phần tử con ở trên. Tuỳ loại template (ví dụ button / carousel có ảnh) có thể có thêm field khác, như đường dẫn ảnh của panel — client bỏ qua field không dùng tới.</li>
+      <li><b>Nội dung đặt lịch</b> (<code>action_from_booking_salon/lesson</code>) là nội dung đã lưu, có thể còn token chưa thay (ví dụ <code>{name}</code>) và thẻ HTML đơn giản (ví dụ <code>&lt;i&gt;</code>).</li>
+      <li><b>URL tương đối:</b> một số bản ghi cũ trả đường dẫn bắt đầu bằng <code>/msg_template/…</code> (thiếu host). Khi gặp, ghép với host media <code>https://p.lmes.jp</code>.</li>
+      <li>Client nên chịu được <code>message_type</code> và <code>type</code> con mới trong tương lai (bỏ qua hoặc hiển thị dạng thô).</li>
+    </ul>
+  </div>
+</article>
+
+<!-- ---------------- GET /handling-statuses ---------------- -->
+<article class="ep" id="ep-handling">
+  <div class="ep-head"><span class="mtd get">GET</span><span class="ep-path">/v1/handling-statuses</span><h3>Lấy danh sách trạng thái xử lý</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>read / full</b></span><span>Rate limit: <b>Đọc</b></span><span>Phân trang: <b>không</b></span></div>
+    <p>Lấy toàn bộ trạng thái xử lý chat (対応状態) của bot — dùng cho filter <code>handling_status_ids</code> của <code>/conversations</code> và action <code>handling_status</code> của <code>/do_action</code>. Không nhận parameter; <code>page</code>/<code>limit</code> nếu gửi sẽ bị bỏ qua.</p>
+    <h4>HTTP request</h4><pre class="http">GET https://api.lmes.jp/v1/handling-statuses</pre>
+    <h4>Response</h4>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th>Mô tả</th></tr></thead><tbody>
+      <tr><td><code>data[]</code></td><td>array&lt;object&gt;</td><td>Toàn bộ trạng thái (mảng phẳng, không có khối <code>pagination</code>). Mảng rỗng nếu bot chưa tạo trạng thái nào.</td></tr>
+      <tr><td><code>data[].id</code></td><td>integer</td><td>Status ID.</td></tr>
+      <tr><td><code>data[].name</code></td><td>string</td><td>Tên trạng thái.</td></tr>
+    </tbody></table></div>
+    <h4>Lỗi riêng</h4><p>Không có.</p>
+    <h4>Ví dụ</h4>
+<pre class="http">GET /v1/handling-statuses</pre>
+    <div class="codetabs" data-ex="handling"><pre class="fallback"><code>curl -sS "https://api.lmes.jp/v1/handling-statuses" \
+  -H "X-LME-API-KEY: $LME_API_KEY"</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_3c4d5e6f",
+  "data": [
+    { "id": 11, "name": "見込みあり" },
+    { "id": 12, "name": "対応中" },
+    { "id": 13, "name": "フォロー" },
+    { "id": 14, "name": "トラブル" },
+    { "id": 15, "name": "対応完了" }
+  ]
+}</code></pre>
+    <p><span class="exlabel">Ví dụ 2</span> Bot chưa có trạng thái nào: <code>{"success": true, "request_id": "…", "data": []}</code>.</p>
+  </div>
+</article>
+
+<!-- ---------------- POST /do_action ---------------- -->
+<article class="ep" id="ep-do-action">
+  <div class="ep-head"><span class="mtd post">POST</span><span class="ep-path">/v1/do_action</span><h3>Thực hiện hàng loạt action trên friend</h3></div>
+  <div class="ep-body">
+    <div class="meta"><span>Scope: <b>full</b></span><span>Rate limit: <b>Ghi</b></span><span>Idempotency: <b>hỗ trợ</b></span><span>Xử lý: <b>đồng bộ</b></span></div>
+    <p>Áp 1–10 action lên 1–100 friend trong 1 request: gắn/gỡ tag, cập nhật friend info, start/stop/resume scenario, đổi trạng thái xử lý, chặn/ẩn, favorite, đã đọc/chưa đọc.</p>
+    <h4>Cách hoạt động</h4>
+    <ul>
+      <li>Mỗi action áp cho <b>tất cả</b> friend trong <code>lmessage_friend_ids</code>; các action chạy tuần tự theo thứ tự khai báo.</li>
+      <li>Toàn bộ request được validate trước — có 1 action sai thì <b>không</b> action nào được chạy.</li>
+      <li>Xử lý <b>đồng bộ</b>: response <span class="st s2">200</span> trả về sau khi đã áp xong. Đặt timeout phía client đủ dài (khuyến nghị ≥ 60 giây cho request lớn).</li>
+      <li>Friend trùng trong mảng chỉ được xử lý 1 lần.</li>
+      <li>Friend <b>không thuộc bot</b> bị <b>bỏ qua</b> (không báo lỗi), các friend hợp lệ vẫn được xử lý. Chỉ khi <b>tất cả</b> friend đều không hợp lệ mới trả 404. Response không liệt kê friend bị bỏ qua — nếu cần chắc chắn, kiểm tra ID trước bằng <code>/friends/detail</code>.</li>
+      <li>Lỗi phát sinh khi áp action cho một friend riêng lẻ (sau khi đã validate) không rollback các friend khác và không làm request thất bại.</li>
+    </ul>
+    <h4>Tác dụng phụ cần lưu ý</h4>
+    <ul>
+      <li><code>tag.add</code>: nếu tag được cấu hình hành động khi gắn tag trên LME (タグ追加時のアクション — gửi template, đổi rich menu, chạy scenario…), hành động đó chạy như khi gắn tag trên LME, có thể gửi message tới friend và tính vào hạn mức gửi tin. Chỉ áp cho friend <b>chưa</b> có tag đó.</li>
+      <li><code>scenario.start</code> / <code>resume</code>: step được đặt gửi ngay (ví dụ step ngày 0 không hẹn giờ) sẽ gửi message tới friend ngay khi action chạy, và <b>tính vào hạn mức gửi tin</b> như message thường.</li>
+      <li><code>point_plus</code> / <code>point_minus</code> và <code>scenario.start</code> không idempotent theo nghiệp vụ: gửi lại cùng request (không có <code>Idempotency-Key</code>, hoặc sau lỗi 500) sẽ cộng/trừ điểm hoặc chạy scenario thêm lần nữa.</li>
+      <li>Thay đổi qua API được ghi nhận như thao tác của người sở hữu API key trên LME.</li>
+    </ul>
+    <h4>HTTP request</h4><pre class="http">POST https://api.lmes.jp/v1/do_action</pre>
+    <h4>Request header</h4><p>Giống <a href="#ep-push">/messages/push</a>.</p>
+    <h4>Request body</h4>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+      <tr><td class="k"><code>lmessage_friend_ids</code></td><td>array&lt;integer&gt;</td><td><span class="req y">Bắt buộc</span></td><td>1–100 friend (đếm sau khi bỏ trùng). <b>Giới hạn cứng</b>: &gt; 100 → 422.</td><td>400</td></tr>
+      <tr><td class="k"><code>actions</code></td><td>array&lt;<a href="#action-objects">Action object</a>&gt;</td><td><span class="req y">Bắt buộc</span></td><td>1–10 action. <b>Giới hạn cứng</b>: &gt; 10 → 422.</td><td>400</td></tr>
+    </tbody></table></div>
+    <h4>Bảng phân loại action</h4>
+    <div class="tbl"><table><thead><tr><th><code>type</code></th><th>Mục đích</th><th><code>action</code></th><th>Field riêng</th></tr></thead><tbody>
+      <tr><td><a href="#act-tag"><code>tag</code></a></td><td>Gắn / gỡ tag</td><td><code>add</code> <code>remove</code></td><td><code>tag_ids</code></td></tr>
+      <tr><td><a href="#act-friend-info"><code>friend_info</code></a></td><td>Cập nhật friend info</td><td><code>set</code> <code>clear</code> <code>today</code> <code>point_replace</code> <code>point_plus</code> <code>point_minus</code> <code>point_clear</code></td><td><code>field_id</code> <code>value</code> <code>option_id</code></td></tr>
+      <tr><td><a href="#act-scenario"><code>scenario</code></a></td><td>Chạy / dừng / chạy tiếp scenario</td><td><code>start</code> <code>stop</code> <code>resume</code></td><td><code>scenario_id</code> <code>start_from</code></td></tr>
+      <tr><td><a href="#act-handling"><code>handling_status</code></a></td><td>Gắn / gỡ trạng thái xử lý</td><td><code>attach</code> <code>detach</code></td><td><code>handling_status_id</code></td></tr>
+      <tr><td><a href="#act-block"><code>block</code></a></td><td>Chặn / bỏ chặn / ẩn / hiện trong chat 1:1</td><td><code>block</code> <code>unblock</code> <code>hide</code> <code>show</code></td><td>—</td></tr>
+      <tr><td><a href="#act-block"><code>favorite</code></a></td><td>Bật / tắt favorite</td><td><code>add</code> <code>remove</code></td><td>—</td></tr>
+      <tr><td><a href="#act-block"><code>confirm_status</code></a></td><td>Đã đọc / chưa đọc (確認/未確認)</td><td><code>confirm</code> <code>unconfirm</code></td><td>—</td></tr>
+    </tbody></table></div>
+    <p>Chi tiết từng field, ràng buộc và lỗi: <a href="#action-objects">6. Action object</a>.</p>
+    <h4>Response</h4><p>HTTP <span class="st s2">200</span> — <code>{"success": true, "request_id": "…"}</code>.</p>
+    <h4>Lỗi riêng (cấp request)</h4>
+    <div class="tbl"><table><thead><tr><th>HTTP</th><th>code</th><th>message (ví dụ)</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead><tbody>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>lmessage_friend_ids is required.</td><td>Thiếu field</td><td>Thêm mảng</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>lmessage_friend_ids must be a non-empty array.</td><td>Mảng rỗng</td><td>≥ 1 friend</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>lmessage_friend_ids exceeds max 100 per request.</td><td>&gt; 100 friend</td><td>Chia lô 100</td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>lmessage_friend_ids not found: [99901, 99902]</td><td>Không friend nào thuộc bot</td><td>Kiểm tra ID / API key</td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>actions is required.</td><td>Thiếu field</td><td>Thêm mảng</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>actions must be a non-empty array.</td><td>Mảng rỗng</td><td>≥ 1 action</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>actions exceeds max 10 per request.</td><td>&gt; 10 action</td><td>Tách request</td></tr>
+      <tr><td>400</td><td><code>invalid_request</code></td><td>actions[0].type is required.</td><td>Thiếu <code>type</code> / phần tử null</td><td>Thêm <code>type</code></td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>actions[0] unknown type 'tags'. Valid: tag|friend_info|scenario|handling_status|block|favorite|confirm_status.</td><td>Sai <code>type</code></td><td>Dùng giá trị hợp lệ</td></tr>
+      <tr><td>422</td><td><code>validation_error</code></td><td>actions[0] invalid action for type 'tag'. Allowed: add|remove.</td><td>Thiếu hoặc sai <code>action</code></td><td>Xem bảng phân loại</td></tr>
+      <tr><td>404 / 422</td><td>—</td><td>actions[i] …</td><td>Lỗi riêng từng loại action</td><td><a href="#action-objects">mục 6</a></td></tr>
+    </tbody></table></div>
+    <h4>Ví dụ</h4>
+<pre class="http">POST /v1/do_action
+Content-Type: application/json
+Idempotency-Key: cart-55120-abandoned
+
+{
+  "lmessage_friend_ids": [12345, 12346],
+  "actions": [
+    { "type": "tag", "action": "add", "tag_ids": [101] },
+    { "type": "friend_info", "action": "point_plus", "field_id": 5001, "value": "10" },
+    { "type": "friend_info", "action": "set", "field_id": 5002, "option_id": 1 },
+    { "type": "friend_info", "action": "set", "field_id": -6, "option_id": 13 },
+    { "type": "scenario", "action": "start", "scenario_id": 88 },
+    { "type": "handling_status", "action": "attach", "handling_status_id": 12 },
+    { "type": "favorite", "action": "add" },
+    { "type": "confirm_status", "action": "confirm" }
+  ]
+}</pre>
+    <div class="codetabs" data-ex="doAction"><pre class="fallback"><code>curl -sS -X POST "https://api.lmes.jp/v1/do_action" \
+  -H "X-LME-API-KEY: $LME_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: cart-55120-abandoned" \
+  -d '{
+  "lmessage_friend_ids": [
+    12345,
+    12346
+  ],
+  "actions": [
+    {
+      "type": "tag",
+      "action": "add",
+      "tag_ids": [
+        101
+      ]
+    },
+    {
+      "type": "friend_info",
+      "action": "point_plus",
+      "field_id": 5001,
+      "value": "10"
+    },
+    {
+      "type": "friend_info",
+      "action": "set",
+      "field_id": 5002,
+      "option_id": 1
+    },
+    {
+      "type": "friend_info",
+      "action": "set",
+      "field_id": -6,
+      "option_id": 13
+    },
+    {
+      "type": "scenario",
+      "action": "start",
+      "scenario_id": 88
+    },
+    {
+      "type": "handling_status",
+      "action": "attach",
+      "handling_status_id": 12
+    },
+    {
+      "type": "favorite",
+      "action": "add"
+    },
+    {
+      "type": "confirm_status",
+      "action": "confirm"
+    }
+  ]
+}'</code></pre></div>
+<pre class="code"><code>{
+  "success": true,
+  "request_id": "req_20261116_4d5e6f7a"
+}</code></pre>
+  </div>
+</article>
+</section>
+
+<!-- ============================================================ 5 -->
+<section id="message-objects">
+  <h2>5. Message object</h2>
+  <p class="lead">Phần tử của mảng <code>messages</code> trong <a href="#ep-push">POST /messages/push</a>. Hỗ trợ 4 loại: <code>text</code>, <code>image</code>, <code>video</code>, <code>audio</code>. Sticker, location, button, carousel… gửi qua <a href="#ep-send-template">template</a>.</p>
+
+  <h3>Thuộc tính chung</h3>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th></tr></thead><tbody>
+    <tr><td class="k"><code>type</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td><code>text</code> | <code>image</code> | <code>video</code> | <code>audio</code>. Không phân biệt hoa/thường.</td></tr>
+  </tbody></table></div>
+
+  <h4>Kiểm tra URL media (image / video / audio)</h4>
+  <p>Trước khi gửi, server truy cập URL để kiểm tra (timeout 5 giây mỗi lần truy cập). Cách truy cập khác nhau theo field:</p>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Request kiểm tra</th><th>Redirect</th></tr></thead><tbody>
+    <tr><td><code>url</code> (image / video / audio)</td><td><b>HEAD</b>. Nếu response HEAD không có <code>Content-Length</code>, server gửi thêm 1 <b>GET</b> để đếm dung lượng (dừng ngay khi vượt giới hạn)</td><td>Được theo</td></tr>
+    <tr><td><code>preview_url</code> (image / video)</td><td><b>GET</b> (1 lần)</td><td><b>Không</b> — 3xx là lỗi</td></tr>
+  </tbody></table></div>
+  <p>Mọi lỗi dưới đây trả <span class="st s4">422</span> <code>validation_error</code>:</p>
+  <div class="tbl"><table><thead><tr><th>Kiểm tra</th><th>message (ví dụ)</th></tr></thead><tbody>
+    <tr><td>URL bắt đầu bằng <code>https://</code> hoặc <code>http://</code></td><td>messages[1] image requires a valid http(s) url.</td></tr>
+    <tr><td>Độ dài ≤ 2.000 ký tự</td><td>messages[1] url exceeds 2000 chars.</td></tr>
+    <tr><td>URL hợp lệ, có host</td><td>messages[1] media url is not a valid URL. / … has no host.</td></tr>
+    <tr><td>Host phân giải được DNS</td><td>messages[1] media url host cannot be resolved: cdn.example.invalid</td></tr>
+    <tr><td>Host là địa chỉ public (không phải localhost, IP nội bộ 10.x / 172.16–31.x / 192.168.x, link-local…)</td><td>messages[1] media url must be a public URL (internal address rejected).</td></tr>
+    <tr><td>Kết nối được trong 5 giây</td><td>messages[1] media url is not reachable: …</td></tr>
+    <tr><td>HTTP status &lt; 400 (redirect được theo)</td><td>messages[1] media url returned HTTP 404.</td></tr>
+    <tr><td><code>Content-Type</code> thuộc danh sách cho phép (nếu server trả header này)</td><td>messages[1] unsupported media Content-Type 'image/gif' for type=image. Allowed: [image/jpeg, image/jpg, image/png].</td></tr>
+    <tr><td>Kích thước ≤ giới hạn (theo <code>Content-Length</code>; thiếu header thì đếm byte khi tải)</td><td>messages[1] image exceeds max size 10MB (Content-Length=12582912).</td></tr>
+  </tbody></table></div>
+  <div class="warn"><b class="t"><code>url</code> PHẢI TRẢ LỜI ĐƯỢC REQUEST HEAD</b><p>Server kiểm tra <code>url</code> bằng request <b>HEAD</b>, không phải GET. Storage từ chối HEAD (trả <span class="st s4">405</span>), hoặc signed URL chỉ ký cho GET — ví dụ Amazon S3 presigned URL tạo cho <code>GetObject</code>, gọi HEAD sẽ nhận <span class="st s4">403</span> — sẽ bị báo <span class="st s4">422</span> "messages[i] media url returned HTTP 405." / "… returned HTTP 403." dù mở bằng trình duyệt vẫn xem được. Trước khi tích hợp, thử <code>curl -I &lt;url&gt;</code>: kết quả phải là <span class="st s2">2xx</span> (với <code>url</code>, redirect sang URL trả 2xx cũng được). <code>preview_url</code> được kiểm tra bằng GET và không được redirect — thử bằng <code>curl -s -o /dev/null -w "%{http_code}" &lt;preview_url&gt;</code>, kết quả phải là <span class="st s2">2xx</span>. Với S3, dùng object public hoặc CloudFront thay cho presigned URL.</p></div>
+  <div class="warn"><b class="t">DÙNG HTTPS</b><p>Bước kiểm tra chấp nhận cả <code>http://</code>, nhưng LINE yêu cầu URL nội dung là HTTPS (TLS 1.2 trở lên). Luôn dùng HTTPS để tránh message không hiển thị được trên LINE. URL phải truy cập công khai, không cần đăng nhập, và còn hiệu lực ít nhất tới khi friend mở message (tránh signed URL hết hạn nhanh).</p></div>
+
+  <h3 id="msg-text">Text message</h3>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th></tr></thead><tbody>
+    <tr><td class="k"><code>type</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td><code>text</code></td></tr>
+    <tr><td class="k"><code>text</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td>Nội dung, 1–5.000 ký tự, không được chỉ toàn khoảng trắng. Đếm theo UTF-16 code unit — emoji và một số ký tự đặc biệt có thể tính 2 ký tự. Xuống dòng dùng <code>\n</code>. Token trong bảng dưới được thay bằng giá trị thật lúc gửi.</td></tr>
+  </tbody></table></div>
+  <h4>Token trong text</h4>
+  <p>Text được xử lý giống tin gửi từ màn hình chat 1:1 của LME. Các token sau được thay bằng giá trị của friend nhận lúc gửi (áp dụng cả cho <code>edited_content</code> của <a href="#ep-send-template">/messages/template</a>):</p>
+  <div class="tbl"><table><thead><tr><th>Token</th><th>Thay bằng</th><th>Ví dụ kết quả</th></tr></thead><tbody>
+    <tr><td><code>{name}</code> hoặc <code>[name]</code></td><td>Tên LINE của friend</td><td><code>{name}様</code> → <code>田中太郎様</code></td></tr>
+    <tr><td><code>[FRIEND_INFO_system_name]</code> <code>[FRIEND_INFO_phone]</code> <code>[FRIEND_INFO_email]</code> <code>[FRIEND_INFO_birthday]</code> <code>[FRIEND_INFO_province]</code> <code>[FRIEND_INFO_zip_code]</code> <code>[FRIEND_INFO_district]</code> <code>[FRIEND_INFO_township]</code> <code>[FRIEND_INFO_building]</code></td><td>Giá trị built-in field tương ứng (-1, -2, -3, -4, -6, -7, -8, -9, -10)</td><td><code>[FRIEND_INFO_province]</code> → <code>東京都</code></td></tr>
+    <tr><td><code>[FRIEND_INFO_&lt;field_id&gt;]</code></td><td>Giá trị custom field (<code>field_id</code> dương từ <a href="#ep-fields">/friend-info-fields</a>). Field IMAGE/FILE → URL xem file</td><td><code>[FRIEND_INFO_5001]</code> → <code>20</code></td></tr>
+    <tr><td><code>[date]</code></td><td>Ngày gửi (giờ Nhật), dạng <code>n月j日(D)</code></td><td><code>11月16日(月)</code></td></tr>
+    <tr><td><code>[date add=N]</code></td><td>Ngày gửi + N ngày (N có thể âm)</td><td><code>[date add=3]</code> → <code>11月19日(木)</code></td></tr>
+  </tbody></table></div>
+  <ul>
+    <li>Friend chưa có giá trị cho field → token được thay bằng chuỗi rỗng.</li>
+    <li>Không có cách gửi nguyên văn chuỗi trùng token (ví dụ muốn hiện đúng chữ <code>{name}</code>).</li>
+    <li>Nếu bot bật chức năng rút gọn URL trên LME, URL trong text có thể được thay bằng URL rút gọn để đo lượt click.</li>
+    <li>Lịch sử ở <code>/conversations/detail</code> lưu text <b>trước khi</b> thay token; riêng <code>[FRIEND_INFO_&lt;field_id&gt;]</code> được lưu ở dạng ID đã mã hoá (ví dụ <code>[FRIEND_INFO_x7Kq2]</code>).</li>
+  </ul>
+  <div class="tbl"><table><thead><tr><th>Lỗi (422)</th><th>Khi nào</th></tr></thead><tbody>
+    <tr><td>messages[0] text requires non-blank text.</td><td>Thiếu <code>text</code>, rỗng, hoặc chỉ khoảng trắng</td></tr>
+    <tr><td>messages[0] text exceeds 5000 chars.</td><td>&gt; 5.000 ký tự</td></tr>
+    <tr><td>messages[0] preview_url is only allowed for image/video messages.</td><td>Text kèm <code>preview_url</code></td></tr>
+  </tbody></table></div>
+<pre class="code"><code>{ "type": "text", "text": "{name}様\nご注文を承りました。" }</code></pre>
+
+  <h3 id="msg-image">Image message</h3>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+    <tr><td class="k"><code>type</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td><code>image</code></td><td>—</td></tr>
+    <tr><td class="k"><code>url</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td>URL ảnh gốc. JPEG/PNG (<code>image/jpeg</code>, <code>image/jpg</code>, <code>image/png</code>), tối đa <b>10 MB</b>, ≤ 2.000 ký tự.</td><td>422</td></tr>
+    <tr><td class="k"><code>preview_url</code></td><td>string</td><td><span class="req n">Tuỳ chọn</span></td><td>Ảnh thu nhỏ hiển thị trong khung chat. Ràng buộc chặt hơn <code>url</code> — xem bảng dưới.</td><td>Dùng <code>url</code> làm preview</td></tr>
+  </tbody></table></div>
+  <h4>Ràng buộc <code>preview_url</code> (image &amp; video)</h4>
+  <div class="tbl"><table><thead><tr><th>Ràng buộc</th><th>Lỗi (422) khi vi phạm</th></tr></thead><tbody>
+    <tr><td>Bắt buộc <code>https://</code> (không chấp nhận http)</td><td>messages[1] preview_url must be a valid https url.</td></tr>
+    <tr><td>≤ 2.000 ký tự</td><td>messages[1] preview_url exceeds 2000 chars.</td></tr>
+    <tr><td>Host public, phân giải được</td><td>… preview_url must be a public URL (internal address rejected). / … host cannot be resolved</td></tr>
+    <tr><td><b>Không redirect</b> (trả 3xx là lỗi) và status &lt; 300</td><td>messages[1] preview_url returned HTTP 302 (redirects are not allowed for preview_url).</td></tr>
+    <tr><td>JPEG/PNG. Nếu server không trả <code>Content-Type</code>, đuôi URL phải là <code>.jpg</code>/<code>.jpeg</code>/<code>.png</code></td><td>messages[1] preview_url must be JPEG/PNG, got Content-Type 'image/webp'.</td></tr>
+    <tr><td>Tối đa <b>1 MB</b></td><td>messages[1] preview_url exceeds max size 1MB (Content-Length=…).</td></tr>
+    <tr><td>Chỉ dùng cho <code>image</code>/<code>video</code></td><td>messages[3] preview_url is only allowed for image/video messages.</td></tr>
+  </tbody></table></div>
+<pre class="code"><code>{
+  "type": "image",
+  "url": "https://cdn.example.co.jp/images/campaign_1040x1040.jpg",
+  "preview_url": "https://cdn.example.co.jp/images/campaign_240x240.jpg"
+}</code></pre>
+
+  <h3 id="msg-video">Video message</h3>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th><th>Khi bỏ trống</th></tr></thead><tbody>
+    <tr><td class="k"><code>type</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td><code>video</code></td><td>—</td></tr>
+    <tr><td class="k"><code>url</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td>URL video MP4 (<code>video/mp4</code>), tối đa <b>200 MB</b>, ≤ 2.000 ký tự.</td><td>422</td></tr>
+    <tr><td class="k"><code>preview_url</code></td><td>string</td><td><span class="req c">Khuyến nghị</span></td><td>Ảnh bìa video, JPEG/PNG ≤ 1 MB, HTTPS, không redirect (bảng ràng buộc ở <a href="#msg-image">Image</a>). Luôn truyền field này để friend thấy đúng ảnh bìa.</td><td>Dùng ảnh bìa mặc định của LME (ảnh "no thumbnail")</td></tr>
+  </tbody></table></div>
+<pre class="code"><code>{
+  "type": "video",
+  "url": "https://cdn.example.co.jp/videos/intro.mp4",
+  "preview_url": "https://cdn.example.co.jp/videos/intro_cover.jpg"
+}</code></pre>
+
+  <h3 id="msg-audio">Audio message</h3>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th></tr></thead><tbody>
+    <tr><td class="k"><code>type</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td><code>audio</code></td></tr>
+    <tr><td class="k"><code>url</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td>URL file M4A/MP3 (<code>audio/m4a</code>, <code>audio/x-m4a</code>, <code>audio/mp4</code>, <code>audio/aac</code>, <code>audio/mpeg</code>, <code>audio/mp3</code>), tối đa <b>200 MB</b>.</td></tr>
+    <tr><td class="k"><code>duration</code></td><td>integer</td><td><span class="req y">Bắt buộc</span></td><td>Độ dài file tính bằng <b>millisecond</b>, số nguyên dương (ví dụ 60 giây = <code>60000</code>). Hiển thị trên LINE — hãy truyền đúng độ dài thật.</td></tr>
+  </tbody></table></div>
+  <div class="tbl"><table><thead><tr><th>Lỗi (422)</th><th>Khi nào</th></tr></thead><tbody>
+    <tr><td>messages[3] audio requires duration (milliseconds).</td><td>Thiếu <code>duration</code></td></tr>
+    <tr><td>messages[3] duration must be a positive integer (milliseconds).</td><td><code>duration</code> ≤ 0</td></tr>
+    <tr><td>messages[3] preview_url is only allowed for image/video messages.</td><td>Audio kèm <code>preview_url</code></td></tr>
+  </tbody></table></div>
+  <p><code>duration</code> gửi kèm message <code>image</code>/<code>video</code> bị bỏ qua.</p>
+<pre class="code"><code>{ "type": "audio", "url": "https://cdn.example.co.jp/audio/guide.m4a", "duration": 60000 }</code></pre>
+
+  <h3>Tóm tắt giới hạn</h3>
+  <div class="tbl"><table><thead><tr><th>Hạng mục</th><th>Giới hạn</th></tr></thead><tbody>
+    <tr><td>Message / request</td><td>1–5</td></tr>
+    <tr><td>Text</td><td>1–5.000 ký tự (UTF-16)</td></tr>
+    <tr><td>URL (<code>url</code>, <code>preview_url</code>)</td><td>≤ 2.000 ký tự</td></tr>
+    <tr><td>Image</td><td>JPEG/PNG ≤ 10 MB</td></tr>
+    <tr><td>Preview</td><td>JPEG/PNG ≤ 1 MB, HTTPS, không redirect</td></tr>
+    <tr><td>Video</td><td>MP4 ≤ 200 MB</td></tr>
+    <tr><td>Audio</td><td>M4A/MP3 ≤ 200 MB, <code>duration</code> bắt buộc</td></tr>
+    <tr><td>Timeout kiểm tra URL</td><td>5 giây / lần truy cập</td></tr>
+  </tbody></table></div>
+</section>
+
+<!-- ============================================================ 6 -->
+<section id="action-objects">
+  <h2>6. Action object</h2>
+  <p class="lead">Phần tử của mảng <code>actions</code> trong <a href="#ep-do-action">POST /do_action</a>. Mỗi action gồm <code>type</code> + <code>action</code> + field riêng. Field không thuộc loại action đang dùng bị bỏ qua.</p>
+  <div class="tbl"><table><thead><tr><th>Field chung</th><th>Type</th><th></th><th>Mô tả</th></tr></thead><tbody>
+    <tr><td class="k"><code>type</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td>Loại action. Không phân biệt hoa/thường.</td></tr>
+    <tr><td class="k"><code>action</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td>Thao tác, giá trị hợp lệ theo <code>type</code>. Thiếu → 422 "invalid action for type …".</td></tr>
+  </tbody></table></div>
+
+  <h3 id="act-tag">tag — gắn / gỡ tag</h3>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th></tr></thead><tbody>
+    <tr><td class="k"><code>action</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td><code>add</code> (gắn) | <code>remove</code> (gỡ). Gắn tag đã có / gỡ tag chưa gắn không gây lỗi. <code>add</code> có thể kích hoạt hành động gắn với tag — xem <a href="#ep-do-action">tác dụng phụ</a>.</td></tr>
+    <tr><td class="k"><code>tag_ids</code></td><td>array&lt;integer&gt;</td><td><span class="req y">Bắt buộc</span></td><td>Tag ID từ <code>/tags</code>, ≥ 1 phần tử. Tất cả phải tồn tại trong bot.</td></tr>
+  </tbody></table></div>
+  <div class="tbl"><table><thead><tr><th>HTTP</th><th>message</th><th>Khi nào</th></tr></thead><tbody>
+    <tr><td>422</td><td>actions[0] tag requires non-empty tag_ids.</td><td>Thiếu hoặc rỗng <code>tag_ids</code></td></tr>
+    <tr><td>404</td><td>actions[0] tag_ids not found: [999]</td><td>Tag không tồn tại / đã xoá / bot khác</td></tr>
+  </tbody></table></div>
+<pre class="code"><code>{ "type": "tag", "action": "add", "tag_ids": [101, 102] }</code></pre>
+
+  <h3 id="act-friend-info">friend_info — cập nhật friend info</h3>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th></tr></thead><tbody>
+    <tr><td class="k"><code>action</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td><code>set</code> <code>clear</code> <code>today</code> <code>point_replace</code> <code>point_plus</code> <code>point_minus</code> <code>point_clear</code> — xem ma trận bên dưới.</td></tr>
+    <tr><td class="k"><code>field_id</code></td><td>integer</td><td><span class="req y">Bắt buộc</span></td><td>Field ID từ <code>/friend-info-fields</code> (âm = built-in, dương = custom).</td></tr>
+    <tr><td class="k"><code>value</code></td><td>string</td><td><span class="req c">Có điều kiện</span></td><td>Giá trị mới, bắt buộc với <code>set</code> (trừ SELECT) và <code>point_replace/plus/minus</code>. Được trim khoảng trắng 2 đầu.</td></tr>
+    <tr><td class="k"><code>option_id</code></td><td>integer</td><td><span class="req c">Có điều kiện</span></td><td>Bắt buộc với <code>set</code> trên field SELECT (không nhận <code>value</code>). Lấy từ <code>options[]</code>; field <code>-6</code> dùng STT 1–47 (<a href="#enum-pref">7.3</a>).</td></tr>
+  </tbody></table></div>
+  <h4>Ma trận action × kiểu field</h4>
+  <div class="tbl"><table><thead><tr><th>action</th><th>TEXT</th><th>DATE</th><th>POINT</th><th>SELECT</th><th>IMAGE</th><th>FILE</th><th>Kết quả</th></tr></thead><tbody>
+    <tr><td><code>set</code></td><td><code>value</code> bất kỳ</td><td><code>value</code> = <code>YYYY-MM-DD</code></td><td><code>value</code> số nguyên</td><td><code>option_id</code></td><td><code>value</code> = URL ảnh</td><td><code>value</code> = URL file</td><td>Ghi đè giá trị</td></tr>
+    <tr><td><code>clear</code></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>Xoá giá trị</td></tr>
+    <tr><td><code>today</code></td><td>—</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td><td>Ghi ngày hiện tại (giờ Nhật)</td></tr>
+    <tr><td><code>point_replace</code></td><td>—</td><td>—</td><td><code>value</code> số nguyên</td><td>—</td><td>—</td><td>—</td><td>Đặt điểm = value</td></tr>
+    <tr><td><code>point_plus</code></td><td>—</td><td>—</td><td><code>value</code> số nguyên</td><td>—</td><td>—</td><td>—</td><td>Cộng value</td></tr>
+    <tr><td><code>point_minus</code></td><td>—</td><td>—</td><td><code>value</code> số nguyên</td><td>—</td><td>—</td><td>—</td><td>Trừ value</td></tr>
+    <tr><td><code>point_clear</code></td><td>—</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>Xoá điểm</td></tr>
+  </tbody></table></div>
+  <p>"—" = không hỗ trợ → 422. Với field POINT, nên dùng <code>point_replace</code> thay cho <code>set</code> để thể hiện rõ ý định.</p>
+  <h4>Ràng buộc URL cho field IMAGE / FILE (<code>set</code>)</h4>
+  <p>Bạn tự upload file lên storage của mình rồi truyền URL. Server kiểm tra: bắt buộc <code>https://</code>; host public; <b>không redirect</b>; status &lt; 400; IMAGE phải JPEG/PNG (theo <code>Content-Type</code>, hoặc đuôi <code>.jpg/.jpeg/.png</code> nếu không có header) và ≤ <b>1 MB</b>; FILE mọi định dạng, ≤ <b>10 MB</b>. Vi phạm → 422, ví dụ "actions[2] IMAGE field value must use HTTPS." / "actions[2] FILE field value exceeds max size 10MB (Content-Length=…)."</p>
+  <h4>Lỗi</h4>
+  <div class="tbl"><table><thead><tr><th>HTTP</th><th>message</th><th>Khi nào</th></tr></thead><tbody>
+    <tr><td>422</td><td>actions[1] friend_info requires field_id.</td><td>Thiếu <code>field_id</code></td></tr>
+    <tr><td>404</td><td>actions[1] friend_info field_id not found: 5009</td><td>Field không tồn tại / bot khác / built-in không có trong <a href="#enum-builtin">7.2</a></td></tr>
+    <tr><td>422</td><td>actions[1] friend_info set on SELECT field requires option_id (value is not accepted).</td><td><code>set</code> SELECT thiếu <code>option_id</code> (kể cả khi đã gửi <code>value</code>)</td></tr>
+    <tr><td>404</td><td>actions[1] option_id not found in field 5002: 9</td><td>Option không thuộc field; field <code>-6</code> ngoài 1–47 ("valid: 1..47")</td></tr>
+    <tr><td>422</td><td>actions[1] friend_info set requires value.</td><td><code>set</code> thiếu / rỗng <code>value</code></td></tr>
+    <tr><td>422</td><td>actions[1] DATE field value must be in format YYYY-MM-DD, got: 2026/11/16</td><td>Sai định dạng ngày</td></tr>
+    <tr><td>422</td><td>actions[1] POINT field value must be an integer, got: 1.5</td><td><code>set</code> POINT không phải số nguyên</td></tr>
+    <tr><td>422</td><td>actions[1] friend_info today only applies to DATE fields, field 5001 is not a DATE field.</td><td><code>today</code> trên field không phải DATE</td></tr>
+    <tr><td>422</td><td>actions[1] friend_info point_plus only applies to POINT fields, field -3 is not a POINT field.</td><td><code>point_*</code> trên field không phải POINT</td></tr>
+    <tr><td>422</td><td>actions[1] friend_info point_plus requires value (number).</td><td>Thiếu <code>value</code></td></tr>
+    <tr><td>422</td><td>actions[1] friend_info point_plus value must be an integer, got: ten</td><td><code>value</code> không phải số nguyên</td></tr>
+    <tr><td>422</td><td>actions[1] invalid action for type 'friend_info'. Allowed: set|clear|today|point_replace|point_plus|point_minus|point_clear.</td><td>Sai <code>action</code></td></tr>
+  </tbody></table></div>
+<pre class="code"><code>{ "type": "friend_info", "action": "set", "field_id": -3, "value": "tanaka.taro@example.co.jp" }
+{ "type": "friend_info", "action": "set", "field_id": -4, "value": "1990-04-12" }
+{ "type": "friend_info", "action": "set", "field_id": -6, "option_id": 13 }
+{ "type": "friend_info", "action": "set", "field_id": 5002, "option_id": 1 }
+{ "type": "friend_info", "action": "today", "field_id": 5003 }
+{ "type": "friend_info", "action": "point_minus", "field_id": 5001, "value": "3" }
+{ "type": "friend_info", "action": "clear", "field_id": -2 }</code></pre>
+
+  <h3 id="act-scenario">scenario — chạy / dừng / chạy tiếp</h3>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th></tr></thead><tbody>
+    <tr><td class="k"><code>action</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td><code>start</code> — chạy scenario từ đầu; <code>resume</code> — chạy từ ngày chỉ định; <code>stop</code> — dừng scenario.</td></tr>
+    <tr><td class="k"><code>scenario_id</code></td><td>integer</td><td><span class="req c">Có điều kiện</span></td><td>Bắt buộc với <code>start</code>/<code>resume</code> (phải tồn tại, chưa xoá). Với <code>stop</code>: không cần — xem lưu ý bên dưới.</td></tr>
+    <tr><td class="k"><code>start_from</code></td><td>integer</td><td><span class="req c">Có điều kiện</span></td><td>Bắt buộc với <code>resume</code>: ngày bắt đầu trong scenario, ≥ 0 (ví dụ <code>3</code> = chạy tiếp từ ngày thứ 3). Bị bỏ qua với <code>start</code> (luôn từ ngày 0).</td></tr>
+  </tbody></table></div>
+  <div class="tbl"><table><thead><tr><th>HTTP</th><th>message</th><th>Khi nào</th></tr></thead><tbody>
+    <tr><td>422</td><td>actions[2] scenario start/resume requires scenario_id.</td><td>Thiếu <code>scenario_id</code></td></tr>
+    <tr><td>404</td><td>actions[2] scenario_id not found: 88</td><td>Scenario không tồn tại / đã xoá / bot khác</td></tr>
+    <tr><td>422</td><td>actions[2] scenario resume requires start_from (&gt;=0).</td><td><code>resume</code> thiếu hoặc âm <code>start_from</code></td></tr>
+    <tr><td>422</td><td>actions[2] invalid action for type 'scenario'. Allowed: start|stop|resume.</td><td>Sai <code>action</code></td></tr>
+  </tbody></table></div>
+  <div class="warn"><b class="t"><code>stop</code> DỪNG TẤT CẢ SCENARIO</b><p><code>scenario.stop</code> dừng <b>tất cả</b> scenario friend đang nhận, không chỉ một scenario. <code>scenario_id</code> gửi kèm <code>stop</code> không được kiểm tra (ID sai không trả 404) và không giới hạn phạm vi dừng — không nên gửi.</p></div>
+  <p>Mỗi request chỉ áp <b>một</b> thao tác scenario cho mỗi friend: nếu <code>actions</code> có nhiều action <code>scenario</code>, chỉ action <code>scenario</code> <b>cuối cùng</b> có hiệu lực. Gắn tag có cấu hình scenario (xem <a href="#ep-do-action">tác dụng phụ</a>) cũng tính là một thao tác scenario.</p>
+<pre class="code"><code>{ "type": "scenario", "action": "start", "scenario_id": 88 }
+{ "type": "scenario", "action": "resume", "scenario_id": 88, "start_from": 3 }
+{ "type": "scenario", "action": "stop" }</code></pre>
+
+  <h3 id="act-handling">handling_status — trạng thái xử lý</h3>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Type</th><th></th><th>Mô tả</th></tr></thead><tbody>
+    <tr><td class="k"><code>action</code></td><td>string</td><td><span class="req y">Bắt buộc</span></td><td><code>attach</code> — gắn trạng thái (thay trạng thái cũ); <code>detach</code> — gỡ trạng thái hiện tại.</td></tr>
+    <tr><td class="k"><code>handling_status_id</code></td><td>integer</td><td><span class="req c">Có điều kiện</span></td><td>Bắt buộc với <code>attach</code>; bỏ qua với <code>detach</code>. Từ <code>/handling-statuses</code>.</td></tr>
+  </tbody></table></div>
+  <div class="tbl"><table><thead><tr><th>HTTP</th><th>message</th><th>Khi nào</th></tr></thead><tbody>
+    <tr><td>422</td><td>actions[3] handling_status attach requires handling_status_id.</td><td>Thiếu ID</td></tr>
+    <tr><td>404</td><td>actions[3] handling_status_id not found: 99</td><td>Không tồn tại / bot khác</td></tr>
+    <tr><td>422</td><td>actions[3] invalid action for type 'handling_status'. Allowed: attach|detach.</td><td>Sai <code>action</code></td></tr>
+  </tbody></table></div>
+<pre class="code"><code>{ "type": "handling_status", "action": "attach", "handling_status_id": 12 }
+{ "type": "handling_status", "action": "detach" }</code></pre>
+
+  <h3 id="act-block">block / favorite / confirm_status</h3>
+  <p>Ba loại này không có field riêng — chỉ cần <code>type</code> + <code>action</code>.</p>
+  <div class="tbl"><table><thead><tr><th><code>type</code></th><th><code>action</code></th><th>Kết quả</th><th>Xem lại ở</th></tr></thead><tbody>
+    <tr><td rowspan="4"><code>block</code></td><td><code>block</code></td><td>LME chặn friend (không nhận message từ friend trong chat 1:1)</td><td><code>block_status = "block"</code></td></tr>
+    <tr><td><code>unblock</code></td><td>Bỏ chặn</td><td><code>block_status = "normal"</code></td></tr>
+    <tr><td><code>hide</code></td><td>Ẩn conversation khỏi danh sách chat 1:1</td><td><code>display_status = "hidden"</code></td></tr>
+    <tr><td><code>show</code></td><td>Hiện lại conversation</td><td><code>display_status = "display"</code></td></tr>
+    <tr><td rowspan="2"><code>favorite</code></td><td><code>add</code></td><td>Đánh dấu favorite (lên đầu <code>/conversations</code>)</td><td><code>favorite = "yes"</code></td></tr>
+    <tr><td><code>remove</code></td><td>Bỏ favorite</td><td><code>favorite = "no"</code></td></tr>
+    <tr><td rowspan="2"><code>confirm_status</code></td><td><code>confirm</code></td><td>Đánh dấu đã đọc (確認済み)</td><td><code>confirm_status = "read"</code></td></tr>
+    <tr><td><code>unconfirm</code></td><td>Đánh dấu chưa đọc (未確認)</td><td><code>confirm_status = "unread"</code></td></tr>
+  </tbody></table></div>
+  <p><code>confirm_status</code> (đã đọc) khác <code>handling_status</code> (trạng thái xử lý do bot tự định nghĩa). <code>block</code> chỉ tác động phía LME — không thể thay friend chặn LINE OA (<code>block_status = "blocked"</code>). Sai <code>action</code> → 422 "invalid action for type …".</p>
+<pre class="code"><code>{ "type": "block", "action": "hide" }
+{ "type": "favorite", "action": "add" }
+{ "type": "confirm_status", "action": "unconfirm" }</code></pre>
+</section>
+
+<!-- ============================================================ 7 -->
+<section id="enums">
+  <h2>7. Bảng giá trị</h2>
+
+  <h3 id="enum-fieldtype">7.1 Kiểu friend info field</h3>
+  <div class="tbl"><table><thead><tr><th><code>field_type</code></th><th>Tên trên LME</th><th>Giá trị đọc ra (<code>/friends/detail</code>)</th><th>Cách ghi (<code>/do_action</code>)</th></tr></thead><tbody>
+    <tr><td><code>TEXT</code></td><td>記述式</td><td>string</td><td><code>set</code> + <code>value</code></td></tr>
+    <tr><td><code>POINT</code></td><td>ポイント</td><td>number</td><td><code>point_*</code> + <code>value</code> số nguyên</td></tr>
+    <tr><td><code>DATE</code></td><td>日付</td><td><code>YYYY-MM-DD</code></td><td><code>set</code> + <code>value</code> / <code>today</code></td></tr>
+    <tr><td><code>SELECT</code></td><td>選択式</td><td>nhãn option (string)</td><td><code>set</code> + <code>option_id</code></td></tr>
+    <tr><td><code>IMAGE</code></td><td>画像</td><td>URL string</td><td><code>set</code> + <code>value</code> URL</td></tr>
+    <tr><td><code>FILE</code></td><td>ファイル</td><td>URL string</td><td><code>set</code> + <code>value</code> URL</td></tr>
+  </tbody></table></div>
+
+  <h3 id="enum-builtin">7.2 Built-in field (ID âm)</h3>
+  <p>Có sẵn cho mọi bot, ID cố định. Không có field <code>-5</code>.</p>
+  <div class="tbl"><table><thead><tr><th>field_id</th><th>Tên (JP)</th><th>Ý nghĩa</th><th>field_type</th></tr></thead><tbody>
+    <tr><td>-1</td><td>システム表示名</td><td>Tên quản lý (= <code>system_name</code>)</td><td>TEXT</td></tr>
+    <tr><td>-2</td><td>携帯電話</td><td>Số điện thoại (= <code>phone</code>)</td><td>TEXT</td></tr>
+    <tr><td>-3</td><td>メールアドレス</td><td>Email (= <code>email</code>)</td><td>TEXT</td></tr>
+    <tr><td>-4</td><td>生年月日</td><td>Ngày sinh</td><td>DATE</td></tr>
+    <tr><td>-6</td><td>都道府県名</td><td>Tỉnh/thành (47 option cố định)</td><td>SELECT</td></tr>
+    <tr><td>-7</td><td>郵便番号</td><td>Mã bưu điện</td><td>TEXT</td></tr>
+    <tr><td>-8</td><td>市区町村名</td><td>Quận/huyện/thành phố</td><td>TEXT</td></tr>
+    <tr><td>-9</td><td>町名/番地</td><td>Địa chỉ/số nhà</td><td>TEXT</td></tr>
+    <tr><td>-10</td><td>建物名・部屋番号</td><td>Toà nhà/số phòng</td><td>TEXT</td></tr>
+  </tbody></table></div>
+
+  <h3 id="enum-pref">7.3 Option của field -6 (都道府県名)</h3>
+  <p><code>option_id</code> = STT 1–47. Ghi bằng <code>option_id</code>, server lưu tên tỉnh; đọc ra là tên tỉnh (string).</p>
+  <div class="tbl"><table><thead><tr><th>ID</th><th>Tỉnh</th><th>ID</th><th>Tỉnh</th><th>ID</th><th>Tỉnh</th><th>ID</th><th>Tỉnh</th></tr></thead><tbody>
+    <tr><td>1</td><td>北海道</td><td>13</td><td>東京都</td><td>25</td><td>滋賀県</td><td>37</td><td>香川県</td></tr>
+    <tr><td>2</td><td>青森県</td><td>14</td><td>神奈川県</td><td>26</td><td>京都府</td><td>38</td><td>愛媛県</td></tr>
+    <tr><td>3</td><td>岩手県</td><td>15</td><td>新潟県</td><td>27</td><td>大阪府</td><td>39</td><td>高知県</td></tr>
+    <tr><td>4</td><td>宮城県</td><td>16</td><td>富山県</td><td>28</td><td>兵庫県</td><td>40</td><td>福岡県</td></tr>
+    <tr><td>5</td><td>秋田県</td><td>17</td><td>石川県</td><td>29</td><td>奈良県</td><td>41</td><td>佐賀県</td></tr>
+    <tr><td>6</td><td>山形県</td><td>18</td><td>福井県</td><td>30</td><td>和歌山県</td><td>42</td><td>長崎県</td></tr>
+    <tr><td>7</td><td>福島県</td><td>19</td><td>山梨県</td><td>31</td><td>鳥取県</td><td>43</td><td>熊本県</td></tr>
+    <tr><td>8</td><td>茨城県</td><td>20</td><td>長野県</td><td>32</td><td>島根県</td><td>44</td><td>大分県</td></tr>
+    <tr><td>9</td><td>栃木県</td><td>21</td><td>岐阜県</td><td>33</td><td>岡山県</td><td>45</td><td>宮崎県</td></tr>
+    <tr><td>10</td><td>群馬県</td><td>22</td><td>静岡県</td><td>34</td><td>広島県</td><td>46</td><td>鹿児島県</td></tr>
+    <tr><td>11</td><td>埼玉県</td><td>23</td><td>愛知県</td><td>35</td><td>山口県</td><td>47</td><td>沖縄県</td></tr>
+    <tr><td>12</td><td>千葉県</td><td>24</td><td>三重県</td><td>36</td><td>徳島県</td><td></td><td></td></tr>
+  </tbody></table></div>
+
+  <h3 id="enum-msgtype">7.4 <code>message_type</code> và dạng <code>data</code> (<code>/conversations/detail</code>)</h3>
+  <div class="tbl"><table><thead><tr><th><code>message_type</code></th><th>Ý nghĩa</th><th>Dạng <code>data</code></th></tr></thead><tbody>
+    <tr><td><code>text</code></td><td>Tin nhắn văn bản, thông báo trả lời form, dòng log hệ thống</td><td>string | <code>null</code></td></tr>
+    <tr><td><code>image</code>, <code>video</code>, <code>audio</code></td><td>Media</td><td>string — URL (audio có thể kèm <code>?duration=</code>)</td></tr>
+    <tr><td><code>file</code></td><td>File friend gửi</td><td>string — URL</td></tr>
+    <tr><td><code>pdf</code></td><td>PDF nhân viên gửi</td><td>object <code>{file_name, file_size, url, file_name_original}</code></td></tr>
+    <tr><td><code>sticker</code></td><td>Sticker</td><td>object <code>{packageId, stickerId}</code> (string)</td></tr>
+    <tr><td><code>location</code></td><td>Vị trí</td><td>object <code>{address, latitude, longitude, title}</code></td></tr>
+    <tr><td><code>template</code>, <code>broadcast</code>, <code>event</code>, <code>action</code></td><td>Template / broadcast / nhắc lịch / action</td><td>array <code>[{type, content}]</code></td></tr>
+    <tr><td><code>scenario</code></td><td>Step của scenario <b>hoặc</b> ghi nhận bắt đầu scenario</td><td>array — phần tử là <code>{type, content}</code> hoặc <code>{scenario_name, start_day, start_time}</code>; có thể là string khi không còn dữ liệu template</td></tr>
+    <tr><td><code>stop_scenario</code>, <code>scenario_empty_step</code></td><td>Dừng scenario / step rỗng</td><td>object <code>{scenario_name, start_day?, start_time?}</code></td></tr>
+    <tr><td><code>start_remind</code>, <code>stop_remind</code></td><td>Đăng ký / huỷ nhắc lịch</td><td>object <code>{remind_name, startDateTime}</code></td></tr>
+    <tr><td><code>action_from_booking</code></td><td>Thông báo đặt lịch / thanh toán</td><td>string</td></tr>
+    <tr><td><code>action_from_booking_salon</code>, <code>action_from_booking_lesson</code></td><td>Thông báo đặt lịch salon / lesson</td><td>object <code>{type, calendar_name, content}</code></td></tr>
+    <tr><td><code>unknown</code></td><td>Loại chưa phân loại (hiện gồm action khi trả lời form)</td><td>nguyên trạng, thường <code>null</code></td></tr>
+  </tbody></table></div>
+  <p>Ví dụ đầy đủ từng loại: <a href="#conv-gallery">bảng ví dụ theo message_type</a>. Field chỉ phục vụ hiển thị nội bộ (màu sắc, server ảnh, đường dẫn thumbnail…) đã được loại bỏ khỏi <code>data</code>. Client nên xử lý được <code>message_type</code> mới xuất hiện trong tương lai (bỏ qua hoặc hiển thị dạng thô).</p>
+
+  <h3 id="enum-status">7.5 Trạng thái</h3>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Giá trị</th><th>Ý nghĩa</th></tr></thead><tbody>
+    <tr><td><code>confirm_status</code></td><td><code>read</code> / <code>unread</code></td><td>Đã đọc (確認済み) / chưa đọc (未確認). Ở query của <code>/conversations</code> dùng số: <code>0</code> = read, <code>1</code> = unread.</td></tr>
+    <tr><td><code>block_status</code></td><td><code>normal</code> / <code>blocked</code> / <code>block</code></td><td>Bình thường / friend đã chặn LINE OA / LME đã chặn friend.</td></tr>
+    <tr><td><code>display_status</code></td><td><code>display</code> / <code>hidden</code></td><td>Hiển thị / đã ẩn trong chat 1:1.</td></tr>
+    <tr><td><code>favorite</code></td><td><code>yes</code> / <code>no</code></td><td>Có / không favorite.</td></tr>
+    <tr><td><code>scenarios[].status</code></td><td><code>following</code> / <code>completed</code> / <code>stopped</code></td><td>Đang nhận / đã nhận hết / đã dừng.</td></tr>
+    <tr><td><code>sender</code></td><td><code>friend</code> / <code>LINE_OA</code></td><td>Friend gửi / bot hoặc nhân viên gửi.</td></tr>
+    <tr><td><code>friendtype</code></td><td><code>old</code> / <code>new</code></td><td>既存友だち (đã là friend trước khi LINE OA kết nối LME) / 新規友だち (kết bạn sau khi kết nối). Xem <a href="#ep-friends">/friends</a>.</td></tr>
+  </tbody></table></div>
+</section>
+
+<!-- ============================================================ 8 -->
+<section id="changelog">
+  <h2>8. Lịch sử cập nhật</h2>
+  <p class="lead">Bản mới nhất ở trên cùng. Khi trao đổi về tài liệu, vui lòng nêu số bản.</p>
+  <div class="tbl"><table>
+    <thead><tr><th style="width:9%">Bản</th><th style="width:13%">Ngày</th><th>Nội dung thay đổi</th></tr></thead>
+    <tbody>
+      <tr><td><b>1.3.0</b></td><td>16/11/2026</td><td>
+        Viết lại toàn bộ tài liệu theo dạng API reference, đối chiếu với hành vi thực tế của server. <b>Không thay đổi API</b> — chỉ bổ sung và sửa mô tả:<br>
+        ① Thêm ví dụ curl / Python / Node.js / Ruby cho cả 12 endpoint.<br>
+        ② Bổ sung bảng lỗi riêng cho từng endpoint (HTTP, code, message, nguyên nhân, cách xử lý) và thứ tự kiểm tra xác thực.<br>
+        ③ Ghi nhận 3 mã lỗi đã có nhưng chưa được mô tả: <code>quota_exceeded</code> (403), <code>in_progress</code> (409), <code>server_error</code> (500).<br>
+        ④ Mô tả đầy đủ response header (<code>X-Request-Id</code>, <code>Idempotency-Replayed</code>…), quy tắc idempotency (lưu 24h, phạm vi theo key, trim khoảng trắng, ký tự cho phép, 409 khi đang xử lý / khác body) và chiến lược retry.<br>
+        ⑤ Phân trang: hành vi <code>page</code> ≤ 0, <code>limit</code> ≤ 0 (400), <code>limit</code> &gt; 500 (kẹp + <code>data.warnings: ["limit_clamped"]</code>); <code>/friends</code> không có khối <code>pagination</code>.<br>
+        ⑥ Tách mục <b>Message object</b> và <b>Action object</b> riêng, kèm toàn bộ ràng buộc: Content-Type cho phép, kiểm tra URL media (bằng request HEAD — lưu ý storage từ chối HEAD / S3 presigned URL), ràng buộc <code>preview_url</code>, ma trận action × kiểu field, ràng buộc URL IMAGE/FILE.<br>
+        ⑦ <code>/messages/template</code>: mô tả field tuỳ chọn <code>templates[].edited_content</code> (chỉ template text).<br>
+        ⑧ <code>/do_action</code>: 100 friend / 10 action là <b>giới hạn cứng</b> (trước ghi "đề xuất"); friend không thuộc bot bị bỏ qua; xử lý đồng bộ.<br>
+        ⑨ <b>Đính chính</b>: <code>/conversations/detail</code> trả message <b>mới nhất trước</b> (sample bản cũ xếp cũ → mới) và không trả message lỗi (ERROR).<br>
+        ⑩ <code>/friends/detail</code>: <code>friend_info[]</code> chỉ gồm field đã có dữ liệu (field chưa nhập không xuất hiện).<br>
+        ⑪ Thêm Bảng giá trị: kiểu field, built-in field, <code>message_type</code> + dạng <code>data</code> (đủ 21 loại, kèm cấu trúc <code>sticker</code>/<code>location</code>/<code>scenario</code>/<code>start_remind</code>/<code>stop_remind</code>/<code>stop_scenario</code>; <code>action_from_booking</code> là string; <code>text</code> có thể <code>null</code>), các trạng thái.<br>
+        ⑫ Ví dụ cho mọi API GET, dùng một bộ dữ liệu mẫu tiếng Nhật thống nhất (tên, ID, URL đều là dữ liệu giả): <code>/conversations/detail</code> (hội thoại 12 message, friend đã chặn / hội thoại ẩn / không còn message, bảng ví dụ <code>data</code> theo từng <code>message_type</code>, phần tử con của template, "message gửi qua API hiển thị lại thế nào", lưu ý xử lý dữ liệu); <code>/friends</code>, <code>/friends/detail</code>, <code>/tags</code>, <code>/friend-info-fields</code>, <code>/scenarios</code>, <code>/templates</code>, <code>/conversations</code>, <code>/handling-statuses</code>.<br>
+        ⑬ <b>Đính chính</b> hành vi gửi tin: text (và <code>edited_content</code>, template) có thay token như <code>{name}</code>, <code>[FRIEND_INFO_…]</code>, <code>[date]</code> (trước ghi "gửi nguyên văn"); <code>/messages/*</code> thành công nghĩa là đã đưa vào hàng đợi gửi; video thiếu <code>preview_url</code> dùng ảnh bìa mặc định (trước ghi "dùng url"); friend đã chặn LINE OA → 422; hạn mức gói free của LME tính <b>1 tin / request</b> cho cả <code>/messages/push</code> và <code>/messages/template</code> (trước ghi "mỗi phần tử / mỗi template tính 1 tin"); thêm lỗi hết hạn mức gói LINE OA (403) và gói LME hết hạn quá 7 ngày (422).<br>
+        ⑭ <b>Đính chính</b> <code>/do_action</code>: <code>scenario.stop</code> dừng <b>tất cả</b> scenario; mỗi request chỉ 1 thao tác scenario có hiệu lực; <code>tag.add</code> kích hoạt hành động gắn với tag; <code>scenario.start</code> có thể gửi tin ngay.<br>
+        ⑮ Idempotency: lưu <b>ít nhất</b> 24 giờ; khi replay, <code>X-Request-Id</code> khác <code>request_id</code> trong body; retry sau 500 có thể thực thi lại; khi hệ thống chống trùng gặp sự cố thì request vẫn được xử lý.<br>
+        ⑯ Bổ sung: định nghĩa <code>friendtype</code>; <code>/friends</code> gồm cả friend đã chặn; <code>/tags</code> sắp xếp mới tạo trước; giá trị chấp nhận của từng kiểu field; DATE không nhận dạng được trả nguyên chuỗi; <code>preview_url</code> được kiểm tra bằng GET; danh sách chuỗi log hệ thống; <code>/templates</code> không trả loại template.</td></tr>
+      <tr><td><b>1.2.0</b></td><td>28/09/2026</td><td>① Bổ sung bảng built-in friend info field (ID âm) ở <code>GET /friend-info-fields</code>.<br>② Field <code>-6</code> (都道府県名) là SELECT với 47 option cố định, <code>option_id</code> = STT 1–47; <code>/do_action</code> <code>friend_info.set</code> field <code>-6</code> nhận <code>option_id</code> (ngoài 1..47 → 404; gửi <code>value</code> thay <code>option_id</code> → 422).</td></tr>
+      <tr><td><b>1.1.0</b></td><td>21/09/2026</td><td>① Resource thuộc bot khác trả 404.<br>② Đổi "compliant status" → "handling status" (<code>/handling-statuses</code>, <code>data.handling_status</code>).<br>③ <code>GET /conversations</code> (message gần nhất) đổi thành <code>GET /conversations/detail</code>; <code>GET /conversations</code> mới là danh sách conversation.<br>④ <code>/do_action</code> thêm <code>confirm_status</code>.<br>⑤ Bỏ tiền tố <code>filters.</code> ở query; <code>/friends</code> thêm <code>line_names</code>, đổi <code>tag_id</code> → <code>tag_ids</code>, <code>email</code> → <code>emails</code>.<br>⑥ Tách <code>line_name</code> / <code>system_name</code>.</td></tr>
+      <tr><td><b>1.0.0</b></td><td>10/09/2026</td><td>Bản đầu tiên.</td></tr>
+    </tbody></table></div>
+  <h3>Hướng dẫn chuyển đổi từ tài liệu 1.2.0</h3>
+  <p>API không đổi, nhưng nếu bạn đã code theo mô tả cũ, hãy rà các điểm sau:</p>
+  <ul>
+    <li><b><code>/conversations/detail</code></b>: <code>messages[0]</code> là message <b>mới nhất</b>. Nếu cần thứ tự thời gian tăng dần, đảo mảng phía client.</li>
+    <li><b><code>/do_action</code></b>: chia lô tối đa 100 friend và 10 action — vượt sẽ nhận 422. Friend không thuộc bot bị bỏ qua thay vì lỗi.</li>
+    <li><b>Xử lý lỗi</b>: thêm nhánh cho <code>quota_exceeded</code> (403 — không retry), <code>in_progress</code> (409 — retry sau vài giây), <code>server_error</code> (500 — retry có backoff).</li>
+    <li><b>Danh sách</b>: chấp nhận field <code>data.warnings</code> có thể xuất hiện; dùng <code>limit</code> ≤ 500.</li>
+    <li><b>Media</b>: dùng HTTPS, <code>preview_url</code> không redirect và ≤ 1 MB, audio luôn kèm <code>duration</code>, video luôn kèm <code>preview_url</code>.</li>
+    <li><b>Text</b>: nếu nội dung có chuỗi dạng <code>{name}</code>, <code>[date]</code>, <code>[FRIEND_INFO_…]</code>, chúng sẽ bị thay bằng giá trị thật.</li>
+    <li><b><code>scenario.stop</code></b>: dừng tất cả scenario của friend, không chỉ scenario truyền trong <code>scenario_id</code>.</li>
+    <li><b>Hạn mức gửi tin</b>: nếu bạn ước tính hạn mức gói free theo số message, hãy đổi sang theo số request (1 request = 1 tin) — xem <a href="#send-quota">Cách tính hạn mức gửi tin</a>.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ 9 -->
+<section id="support">
+  <h2>9. Hỗ trợ</h2>
+  <ul>
+    <li>Khi gặp lỗi, gửi cho đầu mối WSSJ phụ trách: <b><code>request_id</code></b> (hoặc header <code>X-Request-Id</code>), thời điểm gọi (JST), method + path, HTTP status và <code>error.code</code>. Không gửi API key.</li>
+    <li>Nghi key bị lộ: xoá key ngay trên LME và phát hành key mới.</li>
+    <li>Góp ý về tài liệu (thiếu case, ví dụ sai, mô tả khó hiểu): gửi kèm số bản (ví dụ "1.3.0, mục 6 friend_info") để được cập nhật ở bản sau.</li>
+  </ul>
+</section>
+
+<footer><p>LME Public API v1 — Đặc tả chi tiết, bản 1.3.0 (16/11/2026). Tài liệu bản tiếng Việt do WSSJ biên soạn cho Công ty Missiona.</p></footer>
+</main>
+</div>
+
+<script>
+(function(){
+  var BASE = "https://api.lmes.jp";
+  var EX = {
+    friends:      {m:"GET",  p:"/v1/friends", q:{page:1, limit:100, line_names:"田中,佐藤", tag_ids:"101,102", added_date_from:"2026-10-01", added_date_to:"2026-10-31"}},
+    friendDetail: {m:"GET",  p:"/v1/friends/detail", q:{lmessage_friend_id:12345}},
+    tags:         {m:"GET",  p:"/v1/tags", q:{page:1, limit:100}},
+    fields:       {m:"GET",  p:"/v1/friend-info-fields", q:{page:1, limit:100}},
+    scenarios:    {m:"GET",  p:"/v1/scenarios", q:{page:1, limit:100}},
+    templates:    {m:"GET",  p:"/v1/templates", q:{page:1, limit:100}},
+    conversations:{m:"GET",  p:"/v1/conversations", q:{page:1, limit:50, confirm_status:1, handling_status_ids:"12,13", tag_names:"VIP,カゴ落ち", tag_mode:"or"}},
+    convDetail:   {m:"GET",  p:"/v1/conversations/detail", q:{lmessage_friend_id:12345}},
+    handling:     {m:"GET",  p:"/v1/handling-statuses", q:{}},
+    push: {m:"POST", p:"/v1/messages/push", idem:"push-12345-20261116-0001", b:{
+      friend_id:12345, id_type:"lmessage_friend_id",
+      messages:[
+        {type:"text", text:"お問い合わせありがとうございます。ご案内資料をお送りします。"},
+        {type:"image", url:"https://cdn.example.co.jp/images/guide.jpg", preview_url:"https://cdn.example.co.jp/images/guide_preview.jpg"},
+        {type:"video", url:"https://cdn.example.co.jp/videos/intro.mp4", preview_url:"https://cdn.example.co.jp/videos/intro_preview.jpg"},
+        {type:"audio", url:"https://cdn.example.co.jp/audio/guide.m4a", duration:60000}
+      ],
+      mark_confirmed:true}},
+    sendTemplate: {m:"POST", p:"/v1/messages/template", idem:"ship-8812", b:{
+      friend_id:12345, templates:[{template_id:7001},{template_id:7003, edited_content:"{name}様\nご注文 #8812 の商品を発送しました。"}], mark_confirmed:false}},
+    doAction: {m:"POST", p:"/v1/do_action", idem:"cart-55120-abandoned", b:{
+      lmessage_friend_ids:[12345,12346],
+      actions:[
+        {type:"tag", action:"add", tag_ids:[101]},
+        {type:"friend_info", action:"point_plus", field_id:5001, value:"10"},
+        {type:"friend_info", action:"set", field_id:5002, option_id:1},
+        {type:"friend_info", action:"set", field_id:-6, option_id:13},
+        {type:"scenario", action:"start", scenario_id:88},
+        {type:"handling_status", action:"attach", handling_status_id:12},
+        {type:"favorite", action:"add"},
+        {type:"confirm_status", action:"confirm"}
+      ]}}
+  };
+
+  function qs(q){ return Object.keys(q).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(q[k]);}).join("&"); }
+  function url(e){ var s = qs(e.q||{}); return BASE + e.p + (s ? "?"+s : ""); }
+  function ind(n){ return new Array(n+1).join(" "); }
+
+  function py(v, d){
+    d = d||0;
+    if (v === null) return "None";
+    if (v === true) return "True";
+    if (v === false) return "False";
+    if (typeof v === "number") return String(v);
+    if (typeof v === "string") return JSON.stringify(v);
+    if (Array.isArray(v)) {
+      if (!v.length) return "[]";
+      return "[\n" + v.map(function(x){return ind(d+4)+py(x,d+4);}).join(",\n") + ",\n" + ind(d) + "]";
+    }
+    var ks = Object.keys(v); if (!ks.length) return "{}";
+    return "{\n" + ks.map(function(k){return ind(d+4)+JSON.stringify(k)+": "+py(v[k],d+4);}).join(",\n") + ",\n" + ind(d) + "}";
+  }
+  function rb(v, d){
+    d = d||0;
+    if (v === null) return "nil";
+    if (typeof v === "boolean" || typeof v === "number") return String(v);
+    if (typeof v === "string") return JSON.stringify(v);
+    if (Array.isArray(v)) {
+      if (!v.length) return "[]";
+      return "[\n" + v.map(function(x){return ind(d+2)+rb(x,d+2);}).join(",\n") + "\n" + ind(d) + "]";
+    }
+    var ks = Object.keys(v); if (!ks.length) return "{}";
+    return "{\n" + ks.map(function(k){return ind(d+2)+JSON.stringify(k)+" => "+rb(v[k],d+2);}).join(",\n") + "\n" + ind(d) + "}";
+  }
+  function js(v){ return JSON.stringify(v, null, 2).replace(/\n/g, "\n  "); }
+
+  function curl(e){
+    var post = e.m === "POST";
+    var s = "curl -sS" + (post ? " -X POST" : "") + " \"" + url(e) + "\" \\\n  -H \"X-LME-API-KEY: $LME_API_KEY\"";
+    if (post) {
+      s += " \\\n  -H \"Content-Type: application/json\"";
+      if (e.idem) s += " \\\n  -H \"Idempotency-Key: " + e.idem + "\"";
+      s += " \\\n  -d '" + JSON.stringify(e.b, null, 2) + "'";
+    }
+    return s;
+  }
+  function python(e){
+    var post = e.m === "POST";
+    var h = "{\"X-LME-API-KEY\": os.environ[\"LME_API_KEY\"]" + (post && e.idem ? ", \"Idempotency-Key\": \"" + e.idem + "\"" : "") + "}";
+    var s = "import os\nimport requests\n\n";
+    if (post) {
+      s += "payload = " + py(e.b) + "\n\n";
+      s += "resp = requests.post(\n    \"" + BASE + e.p + "\",\n    headers=" + h + ",\n    json=payload,  # tự đặt Content-Type: application/json\n    timeout=60,\n)\n";
+    } else {
+      s += "resp = requests.get(\n    \"" + BASE + e.p + "\",\n    headers=" + h + ",\n";
+      if (Object.keys(e.q||{}).length) s += "    params=" + py(e.q, 4) + ",\n";
+      s += "    timeout=30,\n)\n";
+    }
+    s += "print(resp.status_code, resp.headers.get(\"X-Request-Id\"))\nprint(resp.json())";
+    return s;
+  }
+  function node(e){
+    var post = e.m === "POST";
+    var s = "// Node.js 18+ (fetch có sẵn)\n(async () => {\n";
+    s += "  const res = await fetch(\"" + url(e) + "\", {\n    method: \"" + e.m + "\",\n    headers: {\n      \"X-LME-API-KEY\": process.env.LME_API_KEY,\n";
+    if (post) {
+      s += "      \"Content-Type\": \"application/json\",\n";
+      if (e.idem) s += "      \"Idempotency-Key\": \"" + e.idem + "\",\n";
+    }
+    s += "    },\n";
+    if (post) s += "    body: JSON.stringify(" + js(e.b).replace(/\n/g, "\n  ") + "),\n";
+    s += "  });\n  console.log(res.status, res.headers.get(\"x-request-id\"));\n  console.log(await res.json());\n})();";
+    return s;
+  }
+  function ruby(e){
+    var post = e.m === "POST";
+    var s = "require \"net/http\"\nrequire \"json\"\nrequire \"uri\"\n\n";
+    s += "uri = URI(\"" + BASE + e.p + "\")\n";
+    if (!post && Object.keys(e.q||{}).length) s += "uri.query = URI.encode_www_form(" + rb(e.q) + ")\n";
+    s += "req = Net::HTTP::" + (post ? "Post" : "Get") + ".new(uri)\n";
+    s += "req[\"X-LME-API-KEY\"] = ENV.fetch(\"LME_API_KEY\")\n";
+    if (post) {
+      s += "req[\"Content-Type\"] = \"application/json\"\n";
+      if (e.idem) s += "req[\"Idempotency-Key\"] = \"" + e.idem + "\"\n";
+      s += "req.body = JSON.generate(" + rb(e.b) + ")\n";
+    }
+    s += "\nres = Net::HTTP.start(uri.host, uri.port, use_ssl: true, read_timeout: 60) { |http| http.request(req) }\n";
+    s += "puts res.code, res[\"X-Request-Id\"]\nputs JSON.parse(res.body)";
+    return s;
+  }
+
+  var LANGS = [["curl","curl",curl],["python","Python",python],["node","Node.js",node],["ruby","Ruby",ruby]];
+  var pref = "curl";
+  try { pref = localStorage.getItem("lme-api-lang") || "curl"; } catch (err) {}
+
+  var boxes = [];
+  document.querySelectorAll(".codetabs[data-ex]").forEach(function(box){
+    var e = EX[box.getAttribute("data-ex")]; if (!e) return;
+    box.innerHTML = "";
+    var bar = document.createElement("div"); bar.className = "bar"; bar.setAttribute("role","tablist");
+    var pre = document.createElement("pre"); var code = document.createElement("code"); pre.appendChild(code);
+    var codes = {};
+    LANGS.forEach(function(l){
+      codes[l[0]] = l[2](e);
+      var b = document.createElement("button"); b.type = "button"; b.textContent = l[1];
+      b.setAttribute("role","tab"); b.dataset.lang = l[0];
+      b.addEventListener("click", function(){ setLang(l[0], true); });
+      bar.appendChild(b);
+    });
+    var cp = document.createElement("button"); cp.type = "button"; cp.className = "copy"; cp.textContent = "Copy";
+    cp.addEventListener("click", function(){
+      var t = code.textContent;
+      var done = function(){ cp.textContent = "Đã copy"; setTimeout(function(){ cp.textContent = "Copy"; }, 1200); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, function(){});
+    });
+    bar.appendChild(cp);
+    box.appendChild(bar); box.appendChild(pre);
+    boxes.push({bar:bar, code:code, codes:codes});
+  });
+
+  function setLang(lang, save){
+    pref = lang;
+    boxes.forEach(function(x){
+      x.code.textContent = x.codes[lang];
+      x.bar.querySelectorAll("button[data-lang]").forEach(function(b){ b.setAttribute("aria-selected", b.dataset.lang === lang ? "true" : "false"); });
+    });
+    if (save) { try { localStorage.setItem("lme-api-lang", lang); } catch (err) {} }
+  }
+  setLang(pref, false);
+
+  // scrollspy cho sidebar
+  var links = Array.prototype.slice.call(document.querySelectorAll("nav.side a[href^='#']"));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute("href").slice(1)] = a; });
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting && map[en.target.id]) {
+          links.forEach(function(a){ a.classList.remove("active"); });
+          map[en.target.id].classList.add("active");
+        }
+      });
+    }, {rootMargin:"0px 0px -75% 0px"});
+    Object.keys(map).forEach(function(id){ var el = document.getElementById(id); if (el) io.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>
